@@ -28,25 +28,31 @@ class District(object):
             self.dem_seat = 0
             self.rep_seat = 0
             self.other_seat = 1
-def remove_comma(string):
+
+
+def remove_comma(string):   #remove comma in 4+ digit numbers and %s from data in cvs file 
     list_number = []
     for i in range(len(string)):
         if string[i] != ',' and string[i] != '%':
             list_number.append(string[i])
     number = ''.join(list_number)       
     return number
-def demographic_breakdown(state = "WI"):
+
+
+def demographic_breakdown(state = "WI"):    #find percentages of Democrats&Republicans in stae
     total_dem = 0
     total_rep = 0
     total_pop = 0
     for i in range(len(All_district)):
-        if All_district[i].name[:2] == state:
+        if All_district[i].name[:2] == state:   #
             total_dem += All_district[i].dem_vote
             total_rep += All_district[i].rep_vote
             total_pop += All_district[i].total 
     total_percent_dem = total_dem / total_pop
     total_percent_rep = total_rep / total_pop                                           
     return total_percent_dem, total_percent_rep
+
+
 def simulation(New_list, number_district, number_sample = 1000):  
     test_list  = []
     fail_count = 0
@@ -61,6 +67,8 @@ def simulation(New_list, number_district, number_sample = 1000):
     print (fail_count)
     print (test_list)
     return (test_list)
+
+
 All_district = []
 with open('2014_House_Data_Simplified.csv') as csvfile:
     reader = csv.DictReader(csvfile)
@@ -72,6 +80,7 @@ with open('2014_House_Data_Simplified.csv') as csvfile:
                                      int(remove_comma(row['Other'])), 
                                      float(remove_comma(row['Dem_share'])), 
                                      float(remove_comma(row['Rep_share']))))
+
 print (demographic_breakdown())
 number_district = 8
 total_percent_dem = demographic_breakdown()[0]
