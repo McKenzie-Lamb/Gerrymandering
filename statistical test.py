@@ -39,27 +39,28 @@ def remove_comma(string):   #remove comma in 4+ digit numbers and %s from data i
     return number
 
 
-def demographic_breakdown(state = "WI"):    #find percentages of Democrats&Republicans in stae
+def demographic_breakdown(state = "WI"):    #find percentages of Democrats&Republicans in given stae
     total_dem = 0
     total_rep = 0
     total_pop = 0
     for i in range(len(All_district)):
-        if All_district[i].name[:2] == state:   #
-            total_dem += All_district[i].dem_vote
-            total_rep += All_district[i].rep_vote
-            total_pop += All_district[i].total 
-    total_percent_dem = total_dem / total_pop
-    total_percent_rep = total_rep / total_pop                                           
+        if All_district[i].name[:2] == state:   #look at only districts in given state
+            total_dem += All_district[i].dem_vote    #keep running total of votes for Democrats in given state
+            total_rep += All_district[i].rep_vote    #keep running total of votes for Republicans in given state
+            total_pop += All_district[i].total       #keep running total of all votes cast in given state
+    total_percent_dem = total_dem / total_pop        #percent of votes cast for Democrat in given state
+    total_percent_rep = total_rep / total_pop        #percent of votes cast for Republican in given state                                   
     return total_percent_dem, total_percent_rep
 
 
-def simulation(New_list, number_district, number_sample = 1000):  
+def simulation(New_list, number_district, number_sample = 1000):  #generates sample lists of random districts w/ same demographics as given state
     test_list  = []
     fail_count = 0
     while len(test_list) < number_sample:
-        simulated_set = random.sample(New_list, number_district)
+        simulated_set = random.sample(New_list, number_district) #generates list of random districts
         if abs(sum([dist.dem_vote for dist in simulated_set])/ sum([dist.total for dist in simulated_set]) 
-        - total_percent_dem) <= 0.01:
+        - total_percent_dem) <= 0.01:    #calculates abs of dif btwn demographics of random districts vs given state and 
+            #to find ones w/i 1% of given state's demographics
             total_dem_seat = sum([dist.dem_seat for dist in simulated_set])
             test_list.append(total_dem_seat)
         else: 
@@ -82,15 +83,15 @@ with open('2014_House_Data_Simplified.csv') as csvfile:
                                      float(remove_comma(row['Rep_share']))))
 
 print (demographic_breakdown())
-number_district = 8
+number_district = 8             #value is specific to WI
 total_percent_dem = demographic_breakdown()[0]
 total_percent_rep = demographic_breakdown()[1]
 New_list = []
 for dist in All_district:
-    if dist.name[:2] != "WI":
+    if dist.name[:2] != "WI":   #specific to WI
         New_list.append(dist)        
 test_list = simulation(New_list, number_district)
-mean_test = sum([n for n in test_list])/1000
+mean_test = sum([n for n in test_list])/1000 #if number_sample changed in simulation(), change here as well
 print (mean_test)
        
     
