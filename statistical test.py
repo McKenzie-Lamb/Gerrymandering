@@ -8,7 +8,7 @@ import random
 import math
 import csv
 class District(object):
-    def __init__(self, name, total, dem_vote, rep_vote, other_vote, dem_share, rep_share):
+    def __init__(self, name, total, dem_vote, rep_vote, other_vote, dem_share, rep_share, pres_dem, pres_rep):
         self.name = name
         self.total = total
         self.dem_vote = dem_vote
@@ -16,6 +16,8 @@ class District(object):
         self.other_vote = other_vote
         self.dem_share = dem_share
         self.rep_share = rep_share
+        self.pres_dem = pres_dem
+        self.pres_rep = pres_rep
         if max(self.dem_vote, self.rep_vote, self.other_vote) == self.dem_vote:
             self.dem_seat = 1
             self.rep_seat = 0
@@ -39,7 +41,7 @@ def remove_comma(string):   #remove comma in 4+ digit numbers and %s from data i
     return number
 
 
-def demographic_breakdown(state = "WI"):    #find percentages of Democrats&Republicans in given stae
+def demographic_breakdown(state = "WI"):    #find percentages of Democrats&Republicans in a given state
     total_dem = 0
     total_rep = 0
     total_pop = 0
@@ -80,7 +82,14 @@ with open('2014_House_Data_Simplified.csv') as csvfile:
                                      int(remove_comma(row['Rep'])), 
                                      int(remove_comma(row['Other'])), 
                                      float(remove_comma(row['Dem_share'])), 
-                                     float(remove_comma(row['Rep_share']))))
+                                     float(remove_comma(row['Rep_share'])),
+                                     float(remove_comma(row['Obama'])),
+                                     float(remove_comma(row['Romney']))))
+         
+for dist in All_district:       #for uncontested districts, use information from 2012 presidential election instead
+    if dist.dem_share == 0 and dist.rep_share == 0:
+        dist.dem_share = dist.pres_dem/(dist.pres_dem + dist.pres_rep)
+        dist.rep_share = dist.pres_rep/(dist.pres.dem + dist.pres_rep)
 
 print (demographic_breakdown())
 number_district = 8             #value is specific to WI
