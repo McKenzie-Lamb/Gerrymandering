@@ -7,13 +7,15 @@ This is a temporary script file.
 import random
 import math
 import csv
+import collections
 class District(object):
-    def __init__(self, name, total, dem_vote, rep_vote, other_vote, dem_share, rep_share, pres_dem, pres_rep):
+    def __init__(self, name, total, dem_vote, rep_vote, other_vote, winner, dem_share, rep_share, pres_dem, pres_rep):
         self.name = name
         self.total = total
         self.dem_vote = dem_vote
         self.rep_vote = rep_vote
         self.other_vote = other_vote
+        self.winner = winner
         self.dem_share = dem_share
         self.rep_share = rep_share
         self.pres_dem = pres_dem
@@ -67,8 +69,8 @@ def simulation(New_list, number_district, number_sample = 1000):  #generates sam
             test_list.append(total_dem_seat)
         else: 
             fail_count += 1
-    print (fail_count)
-    print (test_list)
+    #print (fail_count)
+    #print (test_list)
     return (test_list)
 
 
@@ -80,7 +82,8 @@ with open('2014_House_Data_Simplified.csv') as csvfile:
                                      int(remove_comma(row['Total'])),
                                      int(remove_comma(row['Dem'])), 
                                      int(remove_comma(row['Rep'])), 
-                                     int(remove_comma(row['Other'])), 
+                                     int(remove_comma(row['Other'])),
+                                     row['Winner'],
                                      float(remove_comma(row['Dem_share'])), 
                                      float(remove_comma(row['Rep_share'])),
                                      float(remove_comma(row['Obama'])),
@@ -90,8 +93,13 @@ for dist in All_district:       #for uncontested districts, use information from
     if dist.dem_share == 0 and dist.rep_share == 0:
         dist.dem_share = dist.pres_dem/(dist.pres_dem + dist.pres_rep)
         dist.rep_share = dist.pres_rep/(dist.pres.dem + dist.pres_rep)
+    
+for state in All_district:
+    state_name = state.name[:2] 
+    state_dict = collections.Counter(state_name)
+print (state_dict)
 
-print (demographic_breakdown())
+#print (demographic_breakdown())
 number_district = 8             #value is specific to WI
 total_percent_dem = demographic_breakdown()[0]
 total_percent_rep = demographic_breakdown()[1]
@@ -101,7 +109,7 @@ for dist in All_district:
         New_list.append(dist)        
 test_list = simulation(New_list, number_district)
 mean_test = sum([n for n in test_list])/1000 #if number_sample changed in simulation(), change here as well
-print (mean_test)
+#print (mean_test)
        
     
         
