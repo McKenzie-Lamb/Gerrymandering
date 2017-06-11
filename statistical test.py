@@ -42,6 +42,14 @@ def remove_comma(string):   #remove comma in 4+ digit numbers and %s from data i
     number = ''.join(list_number)       
     return number
 
+def state_dictionary(): #creates dictionary w/ state as key & number of districts as value
+    data_file = open("2014_House_Data_Simplified.csv", 'r')
+    data_dict_reader = csv.DictReader(data_file)
+    count_dist = collections.Counter([row['Code'][:2] for row in data_dict_reader])
+    print (count_dist)
+
+state_dictionary()
+
 
 def demographic_breakdown(state = "WI"):    #find percentages of Democrats&Republicans in a given state
     total_dem = 0
@@ -93,11 +101,7 @@ for dist in All_district:       #for uncontested districts, use information from
     if dist.dem_share == 0 and dist.rep_share == 0:
         dist.dem_share = dist.pres_dem/(dist.pres_dem + dist.pres_rep)
         dist.rep_share = dist.pres_rep/(dist.pres.dem + dist.pres_rep)
-    
-for state in All_district:
-    state_name = state.name[:2] 
-    state_dict = collections.Counter(state_name)
-print (state_dict)
+
 
 #print (demographic_breakdown())
 number_district = 8             #value is specific to WI
