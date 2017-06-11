@@ -73,7 +73,8 @@ def simulation(New_list, number_district, number_sample = 1000):  #generates sam
         if abs(sum([dist.dem_vote for dist in simulated_set])/ sum([dist.total for dist in simulated_set]) 
         - total_percent_dem) <= 0.01:    #calculates abs of dif btwn demographics of random districts vs given state and 
             #to find ones w/i 1% of given state's demographics
-            total_dem_seat = sum([dist.dem_seat for dist in simulated_set])
+            total_dem_seat == 0
+            dem_seat = [total_dem_seat += for dist in simulated_set if dist.winner = "D" ]
             test_list.append(total_dem_seat)
         else: 
             fail_count += 1
