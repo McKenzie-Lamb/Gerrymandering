@@ -49,7 +49,7 @@ def demographic_breakdown(state = "WI"):    #find percentages of Democrats&Repub
     return total_percent_dem, total_percent_rep
 
 
-def simulation(New_list, number_district, number_samples = 100000):  #generates sample lists of random districts w/ same demographics as given state
+def simulation(New_list, number_district, number_samples = 10000):  #generates sample lists of random districts w/ same demographics as given state
     test_list  = []
     fail_count = 0
     extreme = 0
@@ -107,10 +107,11 @@ for dist in All_district:
 for dist in All_district:
     if dist.name[:2] == state and dist.winner == "D":
         current_dem_seat += 1
-number_samples = 100000            
+number_samples = 10000            
 test_list, p_value = simulation(New_list, number_district, number_samples)
 mean_test = sum([n for n in test_list])/number_samples #if number_sample changed in simulation(), change here as well
 print ('Current democratic seats: ', current_dem_seat)
+print ('Percentage of democrats in the state: ', total_percent_dem)
 print ('Mean: ', mean_test)
 sd = statistics.stdev(n for n in test_list)
 print ('p_value: ', p_value)
