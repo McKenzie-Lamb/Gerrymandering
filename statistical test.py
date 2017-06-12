@@ -22,7 +22,6 @@ class District(object):
         self.pres_dem = pres_dem
         self.pres_rep = pres_rep
         
-
 def remove_comma(string):   #remove comma in 4+ digit numbers and %s from data in cvs file 
     list_number = []
     for i in range(len(string)):
@@ -60,15 +59,14 @@ def simulation(New_list, number_district, number_sample = 10000):  #generates sa
         if abs(sum([dist.dem_vote for dist in simulated_set])/ sum([dist.total for dist in simulated_set]) 
         - total_percent_dem) <= 0.01:    #allow for margin of error of 1% for the demographic breakdown of the simualated set
             total_dem_seat == 0
-<<<<<<< HEAD
             for dist in simulated_set:
                 if dist.winner == "D":
                     total_dem_seat += 1
             if total_dem_seat <= current_dem_seat:
                 extreme += 1
-=======
-            dem_seat = [total_dem_seat += 1 for dist in simulated_set when dist.winner = D]
->>>>>>> 4c6e3f0400322467441e167ada773f4ade89e922
+            for dist in simulated_set:
+                if dist.winner == "D":
+                    total_dem_seat += 1 
             test_list.append(total_dem_seat)
         else: 
             fail_count += 1
@@ -101,11 +99,7 @@ for dist in All_district:       #for uncontested districts, use information from
 
 
 #print (demographic_breakdown())
-<<<<<<< HEAD
 
-=======
-number_district = 8             #number = count_dist.get(state)
->>>>>>> 4c6e3f0400322467441e167ada773f4ade89e922
 total_percent_dem = demographic_breakdown()[0]
 total_percent_rep = demographic_breakdown()[1]
 New_list = []
