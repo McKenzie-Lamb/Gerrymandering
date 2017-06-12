@@ -64,9 +64,6 @@ def simulation(New_list, number_district, number_sample = 10000):  #generates sa
                     total_dem_seat += 1
             if total_dem_seat <= current_dem_seat:
                 extreme += 1
-            for dist in simulated_set:
-                if dist.winner == "D":
-                    total_dem_seat += 1 
             test_list.append(total_dem_seat)
         else: 
             fail_count += 1
