@@ -8,6 +8,7 @@ import random
 import math
 import csv
 import collections
+import statistics
 class District(object):
     def __init__(self, name, total, dem_vote, rep_vote, other_vote, winner, dem_share, rep_share, pres_dem, pres_rep):
         self.name = name
@@ -36,9 +37,6 @@ def state_dictionary(): #creates dictionary w/ state as key & number of district
     count_dist = collections.Counter([row['Code'][:2] for row in data_dict_reader])
     print (count_dist)
 
-state_dictionary()
-
-
 def demographic_breakdown(state = "WI"):    #find percentages of Democrats&Republicans in a given state
     total_dem = 0
     total_rep = 0
@@ -56,21 +54,27 @@ def demographic_breakdown(state = "WI"):    #find percentages of Democrats&Repub
 def simulation(New_list, number_district, number_sample = 10000):  #generates sample lists of random districts w/ same demographics as given state
     test_list  = []
     fail_count = 0
+    extreme = 0
     while len(test_list) < number_sample:
         simulated_set = random.sample(New_list, number_district) #generates list of random districts
         if abs(sum([dist.dem_vote for dist in simulated_set])/ sum([dist.total for dist in simulated_set]) 
-        - total_percent_dem) <= 0.01:    #calculates abs of dif btwn demographics of random districts vs given state and 
-            #to find ones w/i 1% of given state's demographics
+        - total_percent_dem) <= 0.01:    #allow for margin of error of 1% for the demographic breakdown of the simualated set
             total_dem_seat == 0
-            dem_seat = [total_dem_seat += for dist in simulated_set if dist.winner = "D" ]
+            for dist in simulated_set:
+                if dist.winner == "D":
+                    total_dem_seat += 1
+            if total_dem_seat <= current_dem_seat:
+                extreme += 1
             test_list.append(total_dem_seat)
         else: 
             fail_count += 1
     #print (fail_count)
     #print (test_list)
-    return (test_list)
-
-
+    p_value = extreme / number_sample
+    return (test_list, p_value)
+state = input('Insert the abbreviation of the state', )
+state_dictionary()
+number_district = count_dist.get(state)
 All_district = []
 with open('2014_House_Data_Simplified.csv') as csvfile:
     reader = csv.DictReader(csvfile)
@@ -85,7 +89,7 @@ with open('2014_House_Data_Simplified.csv') as csvfile:
                                      float(remove_comma(row['Rep_share'])),
                                      float(remove_comma(row['Obama'])),
                                      float(remove_comma(row['Romney']))))
-         
+
 for dist in All_district:       #for uncontested districts, use information from 2012 presidential election instead
     if dist.dem_share == 0 and dist.rep_share == 0 and dist.other_vote == 0:
         dist.dem_share = dist.pres_dem/(dist.pres_dem + dist.pres_rep)
@@ -93,21 +97,21 @@ for dist in All_district:       #for uncontested districts, use information from
 
 
 #print (demographic_breakdown())
-number_district = 8             #value is specific to WI
+
 total_percent_dem = demographic_breakdown()[0]
 total_percent_rep = demographic_breakdown()[1]
 New_list = []
+current_dem_seat = 0
 for dist in All_district:
-    if dist.name[:2] != "WI":   #specific to WI
-        New_list.append(dist)        
+    if dist.name[:2] != state:   
+        New_list.append(dist) 
+    else:
+        current_dem_seat += 1 if dist.winner == "D"
 test_list = simulation(New_list, number_district)
-<<<<<<< HEAD
 mean_test = sum([n for n in test_list])/10000 #if number_sample changed in simulation(), change here as well
 print (mean_test)
-=======
-mean_test = sum([n for n in test_list])/1000 #if number_sample changed in simulation(), change here as well
-#print (mean_test)
->>>>>>> b549f1197a272d6a4fb6c592105ea069771aaafa
+stdev(n for n in test_list)
+
        
     
         
