@@ -20,19 +20,7 @@ class District(object):
         self.rep_share = rep_share
         self.pres_dem = pres_dem
         self.pres_rep = pres_rep
-        if max(self.dem_vote, self.rep_vote, self.other_vote) == self.dem_vote:
-            self.dem_seat = 1
-            self.rep_seat = 0
-            self.other_seat = 0
-        elif max(self.dem_vote, self.rep_vote, self.other_vote) == self.rep_vote:
-            self.dem_seat = 0
-            self.rep_seat = 1
-            self.other_seat = 0
-        else: 
-            self.dem_seat = 0
-            self.rep_seat = 0
-            self.other_seat = 1
-
+        
 
 def remove_comma(string):   #remove comma in 4+ digit numbers and %s from data in cvs file 
     list_number = []
