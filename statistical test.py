@@ -62,7 +62,7 @@ def simulation(New_list, number_district, number_sample = 10000):  #generates sa
         - total_percent_dem) <= 0.01:    #calculates abs of dif btwn demographics of random districts vs given state and 
             #to find ones w/i 1% of given state's demographics
             total_dem_seat == 0
-            dem_seat = [total_dem_seat += for dist in simulated_set if dist.winner = "D" ]
+            dem_seat = [total_dem_seat += 1 for dist in simulated_set if dist.winner = "D" ]
             test_list.append(total_dem_seat)
         else: 
             fail_count += 1
@@ -93,7 +93,7 @@ for dist in All_district:       #for uncontested districts, use information from
 
 
 #print (demographic_breakdown())
-number_district = 8             #value is specific to WI
+number_district = 8             #number = 
 total_percent_dem = demographic_breakdown()[0]
 total_percent_rep = demographic_breakdown()[1]
 New_list = []
