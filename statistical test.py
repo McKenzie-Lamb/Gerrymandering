@@ -55,7 +55,7 @@ def demographic_breakdown(state = "WI"):    #find percentages of Democrats&Repub
     return total_percent_dem, total_percent_rep
 
 
-def simulation(New_list, number_district, number_sample = 1000):  #generates sample lists of random districts w/ same demographics as given state
+def simulation(New_list, number_district, number_sample = 10000):  #generates sample lists of random districts w/ same demographics as given state
     test_list  = []
     fail_count = 0
     while len(test_list) < number_sample:
@@ -87,7 +87,7 @@ with open('2014_House_Data_Simplified.csv') as csvfile:
                                      float(remove_comma(row['Romney']))))
          
 for dist in All_district:       #for uncontested districts, use information from 2012 presidential election instead
-    if dist.dem_share == 0 and dist.rep_share == 0:
+    if dist.dem_share == 0 and dist.rep_share == 0 and dist.other_vote == 0:
         dist.dem_share = dist.pres_dem/(dist.pres_dem + dist.pres_rep)
         dist.rep_share = dist.pres_rep/(dist.pres.dem + dist.pres_rep)
 
@@ -100,7 +100,7 @@ for dist in All_district:
     if dist.name[:2] != "WI":   #specific to WI
         New_list.append(dist)        
 test_list = simulation(New_list, number_district)
-mean_test = sum([n for n in test_list])/1000 #if number_sample changed in simulation(), change here as well
+mean_test = sum([n for n in test_list])/10000 #if number_sample changed in simulation(), change here as well
 print (mean_test)
        
     
