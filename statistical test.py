@@ -49,14 +49,14 @@ def demographic_breakdown(state = "WI"):    #find percentages of Democrats&Repub
     return total_percent_dem, total_percent_rep
 
 
-def simulation(New_list, number_district, number_samples = 10000):  #generates sample lists of random districts w/ same demographics as given state
+def simulation(New_list, number_district, number_samples = 100):  #generates sample lists of random districts w/ same demographics as given state
     test_list  = []
     fail_count = 0
     print ('Number of districts: ', number_district)
     while len(test_list) < number_samples:
         simulated_set = random.sample(New_list, number_district) #generates list of random districts
         if abs(sum([dist.dem_vote for dist in simulated_set])/ sum([dist.total for dist in simulated_set]) 
-        - total_percent_dem) <= 0.01:    #allow for margin of error of 1% for the demographic breakdown of the simualated set
+        - total_percent_dem) <= 0.05:    #allow for margin of error of 1% for the demographic breakdown of the simualated set
             total_dem_seat = 0
             for dist in simulated_set:  #counts how many seats in random set of districts are held by Democrats
                 if dist.winner == "D":
@@ -64,7 +64,7 @@ def simulation(New_list, number_district, number_samples = 10000):  #generates s
             test_list.append(total_dem_seat)
         else: 
             fail_count += 1     #keeps count of how many random sets of districts did not match state's demographics
-    #print (fail_count)
+    print ('fail_count: ', fail_count)
     #print (test_list)
     return (test_list)
 
@@ -79,6 +79,7 @@ def calculate_p_value (sets):
             if i >= current_dem_seat:
                 extreme += 1
     p_value = extreme / number_samples
+    print ('extreme count: ', extreme)
     return (p_value)    
 
 state = input('Insert the abbreviation of the state: ', )
@@ -107,8 +108,8 @@ for dist in All_district:       #for uncontested districts, use information from
 
 #print (demographic_breakdown())
 
-total_percent_dem = demographic_breakdown()[0]
-total_percent_rep = demographic_breakdown()[1]
+total_percent_dem = demographic_breakdown(state)[0]
+total_percent_rep = demographic_breakdown(state)[1]
 New_list = []
 current_dem_seat = 0
 for dist in All_district:       #creates new list of districts to make up random 
@@ -117,7 +118,7 @@ for dist in All_district:       #creates new list of districts to make up random
 for dist in All_district:       #counts how many seats currently held in by democrats in given state
     if dist.name[:2] == state and dist.winner == "D":
         current_dem_seat += 1
-number_samples = 10000            
+number_samples = 100           
 test_list = simulation(New_list, number_district, number_samples)
 mean_test = sum([n for n in test_list])/number_samples 
 print ('Current democratic seats: ', current_dem_seat)
