@@ -59,23 +59,23 @@ def simulation(New_list, number_district, number_samples = 10000):  #generates s
         if abs(sum([dist.dem_vote for dist in simulated_set])/ sum([dist.total for dist in simulated_set]) 
         - total_percent_dem) <= 0.01:    #allow for margin of error of 1% for the demographic breakdown of the simualated set
             total_dem_seat = 0
-            for dist in simulated_set:
+            for dist in simulated_set:  #counts how many seats in random set of districts are held by Democrats
                 if dist.winner == "D":
                     total_dem_seat += 1
             if total_dem_seat <= current_dem_seat:
                 extreme += 1
             test_list.append(total_dem_seat)
         else: 
-            fail_count += 1
+            fail_count += 1     #keeps count of how many random sets of districts did not match state's demographics
     #print (fail_count)
     #print (test_list)
     p_value = extreme / number_samples
     return (test_list, p_value)
 state = input('Insert the abbreviation of the state: ', )
 count_dist = state_dictionary()
-number_district = count_dist.get(state)
+number_district = count_dist.get(state)     #number of districts in given state
 All_district = []
-with open('2014_House_Data_Simplified.csv') as csvfile:
+with open('2014_House_Data_Simplified.csv') as csvfile:     #create list of all districts w/ their data
     reader = csv.DictReader(csvfile)
     for row in reader:
         All_district.append(District(row['Code'],
@@ -101,10 +101,10 @@ total_percent_dem = demographic_breakdown()[0]
 total_percent_rep = demographic_breakdown()[1]
 New_list = []
 current_dem_seat = 0
-for dist in All_district:
-    if dist.name[:2] != state:   
+for dist in All_district:       #creates new list of districts to make up random 
+    if dist.name[:2] != state:  #list of districts that discludes districts from given state   
         New_list.append(dist) 
-for dist in All_district:
+for dist in All_district:       #counts how many seats currently held in by democrats in given state
     if dist.name[:2] == state and dist.winner == "D":
         current_dem_seat += 1
 number_samples = 10000            
