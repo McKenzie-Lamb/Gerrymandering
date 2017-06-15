@@ -11,8 +11,8 @@ import random
 
 class CBlock(object):
     def __init__(self, dems, reps, population, shape):
-        self.dems = dems # min(100, max(0, random.gauss(50, 20)))
-        self.reps = reps #100 - self.dems
+        self.dems = dems 
+        self.reps = reps 
         self.population = 100
         self.shape = shape
         
@@ -29,14 +29,6 @@ class State(object):
         self.all_cblocks = all_cblocks
         
 
-#cblock_1 = CBlock(dems, reps, Polygon([(0,0),(1,0),(1,1),(0,1)]))
-#cblock_2 = CBlock(dems, reps, Polygon([(1,0),(1,1),(2,1),(2,0)]))
-#print (cblock_1.dems)
-#print (cblock_1.reps)
-#print (cblock_2.dems)
-#print (cblock_2.reps)
-#district_1 = District('A', [cblock_1, cblock_2], cblock_1.shape.union(cblock_2.shape))
-#print (district_1.shape.area)
 c_block_array = []
 for i in range(32):
     row = []
@@ -45,11 +37,23 @@ for i in range(32):
         while dems < 0 or dems > 100:         
             dems = random.gauss(50, 10) 
             reps = 100 - dems
-            row.append(CBlock(dems, reps, 100, True))
+            shape = Polygon([(i,j), (i+1,j), (i+1,j+1), (i,j+1)])
+            row.append(CBlock(dems, reps, 100, shape))
     c_block_array.append(row)
 
 for i in range(3):
     print([c_block_array[i][j].dems for j in range(3)])
+    
+district_set = {}
+for i in range(32):
+    if i%4 == 0:
+        for j in range(32):
+            if j%4 == 0:
+                shape = Polygon([(i,j), (i+4,j), (i+4,j+4), (i,j+4)])
+                name = 'name'
+                cblocks = {}
+                district_set.add
+                
         
 
         
