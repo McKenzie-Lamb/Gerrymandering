@@ -15,7 +15,9 @@ class CBlock(object):
         self.reps = reps 
         self.population = 100
         self.shape = shape
-        
+    def __iter__(self):
+        return iter(self.shape.bounds)
+   
 
 class District(object):
     def __init__(self, name, cblocks, shape):
@@ -30,9 +32,9 @@ class State(object):
         
 
 c_block_array = []
-for i in range(32):
+for i in range(8):
     row = []
-    for j in range(32):
+    for j in range(8):
         dems = 101
         while dems < 0 or dems > 100:         
             dems = random.gauss(50, 10) 
@@ -40,19 +42,22 @@ for i in range(32):
             shape = Polygon([(i,j), (i+1,j), (i+1,j+1), (i,j+1)])
             row.append(CBlock(dems, reps, 100, shape))
     c_block_array.append(row)
+print (c_block_array[0][3].shape.bounds)
 
-for i in range(3):
-    print([c_block_array[i][j].dems for j in range(3)])
-    
-district_set = {}
-for i in range(32):
-    if i%4 == 0:
-        for j in range(32):
-            if j%4 == 0:
-                shape = Polygon([(i,j), (i+4,j), (i+4,j+4), (i,j+4)])
-                name = 'name'
-                cblocks = {}
-                district_set.add
+
+def make_dist(min_i, max_i, min_j, max_j):
+    cblock_set = {}
+    for i in range(min_i, max_i):
+        for j in range(min_j, max_j):
+            for cblock in c_block_array:
+                for coordinates in cblock[3]:
+                    if min_i <= coordinates[0] and max_i >= coordinates[0] and min_j <= coordinates[1] and max_j >= coordinates[1]:
+                        cblock_set.add(cblock)
+    print (cblock_set)
+
+make_dist(0,4,0,4)
+
+
                 
         
 
