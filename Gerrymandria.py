@@ -9,6 +9,7 @@ Created on Wed Jun 14 09:49:39 2017
 from shapely.geometry import Polygon
 from shapely.ops import cascaded_union
 import random
+import collections
 
 class CBlock:
     def __init__(self, dems, reps, population, shape):
@@ -72,32 +73,37 @@ for state in state_set:
      for district in state.districts:
           All_district.append(district)
 
+New_list = []
+for dist in All_district:       #creates new list of districts to make up random 
+    if dist.name[:1] != state:  #list of districts that discludes districts from given state   
+        New_list.append(dist) 
+
 def demographic_breakdown(state):    #find percentages of Democrats&Republicans in a given state
     dems_list = []
     reps_list = []
     for i in range(len(All_district)):
-        if All_district[i].name[:1] == state:   #look at only districts in given state
-            for cblock in All_district[i].cblocks:
+        if All_district[i].name[:1] == state: #look at only districts in given state
+            for All_district[i] in All_district[i].cblocks:
                 dems_list.append(cblock.dems)    #make list of number of Democrats in state's cblocks
                 reps_list.append(cblock.reps)    #make list of number of Republicans in state's cblocks
     total_dem = sum(dems_list)
+    print (total_dem)
     total_rep = sum(reps_list)
     total_pop = total_dem + total_rep
     total_percent_dem = total_dem / total_pop        #percent of votes cast for Democrat in given state
     total_percent_rep = total_rep / total_pop        #percent of votes cast for Republican in given state                                   
     return total_percent_dem, total_percent_rep
 
-total_percent_dem = demographic_breakdown(state)[0]
-total_percent_rep = demographic_breakdown(state)[1]
-
-New_list = []
-for dist in All_district:       #creates new list of districts to make up random 
-    if dist.name[:1] != state:  #list of districts that discludes districts from given state   
-        New_list.append(dist) 
-
-number_samples = 100
-
-
+demographic_breakdown('A')
+#total_percent_dem = demographic_breakdown(state)[0]
+#total_percent_rep = demographic_breakdown(state)[1]
+##
+#
+#number_samples = 100
+#
+#count_dist = collections.Counter(All_district)
+#print (count_dist)
+    
 
 #print (state_set.pop().shape.area)
 #for state in state_set:
