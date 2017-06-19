@@ -78,30 +78,30 @@ for dist in All_district:       #creates new list of districts to make up random
     if dist.name[:1] != state:  #list of districts that discludes districts from given state   
         New_list.append(dist) 
 
-#def demographic_breakdown(state):    #find percentages of Democrats&Republicans in a given state
-#    dems_list = []
-#    reps_list = []
-#    for i in range(len(All_district)):
-#        if All_district[i].name[:1] == state: #look at only districts in given state
-#            for All_district[i] in All_district[i].cblocks:
-#                dems_list.append(cblock.dems)    #make list of number of Democrats in state's cblocks
-#                reps_list.append(cblock.reps)    #make list of number of Republicans in state's cblocks
-#    total_dem = sum(dems_list)
-#    total_rep = sum(reps_list)
-#    total_pop = total_dem + total_rep
-#    total_percent_dem = total_dem / total_pop        #percent of votes cast for Democrat in given state
-#    total_percent_rep = total_rep / total_pop        #percent of votes cast for Republican in given state                                   
-#    return total_percent_dem, total_percent_rep
-#
-#demographic_breakdown('A')
+def demographic_breakdown(state):    #find percentages of Democrats&Republicans in a given state
+    dems_list = []
+    reps_list = []
+    for i in range(len(All_district)):
+        if All_district[i].name[:1] == state: #look at only districts in given state
+            for cblocks in All_district[i].cblocks:
+                dems_list.append(cblocks.dems)    #make list of number of Democrats in state's cblocks
+                reps_list.append(cblocks.reps) #make list of number of Republicans in state's cblocks
+    total_dem = sum(dems_list)
+    total_rep = sum(reps_list)
+    total_pop = total_dem + total_rep 
+    print (total_dem, total_rep, total_pop)
+    total_percent_dem = total_dem / total_pop       #percent of votes cast for Democrat in given state
+    total_percent_rep = total_rep / total_pop       #percent of votes cast for Republican in given state                                   
+    return total_percent_dem, total_percent_rep
+make_cblocks()
+demographic_breakdown('A')
 #total_percent_dem = demographic_breakdown(state)[0]
 #total_percent_rep = demographic_breakdown(state)[1]
-##
-#
-#number_samples = 100
+
+
+number_samples = 100
 
 count_dist = collections.Counter([dist.name[:1] for dist in All_district])
-print (count_dist)
     
 
 #print (state_set.pop().shape.area)
