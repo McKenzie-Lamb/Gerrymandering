@@ -93,16 +93,17 @@ def demographic_breakdown(state):    #find percentages of Democrats&Republicans 
     total_percent_dem = total_dem / total_pop       #percent of votes cast for Democrat in given state
     total_percent_rep = total_rep / total_pop       #percent of votes cast for Republican in given state                                   
     return total_percent_dem, total_percent_rep
-make_cblocks()
-demographic_breakdown('A')
-#total_percent_dem = demographic_breakdown(state)[0]
-#total_percent_rep = demographic_breakdown(state)[1]
+
+state = input('Insert the abbreviation of the state: ', )
+demographic_breakdown(state)
+total_percent_dem = demographic_breakdown(state)[0]
+total_percent_rep = demographic_breakdown(state)[1]
 
 
 number_samples = 100
 
 count_dist = collections.Counter([dist.name[:1] for dist in All_district])
-    
+number_district = count_dist.get(state)     #number of districts in given state 
 
 #print (state_set.pop().shape.area)
 #for state in state_set:
