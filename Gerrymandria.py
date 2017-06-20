@@ -8,6 +8,8 @@ Created on Wed Jun 14 09:49:39 2017
 
 from shapely.geometry import Polygon
 from shapely.ops import cascaded_union
+import matplotlib.pyplot as plt
+from descartes.patch import PolygonPatch
 import random
 import collections
 
@@ -17,12 +19,43 @@ class CBlock:
         self.reps = reps 
         self.population = 100
         self.shape = shape
+        
+    def __str__(self):
+        return "({0}-{1})".format(self.dems,self.reps)
+        
+    def plot_block(self, plot):
+        dem_share = self.dems/(self.dems+self.reps)
+        if dem_share > .5:
+            color = 'blue'
+            alph = dem_share
+        elif dem_share < .5:
+            color = 'red'
+            alph = (1-dem_share)
+        else:
+            color = 'magenta'
+            alph = 1
+        x,y = self.shape.exterior.xy
+        plot.plot(x,y,color='none',zorder=1)
+        patch = PolygonPatch(self.shape,facecolor=color,edgecolor='none',alpha=alph,zorder=2)
+        plot.add_patch(patch)
+
 
 class District:
     def __init__(self, name, cblocks):
         self.name = name
         self.cblocks = cblocks
         self.shape = cascaded_union([cblock.shape for cblock in cblocks])
+        
+    def __str__(self):
+        return self.name
+        
+    def plot_district(self,plot):
+        for block in self.cblocks:
+            block.plot_block(plot)
+        x,y=self.shape.exterior.xy
+        plot.plot(x,y,linestyle='dotted',color='black',lw=2)
+        c = self.shape.centroid.coords[0]
+        plot.text(c[0],c[1],self)
 
 class State:
     def __init__(self, name, districts, all_cblocks):
@@ -30,6 +63,15 @@ class State:
         self.districts = districts
         self.shape = cascaded_union([district.shape for district in districts])
         self.all_cblocks = all_cblocks
+        
+    def __str__(self):
+        return self.name
+        
+    def plot_state(self,plot):
+        for district in self.districts:
+            district.plot_district(plot)
+        x,y = self.shape.exterior.xy
+        plot.plot(x,y,color='black',lw=3)
         
 def make_cblocks():        
     cblock_array = []
@@ -65,6 +107,30 @@ def make_state(name):
             district_num += 1
     state = State(name, district_set, all_cblocks)
     return state 
+    
+def draw_state_grid(states, width, plot):
+    height = len(states)//width
+    i = 0
+    j = 0
+    import matplotlib.gridspec as gridspec
+    gs = gridspec.GridSpec(width, height)
+    gs.update(wspace=0,hspace=0)
+    #plt.gca().set_aspect('equal','datalim')
+    for state in states:
+        ax = plot.subplot(gs[i,j])
+        ax.spines['top'].set_color('none')
+        ax.spines['bottom'].set_color('none')
+        ax.spines['left'].set_color('none')
+        ax.spines['right'].set_color('none')
+        #ax.set_aspect('equal','datalim')
+        ax.tick_params(axis='both',labelcolor='none',color='none')
+
+        state.plot_state(ax)
+        i = (i+1) % width
+        if i == 0:
+            j += 1
+        
+            
 
 state_names = "ABCDEFGHIJKLMNOP"
 state_set = {make_state(name) for name in state_names}
@@ -103,6 +169,7 @@ number_samples = 100
 
 count_dist = collections.Counter([dist.name[:1] for dist in All_district])
     
+draw_state_grid(state_set,4,plt)
 
 #print (state_set.pop().shape.area)
 #for state in state_set:
