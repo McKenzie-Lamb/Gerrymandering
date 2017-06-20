@@ -159,16 +159,41 @@ def demographic_breakdown(state):    #find percentages of Democrats&Republicans 
     total_percent_dem = total_dem / total_pop       #percent of votes cast for Democrat in given state
     total_percent_rep = total_rep / total_pop       #percent of votes cast for Republican in given state                                   
     return total_percent_dem, total_percent_rep
-make_cblocks()
-demographic_breakdown('A')
-#total_percent_dem = demographic_breakdown(state)[0]
-#total_percent_rep = demographic_breakdown(state)[1]
+
+def simulation(New_list, number_district, number_samples = 100):  #generates sample lists of random districts w/ same demographics as given state
+    test_list  = []
+    fail_count = 0
+    print ('Number of districts: ', number_district)
+    while len(test_list) < number_samples:
+        simulated_set = random.sample(New_list, number_district) #generates list of random districts
+        if abs(sum([cblock.dems  for dist in simulated_set for cblock in dist.cblocks  ])/ 
+                sum([cblock.population for dist in simulated_set for cblock in dist.cblocks ]) 
+        - total_percent_dem) <= 0.05:    #allow for margin of error of 1% for the demographic breakdown of the simualated set
+            for dist in simulated_set:  #counts how many seats in random set of districts are held by Democrats
+                total_dem_seat = sum([cblock.dems for dist in simulated_set for cblock in dist.cblocks])
+            test_list.append(total_dem_seat)
+        else: 
+            fail_count += 1     #keeps count of how many random sets of districts did not match state's demographics
+    print ('fail_count: ', fail_count)
+    #print (test_list)
+    return (test_list)
+
+state = input('Insert the abbreviation of the state: ', )
+demographic_breakdown(state)
+
+total_percent_dem = demographic_breakdown(state)[0]
+total_percent_rep = demographic_breakdown(state)[1]
 
 
 number_samples = 100
 
 count_dist = collections.Counter([dist.name[:1] for dist in All_district])
-    
+number_district = count_dist.get(state)     #number of districts in given state 
+
+test_list = simulation(New_list, number_district, number_samples)
+print (test_list)
+
+
 draw_state_grid(state_set,4,plt)
 
 #print (state_set.pop().shape.area)

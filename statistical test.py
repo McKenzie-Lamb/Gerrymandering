@@ -129,6 +129,18 @@ p_value = calculate_p_value(test_list)
 print ('p_value: ', p_value)
 print ('standard deviation: ', sd)
 
+#def country_demographic():                          
+#    all_dems = 0
+#    all_reps = 0
+#    all_pop = 0
+#    for i in range(len(All_district)):
+#        all_dems += All_district[i].dem_vote
+#        all_reps += All_district[i].rep_vote
+#        all_pop += All_district[i].total
+#    percent_dem = all_dems / all_pop
+#    percent_rep = all_reps / all_pop
+#    return percent_dem, percent_rep
+
 
 
        
