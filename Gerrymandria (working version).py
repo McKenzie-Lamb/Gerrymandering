@@ -15,7 +15,7 @@ class CBlock:
     def __init__(self, dems, reps, population, shape):
         self.dems = dems 
         self.reps = reps 
-        self.population = 100
+        self.population = population
         self.shape = shape
 
 class District:
@@ -25,7 +25,7 @@ class District:
         self.shape = cascaded_union([cblock.shape for cblock in cblocks])
         self.dems = dems
         self.reps = reps
-        self.population = 1600
+        self.population = population
         self.winner = winner
 
 class State:
@@ -42,7 +42,7 @@ def make_cblocks():
         for j in range(8):
             dems = 101
             while dems < 0 or dems > 100:         
-                dems = random.gauss(50, 10) 
+                dems = int(random.gauss(50, 10) + 0.5)              #Round to the nearest int
                 reps = 100 - dems
                 shape = Polygon([(i,j), (i+1,j), (i+1,j+1), (i,j+1)])
                 row.append(CBlock(dems, reps, 100, shape))
@@ -113,8 +113,6 @@ def demographic_breakdown(state):
 
 for state in state_set:
     print (demographic_breakdown(state.name))       #Yay!! It worked!! 
-
-
        
 def simulation (new_list, number_samples):
     test_list  = []
@@ -130,7 +128,8 @@ def simulation (new_list, number_samples):
             test_list.append(total_dem_seat)
         else: 
             fail_count += 1     #keeps count of how many random sets of districts did not match state's demographics
-    print ('fail_count: ', fail_count)      
+    print ('fail_count: ', fail_count)
+    return (test_list)      
 
 def calculate_p_value (sets):
     extreme = 0
@@ -147,21 +146,21 @@ def calculate_p_value (sets):
     return (p_value)      
           
 number_samples = 1000
+state = "A"
 total_percent_dems = demographic_breakdown(state)[0]
 total_percent_reps = demographic_breakdown(state)[1]  
 new_list = []
 current_dem_seat = 0
 for dist in All_district:       #creates new list of districts to make up random 
-    if dist.name[:2] != state:  #list of districts that discludes districts from given state   
+    if dist.name[:1] != state:  #list of districts that discludes districts from given state   
         new_list.append(dist) 
 for dist in All_district:       #counts how many seats currently held in by democrats in given state
-    if dist.name[:2] == state and dist.winner == "D":
+    if dist.name[:1] == state and dist.winner == "D":
         current_dem_seat += 1  
 test_list = simulation(new_list, number_samples)
 mean_test = sum([n for n in test_list])/number_samples     
 sd = statistics.stdev(n for n in test_list)
 p_value = calculate_p_value(test_list)
-state = "A"
 print ('Current democratic seats: ', current_dem_seat)
 print ('Percentage of democrats in the state: ', total_percent_dems)
 print ('Mean: ', mean_test)
