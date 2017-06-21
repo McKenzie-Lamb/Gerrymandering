@@ -7,18 +7,26 @@ Created on Wed Jun 14 09:49:39 2017
 """
 
 from shapely.geometry import Polygon
+from shapely.geometry import Point
 from shapely.ops import cascaded_union
 import matplotlib.pyplot as plt
 from descartes.patch import PolygonPatch
 import random
 import collections
 
+def is_adjacent(shape1, shape2):
+        return (shape1 is not shape2 and shape1.touches(shape2) 
+                 and not isinstance(shape1.intersection(shape2),Point))
+
+
 class CBlock:
     def __init__(self, dems, reps, population, shape):
         self.dems = dems 
         self.reps = reps 
-        self.population = 100
+        self.population = population
         self.shape = shape
+        self.state = None
+        self.district = None
         
     def __str__(self):
         return "({0}-{1})".format(self.dems,self.reps)
@@ -38,6 +46,9 @@ class CBlock:
         plot.plot(x,y,color='none',zorder=1)
         patch = PolygonPatch(self.shape,facecolor=color,edgecolor='none',alpha=alph,zorder=2)
         plot.add_patch(patch)
+        
+    def is_adjacent(self, other_block):
+        return is_adjacent(self.shape,other_block.shape)
 
 
 class District:
@@ -45,6 +56,9 @@ class District:
         self.name = name
         self.cblocks = cblocks
         self.shape = cascaded_union([cblock.shape for cblock in cblocks])
+        for cblock in cblocks:
+            cblock.district = self
+        self.index = None
         
     def __str__(self):
         return self.name
@@ -63,6 +77,19 @@ class State:
         self.districts = districts
         self.shape = cascaded_union([district.shape for district in districts])
         self.all_cblocks = all_cblocks
+        for cblock in all_cblocks:
+            cblock.state = self
+        self.adjacent_blocks = []
+        index = 0
+        for district in districts:
+            row = []
+            district.index = index
+            for other_district in districts:
+                adj = self.find_adjacent(district,other_district)[0]
+                row.append(adj)
+            self.adjacent_blocks.append(row)
+            index += 1
+            
         
     def __str__(self):
         return self.name
@@ -72,6 +99,56 @@ class State:
             district.plot_district(plot)
         x,y = self.shape.exterior.xy
         plot.plot(x,y,color='black',lw=3)
+        
+    def find_adjacent(self, district1, district2):
+        adj_from = set()
+        adj_to = set()
+        if district1 is not district2:                    
+            for block in district1.cblocks:
+                for other_block in district2.cblocks:
+                    if block.is_adjacent(other_block):
+                        adj_from.add(block)
+                        adj_to.add(other_block)
+        return adj_from,adj_to
+
+    def pairwise_swap(self,district1, district2):
+        if (district1 is district2 or not is_adjacent(district1.shape,district2.shape)
+            or district1.state is not self or district2.state is not self):
+                return False
+        #choose a random block in district1 which is adjacent to district2 and vice versa
+        adj_blocks1 = self.adjacent_blocks[district1.index][district2.index]
+        adj_blocks2 = self.adjacent_blocks[district2.index][district1.index]
+        adj1 = random.choice(adj_blocks1)
+        adj2 = random.choice(adj_blocks2)
+        #make new local districts swapping the blocks
+        new_d1 = district1.cblocks.copy()
+        new_d2 = district2.cblocks.copy()
+        new_d1.remove(adj1)
+        new_d1.add(adj2)
+        new_d2.remove(adj2)
+        new_d2.add(adj1)
+        #if the new districts are not contiguous, bail out
+        shape1 = cascaded_union([b.shape for b in new_d1])
+        shape2 = cascaded_union([b.shape for b in new_d2])
+        if(not (isinstance(shape1,Polygon) and isinstance(shape2,Polygon))):
+            return False
+        #modify the districts to reflect the swapped blocks.
+        district1.cblocks = new_d1
+        district2.cblocks = new_d2
+        district1.shape = shape1
+        district2.shape = shape2
+        adj_blocks1,adj_blocks2 = self.find_adjacent(district1,district2)
+        self.adjacent_blocks[district1.index][district2.index] = adj_blocks1
+        self.adjacent_blocks[district2.index][district1.index] = adj_blocks2
+        return True
+
+        
+        
+        
+        
+        
+        
+        
         
 def make_cblocks():        
     cblock_array = []
@@ -98,14 +175,14 @@ def make_dist(min_i, max_i, min_j, max_j, name, cblock_array):
 
 def make_state(name):
     all_cblocks = make_cblocks()
-    district_set = set()
+    district_list = list()
     district_num = 1
     for i in range(0,8,4):
         for j in range(0,8,4):
             district = make_dist (i, i+4, j, j+4, "{0}-{1}".format(name, district_num), all_cblocks)
-            district_set.add(district)
+            district_list.add(district)
             district_num += 1
-    state = State(name, district_set, all_cblocks)
+    state = State(name, district_list, all_cblocks)
     return state 
     
 def draw_state_grid(states, width, plot):
