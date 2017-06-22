@@ -151,17 +151,17 @@ def calculate_p_value (sets):
     return (p_value)      
           
 number_samples = 1000
-state = "A"
+state = input('Insert the abbreviation of the state: ', )
 
 total_percent_dems = demographic_breakdown(state)[0]
 total_percent_reps = demographic_breakdown(state)[1]  
 new_list = []
 current_dem_seat = 0
 for dist in All_district:       #creates new list of districts to make up random 
-    if dist.name[:2] != state:  #list of districts that discludes districts from given state   
+    if dist.name[:1] != state:  #list of districts that discludes districts from given state   
         new_list.append(dist) 
 for dist in All_district:       #counts how many seats currently held in by democrats in given state
-    if dist.name[:2] == state and dist.winner == "D":
+    if dist.name[:1] == state and dist.winner == "D":
         current_dem_seat += 1  
 test_list = simulation(new_list, number_samples)
 mean_test = sum([n for n in test_list])/number_samples     
