@@ -10,6 +10,7 @@ from shapely.geometry import Polygon
 from shapely.ops import cascaded_union
 import random
 import statistics
+import collections
 
 class CBlock:
     def __init__(self, dems, reps, population, shape):
@@ -119,11 +120,11 @@ for state in state_set:
 
 
        
-def simulation (new_list, number_samples):
+def simulation (new_list, number_district, number_samples):
     test_list  = []
     fail_count = 0
     while len(test_list) < number_samples:
-        simulated_set = random.sample(new_list, 4) 
+        simulated_set = random.sample(new_list, number_district ) 
         if abs(sum([dist.dems for dist in simulated_set])/ sum([dist.population for dist in simulated_set]) 
         - total_percent_dems) <= 0.01:    #allow for margin of error of 1% for the demographic breakdown of the simualated set
             total_dem_seat = 0
@@ -150,9 +151,11 @@ def calculate_p_value (sets):
     print ('extreme count: ', extreme)
     return (p_value)      
           
+
 number_samples = 1000
 state = input('Insert the abbreviation of the state: ', )
-
+count_dist = collections.Counter([dist.name[:1] for dist in All_district])
+number_district = count_dist.get(state)     #number of districts in given state
 total_percent_dems = demographic_breakdown(state)[0]
 total_percent_reps = demographic_breakdown(state)[1]  
 new_list = []
@@ -163,7 +166,7 @@ for dist in All_district:       #creates new list of districts to make up random
 for dist in All_district:       #counts how many seats currently held in by democrats in given state
     if dist.name[:1] == state and dist.winner == "D":
         current_dem_seat += 1  
-test_list = simulation(new_list, number_samples)
+test_list = simulation(new_list, number_district, number_samples)
 mean_test = sum([n for n in test_list])/number_samples     
 sd = statistics.stdev([n for n in test_list])
 p_value = calculate_p_value(test_list)
