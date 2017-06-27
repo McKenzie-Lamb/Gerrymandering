@@ -80,8 +80,9 @@ class State:
         self.districts = districts
         self.shape = cascaded_union([district.shape for district in districts])
         self.all_cblocks = all_cblocks
-        for cblock in all_cblocks:
-            cblock.state = self
+        for cblocks in all_cblocks:
+            for cblock in cblocks:
+                cblock.state = self
         self.adjacent_blocks = []
         index = 0
         for district in districts:
