@@ -10,6 +10,7 @@ from shapely.geometry import Point
 from shapely.ops import cascaded_union
 from descartes.patch import PolygonPatch
 import random
+import copy
 
 def is_adjacent(shape1, shape2):
         return (shape1 is not shape2 and shape1.touches(shape2) 
@@ -58,9 +59,14 @@ class District:
         for cblock in cblocks:
             cblock.district = self
         self.index = None
+        self.the_state = None
         
     def __str__(self):
         return self.name
+        
+    def clone(self):
+        return District(self.name,copy.copy(self.cblocks),self.dems,self.reps,self.winner)
+        
         
     def plot_district(self,plot):
         for block in self.cblocks:
@@ -80,19 +86,22 @@ class State:
             for cblock in cblocks:
                 cblock.state = self
         self.adjacent_blocks = []
-        index = 0
+
         for district in districts:
-            row = []
-            district.index = index
-            for other_district in districts:
-                adj = self.find_adjacent(district,other_district)[0]
-                row.append(adj)
-            self.adjacent_blocks.append(row)
-            index += 1
+            district.the_state = self
             
         
     def __str__(self):
         return self.name
+        
+    def __eq__(self,other):
+        return isinstance(other,State) and self.name == other.name
+        
+    def __hash__(self):
+        return self.name.__hash__()
+        
+    def clone(self):
+        return State(self.name,self.districts,self.all_cblocks)
         
     def plot_state(self,plot):
         for district in self.districts:
@@ -110,37 +119,55 @@ class State:
                         adj_from.add(block)
                         adj_to.add(other_block)
         return adj_from,adj_to
+    
 
     def pairwise_swap(self,district1, district2):
-        if (district1 is district2 or not is_adjacent(district1.shape,district2.shape)
-            or district1.state is not self or district2.state is not self):
+        """Returns a new state with a swap of adjacent blocks if possible.
+        If not, returns False"""
+        
+  #      print("Comparing",district1,"and",district2)
+        if (district1 is district2 or not is_adjacent(district1.shape,district2.shape)):
+#            or district1.the_state is not self or district2.the_state is not self):
                 return False
+        #other = self.clone()
         #choose a random block in district1 which is adjacent to district2 and vice versa
-        adj_blocks1 = self.adjacent_blocks[district1.index][district2.index]
-        adj_blocks2 = self.adjacent_blocks[district2.index][district1.index]
-        adj1 = random.choice(adj_blocks1)
-        adj2 = random.choice(adj_blocks2)
+#        adj_blocks1 = self.adjacent_blocks[district1.index][district2.index]
+#        adj_blocks2 = self.adjacent_blocks[district2.index][district1.index]
+        adj_blocks1,adj_blocks2 = self.find_adjacent(district1,district2)
+        #adj1 = random.choice(list(adj_blocks1))
+        #adj2 = random.choice(list(adj_blocks2))
+        adj1 = adj_blocks1.pop()
+        adj2 = adj_blocks2.pop()
+        #print(adj_blocks1,":",adj1)
+        
         #make new local districts swapping the blocks
-        new_d1 = district1.cblocks.copy()
-        new_d2 = district2.cblocks.copy()
-        new_d1.remove(adj1)
-        new_d1.add(adj2)
-        new_d2.remove(adj2)
-        new_d2.add(adj1)
+        district1.cblocks.remove(adj1)
+        district1.cblocks.add(adj2)
+        district2.cblocks.remove(adj2)
+        district2.cblocks.add(adj1)
         #if the new districts are not contiguous, bail out
-        shape1 = cascaded_union([b.shape for b in new_d1])
-        shape2 = cascaded_union([b.shape for b in new_d2])
+        shape1 = cascaded_union([b.shape for b in district1.cblocks])
+        shape2 = cascaded_union([b.shape for b in district2.cblocks])
         if(not (isinstance(shape1,Polygon) and isinstance(shape2,Polygon))):
+            district1.cblocks.remove(adj2)
+            district1.cblocks.add(adj1)
+            district2.cblocks.remove(adj1)
+            district2.cblocks.add(adj2)
             return False
         #modify the districts to reflect the swapped blocks.
-        district1.cblocks = new_d1
-        district2.cblocks = new_d2
         district1.shape = shape1
         district2.shape = shape2
-        adj_blocks1,adj_blocks2 = self.find_adjacent(district1,district2)
-        self.adjacent_blocks[district1.index][district2.index] = adj_blocks1
-        self.adjacent_blocks[district2.index][district1.index] = adj_blocks2
-        return True
+        return self
+        
+    def random_district(self,exceptions=None):
+        if exceptions is None: 
+            exceptions = {}
+        district = random.choice(list(self.districts))
+        while district in exceptions:
+            district = random.choice(list(self.districts))
+        return district
+        
+        
 
 def draw_state_grid(states, width, plot):
     height = len(states)//width
