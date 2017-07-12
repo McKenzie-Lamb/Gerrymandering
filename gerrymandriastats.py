@@ -6,6 +6,7 @@ Created on Tue Jun 27 14:30:38 2017
 """
 
 from gerrymandriastates import State,District,CBlock,draw_state_grid
+from gerrymandriahillclimb import hill_climb
 import random
 import statistics
 import collections
@@ -29,13 +30,21 @@ def demographic_breakdown(state,All_district):
     total_reps = 0
     total_pop = 0
     for i in range(len(All_district)):
-        if All_district[i].name[:1] == state:   
+        if All_district[i].the_state.name == state.name:   
             total_dems += All_district[i].dems 
             total_reps += All_district[i].reps
-            total_pop += All_district[i].population       
+            total_pop += All_district[i].population
+    if total_pop == 0:
+        print("ERROR! pop is 0 (state:",state,")")
     total_percent_dems = total_dems / total_pop       
     total_percent_reps = total_reps / total_pop                                        
     return total_percent_dems, total_percent_reps
+    
+def get_state(state_set,state_name):
+    for state in state_set:
+        if state.name == state_name:
+            return state
+    return None
 
        
 def simulation (new_list, number_district, total_percent_dems, number_samples):
@@ -52,7 +61,7 @@ def simulation (new_list, number_district, total_percent_dems, number_samples):
             test_list.append(total_dem_seat)
         else: 
             fail_count += 1     #keeps count of how many random sets of districts did not match state's demographics
-    print ('fail_count: ', fail_count)
+    #print ('fail_count: ', fail_count)
     return test_list
 
 def calculate_p_value (sets,current_dem_seat,mean,number_samples):
@@ -66,7 +75,7 @@ def calculate_p_value (sets,current_dem_seat,mean,number_samples):
             if i >= current_dem_seat:
                 extreme += 1
     p_value = extreme / number_samples
-    print ('extreme count: ', extreme)
+    #print ('extreme count: ', extreme)
     return (p_value)      
           
 def make_district_list(state_set):
@@ -80,10 +89,10 @@ def print_demographics(state_set):
     print ("Overall: ",Gerrymandria_demographic(state_set))           #The results are 0.4978865879685357, 0.5021134120314642 
     districts = make_district_list(state_set)
     for state in state_set:
-        print (state,":",demographic_breakdown(state.name,districts))       #Yay!! It worked!! 
+        print (state,":",demographic_breakdown(state,districts))       #Yay!! It worked!! 
 
 def statistical_test(state,All_district,number_samples=1000):
-    count_dist = collections.Counter([dist.name[:1] for dist in All_district])
+    count_dist = collections.Counter([dist.the_state for dist in All_district])
     number_district = count_dist.get(state)     #number of districts in given state
     
     total_percent_dems,total_percent_reps = demographic_breakdown(state,All_district)
@@ -92,10 +101,10 @@ def statistical_test(state,All_district,number_samples=1000):
     new_list = []
     current_dem_seat = 0
     for dist in All_district:       #creates new list of districts to make up random 
-        if dist.name[:1] != state:  #list of districts that discludes districts from given state   
+        if dist.the_state != state:  #list of districts that discludes districts from given state   
             new_list.append(dist) 
     for dist in All_district:       #counts how many seats currently held in by democrats in given state
-        if dist.name[:1] == state and dist.winner == "D":
+        if dist.the_state == state and dist.winner == "D":
             current_dem_seat += 1  
     test_list = simulation(new_list, number_district, total_percent_dems, number_samples)
     mean_test = sum(test_list)/number_samples     
@@ -114,7 +123,7 @@ def main():
         
         All_district = make_district_list(state_set)
         
-        state = 'A'
+        state = get_state(state_set,'A')
 
         total_percent_dems,total_percent_reps = demographic_breakdown(state,All_district)
 
@@ -126,7 +135,15 @@ def main():
         print ('p_value: ', p_value)
         print ('standard deviation: ', sd)
         import matplotlib.pyplot as plt
-        draw_state_grid(state_set,4,plt)
+        #draw_state_grid(state_set,4,plt)
+        
+        def better(state1,state2):
+            cds_1,msds_1,sd1,p1 = statistical_test(state1,All_district,1000)
+            cds_2,msds_2,sd2,p2 = statistical_test(state2,All_district,1000)
+            return p1 > p2
+        
+        new_plan = hill_climb(state,better,5)
+        new_plan.plot_state(plt.gca())
 
 if __name__ == "__main__":
     main()
