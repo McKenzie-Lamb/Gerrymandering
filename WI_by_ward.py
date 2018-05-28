@@ -77,8 +77,8 @@ with fiona.open(daShapefile) as shapes:
         
     print("\nDone!")
         
-    
-    plt.show()
+    plt.savefig('WI_by_Ward.svg', dpi=300)
+#    plt.show()
     print("Drew {0} things.".format(count))
 
     

@@ -1,0 +1,95 @@
+\documentclass[12pt]{article}
+%\documentclass[double]{ua-thesis}
+%\documentclass{ua-thesis}
+\usepackage{amssymb,amsmath,graphicx,amsthm}
+\usepackage[toc,page]{appendix}
+% ----------------------------------------------------------------
+% ----------------------------------------------------------------
+%Page setup
+%\oddsidemargin=0in \evensidemargin=0in \textwidth=6.3in \topmargin=-0.5in \textheight=9in
+% ----------------------------------------------------------------
+%\vfuzz2pt % Don't report over-full v-boxes if over-edge is small
+%\hfuzz2pt % Don't report over-full h-boxes if over-edge is small
+\newcommand{\abs}[1]{\left\vert#1\right\vert}
+\newcommand{\st}{\ensuremath{\,|\,}}
+\newcommand{\pr}{\ensuremath{^{\prime}}}
+\newcommand{\C}{\ensuremath{\mathbb{C}}}
+\newcommand{\Chat}{\ensuremath{\hat{\mathbb{C}}}}
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\di}[1]{\ensuremath{\frac{\partial}{\partial #1}}}
+\newcommand{\I}{\ensuremath{\mathbf{i}}}
+\newcommand{\dlim}{\displaystyle\lim}
+\newcommand{\dint}{\displaystyle\int}
+\newcommand{\frag}{\ensuremath{\mathfrak{g}}}
+\newcommand{\fragR}{\ensuremath{\mathfrak{g}^{\R{}}}}
+\newcommand{\frau}{\ensuremath{\mathfrak{u}}}
+\newcommand{\frah}{\ensuremath{\mathfrak{h}}}
+\newcommand{\frakk}{\ensuremath{\mathfrak{k}}}
+\newcommand{\frap}{\ensuremath{\mathfrak{p}}}
+\newcommand{\fraa}{\ensuremath{\mathfrak{a}}}
+\newcommand{\fran}{\ensuremath{\mathfrak{n}}}
+\newcommand{\fraq}{\ensuremath{\mathfrak{q}}}
+\newcommand{\fraksu}{\ensuremath{\mathfrak{su}}}
+\newcommand{\fraksl}{\ensuremath{\mathfrak{sl}}}
+\newcommand{\fral}{\ensuremath{\mathfrak{l}}}
+\newcommand{\frat}{\ensuremath{\mathfrak{t}}}
+\newcommand{\Cinfty}{\ensuremath{C^{\infty}}}
+\newcommand{\dd}[1]{\ensuremath{\frac{\partial}{\partial #1}}}
+\newcommand{\CalO}{\ensuremath{\mathcal{O}}}
+\newcommand{\CalD}{\ensuremath{\mathcal{D}}}
+\newcommand{\CalC}{\ensuremath{\mathcal{C}}}
+\newcommand{\CalM}{\ensuremath{\mathcal{M}}}
+\newcommand{\CalL}{\ensuremath{\mathcal{L}}}
+\newcommand{\CalH}{\ensuremath{\mathcal{H}}}
+
+
+\newcommand{\res}{\text{res}}
+\newcommand{\Inv}{\mathrm{Inv}}
+\newcommand{\Ind}{\mathrm{Ind}}
+\newcommand{\Stab}{\mathrm{Stab}}
+\newcommand{\ad}{\mathrm{ad}}
+\newcommand{\Ad}{\mathrm{Ad}}
+\newcommand{\Sym}{\ensuremath{\mathrm{Sym}}}
+\newcommand{\Span}{\mathrm{span}}
+\newcommand{\tr}{\mathrm{tr}}
+%\newcommand{\dim}{\text{dim}}
+\newcommand{\pd}[2]{\ensuremath{\frac{\partial #1}{\partial #2}}}
+
+%--------------------------------------------------------------------------------------------------
+
+%Theorems, Lemmas, etc.
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lemma}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{conj}[thm]{Conjecture}
+\newtheorem{example}[thm]{Example}
+\newtheorem{rmk}[thm]{Remark}
+% ----------------------------------------------------------------
+\begin{document}
+\begin{center}
+{\large Practice Project - Random Numbers} \linebreak Summer Research 2017
+\end{center}
+
+\begin{enumerate}
+
+\item 
+\begin{enumerate}
+\item Generate a sequence of 100000 random points $(x,y)$ in the square $-1\leq x,y\leq 1$ in the plane.  
+\item Count the number of these points that lie in the unit disk centered at the origin.
+\item Use this count to approximate $\pi$.  (Hint: What is the probability that a randomly generated point in the square lies in the unit circle?)
+\item Bonus: Use the matplotlib Python package to plot a picture of this method for approximating $\pi$.  Use 100 points.  Note that if you are using IPython notebook, you'll need to put the following line at the beginning of any cell that uses matplotlib (if you want to see the output): \verb+%matplotlib inline+
+
+The idea here is to use Google to find enough matplotlib commands to accomplish your goal, not to become an expert in matplotlib.  Feel free to copy and paste from examples you find on the web.  
+\end{enumerate}
+
+\item Let $P$ be the set of all points $(x,y,z)$ in 3-dimensional space such that $0\leq x,y,z\leq 1$ and $x+y+z=1$.  Write a Python function that uses the \verb+random+ module to generate a random point in $P$ \textbf{in such a way that any point in $P$ is equally likely to be the point generated}.  
+
+\end{enumerate}
+
+\end{document}
+% ----------------------------------------------------------------

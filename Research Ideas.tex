@@ -1,0 +1,57 @@
+\documentclass[12pt]{article}
+\usepackage{amssymb,amsmath,graphicx,amsthm, float}
+\usepackage[toc,page]{appendix}
+\usepackage{units}
+\usepackage{fullpage}
+\usepackage{hyperref}
+
+% ----------------------------------------------------------------
+%Page setup
+%\oddsidemargin=0in \evensidemargin=0in \textwidth=6.3in \topmargin=-0.5in \textheight=9in
+% ----------------------------------------------------------------
+%\vfuzz2pt % Don't report over-full v-boxes if over-edge is small
+%\hfuzz2pt % Don't report over-full h-boxes if over-edge is small
+\newcommand{\abs}[1]{\left\vert#1\right\vert}
+\newcommand{\st}{\ensuremath{\,|\,}}
+\newcommand{\pr}{\ensuremath{^{\prime}}}
+\newcommand{\C}{\ensuremath{\mathbb{C}}}
+\newcommand{\Chat}{\ensuremath{\hat{\mathbb{C}}}}
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\di}[1]{\ensuremath{\frac{\partial}{\partial #1}}}
+\newcommand{\I}{\ensuremath{\mathbf{i}}}
+\newcommand{\dlim}{\displaystyle\lim}
+\newcommand{\dint}{\displaystyle\int}
+\newcommand{\dd}[1]{\ensuremath{\frac{\partial}{\partial #1}}}
+\newcommand{\Span}{\mathrm{span}}
+\newcommand{\pd}[2]{\ensuremath{\frac{\partial #1}{\partial #2}}}
+\newcommand{\va}{\ensuremath{\vec{a}}}
+\newcommand{\vb}{\ensuremath{\vec{b}}}
+\newcommand{\ve}{\ensuremath{\varepsilon}}
+%--------------------------------------------------------------------------------------------------
+
+%Theorems, Lemmas, etc.
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lemma}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{conj}[thm]{Conjecture}
+\newtheorem{example}[thm]{Example}
+\newtheorem{exercise}[thm]{Exercise}
+\newtheorem{rmk}[thm]{Remark}
+% ----------------------------------------------------------------
+\begin{document}
+\begin{center}
+{\large Research Ideas} \linebreak Gerrymandering
+\end{center}
+
+\begin{enumerate}
+\item Topology (shape) of the space of district plans.  Each sampler generates its own topology.  Question: Which sampler generates a topology that it can effectively traverse?
+\item Survey article: \emph{The MCMC Revolution}, by Percy O-something. Configuration space of $n$ disks of radius $r$ might not be connected.  However, perhaps there is one component that holds almost all of the mass. Metropolis algorithm.
+\item Problem with current sampling methods: How to generate starting points?
+\end{enumerate}
+\end{document}
+% ----------------------------------------------------------------

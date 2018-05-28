@@ -1,0 +1,2 @@
+Initial Dem Seats =  35
+Dem Seats After Majority Gerrymander =  32
