@@ -314,11 +314,13 @@ class State:
             district.calculate_winner()
         return sum([1 for district in self.districts if district.winner == 'R' ])
     
+    #Returns a delta value (see Wang paper, p1307).  
+    #Compare to t-distribution to get a p-value.
     def MeanMedian(self):
         dem_vote_list = [dist.dems for dist in self.districts]
         mean = sum(dem_vote_list)/len(self.districts)
         median = statistics.median(dem_vote_list)
-        return 0.5708 * (mean - median)/stats.sem(dem_vote_list) 
+        return (mean - median)/(stats.sem(dem_vote_list)*0.756) 
     
 
  #Stores states and everything in them.  Carries out gerrymandering, effects test, t-test.       
@@ -435,7 +437,7 @@ class Country:
     def TTest(self, state):
         dem_props = [dist.dems/dist.population for dist in state.districts if dist.winner == 'D']
         rep_props = [dist.reps/dist.population for dist in state.districts if dist.winner == 'R']
-        return(stats.ttest_ind(dem_props,rep_props, equal_var = False))
+        return(stats.ttest_ind(dem_props,rep_props, equal_var = True))
         
     def PickleCountry(self, filename):
         import pickle
