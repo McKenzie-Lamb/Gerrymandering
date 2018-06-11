@@ -12,7 +12,7 @@ from shapely.geometry import Polygon
 from shapely.geometry import Point
 import pyproj as proj
 
-daShapefile = r"../Wards_fall_2014.shape/Wards_Final_Geo_111312_2014_ED.shp"
+daShapefile = r"./Wards_fall_2014.shape/Wards_Final_Geo_111312_2014_ED.shp"
 
 # Checks for adjacency between two shapes
 # Inputs: Two polygons object
@@ -103,7 +103,6 @@ with fiona.open(daShapefile) as shapes:
         
         position = get_position(tracts.centroid.x,tracts.centroid.y)
 
-
         graph.add_node(tract_id,style = 'filled',shape = 'circle', pos=position, color=color_n, 
                     polygon = tracts, data=properties, fixedsize = True)
         count += 1
@@ -113,4 +112,4 @@ with fiona.open(daShapefile) as shapes:
                 graph.add_edge(n,latest_node)
             
 A=nx.nx_agraph.to_agraph(graph)       # convert to a graphviz graph
-A.write('data.dot')          # neato layout
+A.write('abel-network-files/data/data.dot')          # neato layout

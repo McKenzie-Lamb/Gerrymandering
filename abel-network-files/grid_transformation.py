@@ -47,57 +47,60 @@ def strip_data(dictionary_val):
 # Outputs: all the data
 def add_data(grid_graph, wisconsin_graph, array):
     data = dict()
+    close = dict()
     for n in wisconsin_graph.nodes():
         point_pre = wisconsin_graph.node[n]['pos'][:-1].split(',')
         point_x = float(point_pre[0])
         point_y = float(point_pre[1])
         point = [point_x, point_y]
-        #print(array)
         nearest_point_index = spatial.KDTree(array).query(point)[1]
-        
         if nearest_point_index in data:
             data[nearest_point_index].append(wisconsin_graph.node[n]['data'])
         else:
             data[nearest_point_index] = [wisconsin_graph.node[n]['data']]
     for i in data.keys():
-        if len(data[i]) > 1:
-            grid_graph.node[str(i)]['data'] = strip_data(data[i])
+        grid_graph.node[str(i)+'!']['data'] = strip_data(data[i])
     return grid_graph
 
 
 # Main function that runs the whole project, and creates the .dot file
 # Inputs: total number of x nodes
 def main(nodes):
-    wisconsin_graph = nx.Graph(nx.drawing.nx_agraph.read_dot('data.dot')) #Graph previously created
+    wisconsin_graph = nx.Graph(nx.drawing.nx_agraph.read_dot('abel-network-files/data/data.dot')) #Graph previously created
     grid_graph = nx.Graph(directed=False)
     total_nodes = nodes
-    #array = np.empty([total_nodes**2, 2])
     list_positions = []
     count = 0
+    label_dict = {}
     for i in range(1,total_nodes): # This for loop creates the grid graph
         for j in range(1,total_nodes):
 
             #Node creation
-            #label = str(i)+','+str(j)
-            label = str(count)
-            position = get_position(i, j, total_nodes)
+            label = str(i)+','+str(j)
 
-            #np.array(array)[count,0] = float(position.split(',')[0])
-            #np.array(array)[count,1] = float(position.split(',')[1][:-1])
+            position = get_position(i, j, total_nodes)
+            label_dict[label] = str(count)+'!'
+
             list_positions.append([float(position.split(',')[0]), float(position.split(',')[1][:-1])])
-            #print(array)
+
             grid_graph.add_node(label, pos=position, shape='box', index = count)
 
             #This if statement creates the edges
-            if i < 69 and j < 69:
-                grid_graph.add_edge(label, str(i+1)+','+str(j))
-                grid_graph.add_edge(label, str(i)+','+str(j+1))
-
+            if i < total_nodes-1 and j < total_nodes-1:
+                grid_graph.add_edge(str(i)+','+str(j), str(i+1)+','+str(j))
+                grid_graph.add_edge(str(i)+','+str(j), str(i)+','+str(j+1))
+            elif i == total_nodes-1 and j != total_nodes-1:
+                grid_graph.add_edge(str(i)+','+str(j), str(i)+','+str(j+1))
+            elif j == total_nodes-1 and i != total_nodes-1:
+                grid_graph.add_edge(str(i)+','+str(j), str(i+1)+','+str(j))
             count+= 1
+
+    grid_graph = nx.relabel_nodes(grid_graph, label_dict)
     array = np.asarray(list_positions)
     grid_graph = add_data(grid_graph, wisconsin_graph, array)
     
-    A=nx.nx_agraph.to_agraph(grid_graph)       # convert to a graphviz graph
-    A.write('grid_data.dot') 
+    compose = nx.compose(wisconsin_graph, grid_graph)
+    A=nx.nx_agraph.to_agraph(compose)       # convert to a graphviz graph
+    A.write('abel-network-files/data/grid_data.dot') 
 
 main(70)
