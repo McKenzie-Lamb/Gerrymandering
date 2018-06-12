@@ -4,6 +4,10 @@
 # Description:
 # This program takes the previously created network graph and
 # transfrom it into a grid by adding the census tracts properties
+# the number of nodes inside the graph can be changed by calling
+# main function with a different value, this will not change the overall
+# size of the function, more like the number of nodes contained in the 
+# inside
 
 import networkx as nx
 import pygraphviz as pvg
@@ -47,7 +51,6 @@ def strip_data(dictionary_val):
 # Outputs: all the data
 def add_data(grid_graph, wisconsin_graph, array):
     data = dict()
-    close = dict()
     for n in wisconsin_graph.nodes():
         point_pre = wisconsin_graph.node[n]['pos'][:-1].split(',')
         point_x = float(point_pre[0])
@@ -99,8 +102,9 @@ def main(nodes):
     array = np.asarray(list_positions)
     grid_graph = add_data(grid_graph, wisconsin_graph, array)
     
-    compose = nx.compose(wisconsin_graph, grid_graph)
-    A=nx.nx_agraph.to_agraph(compose)       # convert to a graphviz graph
+    #compose = nx.compose(wisconsin_graph, grid_graph)
+    A=nx.nx_agraph.to_agraph(grid_graph)       # convert to a graphviz graph
     A.write('abel-network-files/data/grid_data.dot') 
+    return grid_graph
 
-main(70)
+grid_graph= main(70)
