@@ -7,12 +7,15 @@
 
 import fiona
 import networkx as nx
-import pygraphviz as pvg
 from shapely.geometry import Polygon
 from shapely.geometry import Point
 import pyproj as proj
 
-daShapefile = r"./Wards_fall_2014.shape/Wards_Final_Geo_111312_2014_ED.shp"
+
+#Unix-like Path
+#daShapefile = r"./Wards_fall_2014.shape/Wards_Final_Geo_111312_2014_ED.shp" 
+#Windows path
+daShapefile = r"E:\Projects\Gerrymandering\Gerrymandering\Wards_fall_2014.shape\Wards_Final_Geo_111312_2014_ED.shp"
 
 # Checks for adjacency between two shapes
 # Inputs: Two polygons object
@@ -92,6 +95,7 @@ with fiona.open(daShapefile) as shapes:
     graph = nx.Graph(directed=False)
     count = 0
     positions = []
+    print("Creating Graph...")
     for feat in shapes: 
         properties = feat['properties']
         tract_id = feat['id']
@@ -110,6 +114,13 @@ with fiona.open(daShapefile) as shapes:
         for n in list(graph.nodes())[:count-1]:
             if is_adjacent(graph.node[n]['polygon'], graph.node[latest_node]['polygon']):
                 graph.add_edge(n,latest_node)
-            
-A=nx.nx_agraph.to_agraph(graph)       # convert to a graphviz graph
-A.write('abel-network-files/data/data.dot')          # neato layout
+    print("Cleaning...")
+    for n in list(graph.nodes()):
+        del graph.node[n]['polygon']
+
+
+#Unix-Like
+#nx.drawing.nx_pydot.write_dot(graph, 'abel-network-files/data/data.dot')
+#Windows
+nx.drawing.nx_pydot.write_dot(graph, 'e:/Projects/Gerrymandering/Gerrymandering/abel-network-files/data/data.dot')
+print("Done")

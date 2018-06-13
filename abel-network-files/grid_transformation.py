@@ -10,7 +10,6 @@
 # inside
 
 import networkx as nx
-import pygraphviz as pvg
 from scipy import spatial
 import numpy as np
 
@@ -35,7 +34,7 @@ def get_position(x,y, total_nodes):
 def strip_data(dictionary_val):
     data = {}
     for i in dictionary_val:
-        actual_dict = eval(i[7:].lower())
+        actual_dict = eval(i[8:-1].lower())
         for j in actual_dict.keys():
             if isinstance(actual_dict[j], str):
                 continue
@@ -53,8 +52,8 @@ def add_data(grid_graph, wisconsin_graph, array):
     data = dict()
     for n in wisconsin_graph.nodes():
         point_pre = wisconsin_graph.node[n]['pos'][:-1].split(',')
-        point_x = float(point_pre[0])
-        point_y = float(point_pre[1])
+        point_x = float(point_pre[0][1:])
+        point_y = float(point_pre[1][:-1])
         point = [point_x, point_y]
         nearest_point_index = spatial.KDTree(array).query(point)[1]
         if nearest_point_index in data:
@@ -69,7 +68,8 @@ def add_data(grid_graph, wisconsin_graph, array):
 # Main function that runs the whole project, and creates the .dot file
 # Inputs: total number of x nodes
 def main(nodes):
-    wisconsin_graph = nx.Graph(nx.drawing.nx_agraph.read_dot('abel-network-files/data/data.dot')) #Graph previously created
+    wisconsin_graph = nx.Graph(nx.drawing.nx_pydot.read_dot('e:/Projects/Gerrymandering/Gerrymandering/abel-network-files/data/data.dot')) #Graph previously created
+    print('here')
     grid_graph = nx.Graph(directed=False)
     total_nodes = nodes
     list_positions = []
@@ -103,8 +103,10 @@ def main(nodes):
     grid_graph = add_data(grid_graph, wisconsin_graph, array)
     
     #compose = nx.compose(wisconsin_graph, grid_graph)
-    A=nx.nx_agraph.to_agraph(grid_graph)       # convert to a graphviz graph
-    A.write('abel-network-files/data/grid_data.dot') 
+    #Unix
+    #nx.drawing.nx_pydot.write_dot(grid_graph, 'abel-network-files/data/grid_data.dot')
+    #Windows
+    nx.drawing.nx_pydot.write_dot(grid_graph, 'e:/Projects/Gerrymandering/Gerrymandering/abel-network-files/data/data.dot')
     return grid_graph
 
 grid_graph= main(70)
