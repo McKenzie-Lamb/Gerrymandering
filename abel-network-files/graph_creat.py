@@ -96,7 +96,7 @@ with fiona.open(daShapefile) as shapes:
     count = 0
     positions = []
     print("Creating Graph...")
-    for feat in shapes: 
+    for feat in shapes[:500]: 
         properties = feat['properties']
         tract_id = feat['id']
         color_n = get_color(feat)
@@ -122,5 +122,5 @@ with fiona.open(daShapefile) as shapes:
 #Unix-Like
 #nx.drawing.nx_pydot.write_dot(graph, 'abel-network-files/data/data.dot')
 #Windows
-nx.drawing.nx_pydot.write_dot(graph, 'e:/Projects/Gerrymandering/Gerrymandering/abel-network-files/data/data.dot')
+nx.drawing.nx_pydot.write_dot(graph, 'e:/Projects/Gerrymandering/Gerrymandering/abel-network-files/data/short_data.dot')
 print("Done")
