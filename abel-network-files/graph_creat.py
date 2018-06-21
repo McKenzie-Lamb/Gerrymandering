@@ -2,8 +2,8 @@
 # Date: 05/29/18
 #
 # Description:
-# This program uses the .shp file to create a network graph where each node represents a census tract
-# and the edge represents adjacency between each tract.
+# This program uses the .shp file to create a network graph where each node
+# represents a census tract and the edge represents adjacency between each tract.
 
 import fiona
 import networkx as nx
@@ -15,7 +15,8 @@ import pyproj as proj
 #Unix-like Path
 #daShapefile = r"./Wards_fall_2014.shape/Wards_Final_Geo_111312_2014_ED.shp" 
 #Windows path
-daShapefile = r"E:\Projects\Gerrymandering\Gerrymandering\Wards_fall_2014.shape\Wards_Final_Geo_111312_2014_ED.shp"
+daShapefile = r"E:\Projects\Gerrymandering\Gerrymandering\
+                Wards_fall_2014.shape\Wards_Final_Geo_111312_2014_ED.shp"
 
 # Checks for adjacency between two shapes
 # Inputs: Two polygons object
@@ -35,6 +36,7 @@ def get_poly(rings):
             print("BAD!")
             continue
         poly = Polygon(ptlst)
+        tracts 
         return poly
 
 # Produces the color of the node based on republican and democrats share
@@ -50,7 +52,7 @@ def get_color(feat):
         dem_share = dem_vote/(dem_vote+rep_vote)
         if dem_share > .5:
             alph = dem_share
-            color_n = '#0000ff'+hex(int(alph*100))[2:]
+            color_n = ['#0000ff'+hex(int(alph*100))[2:]]
         else :
             alph = (1-dem_share)
             color_n = '#ff0000'+hex(int(alph*100))[2:]
@@ -107,7 +109,8 @@ with fiona.open(daShapefile) as shapes:
         
         position = get_position(tracts.centroid.x,tracts.centroid.y)
 
-        graph.add_node(tract_id,style = 'filled',shape = 'circle', pos=position, color=color_n, 
+        graph.add_node(tract_id,style = 'filled',shape = 'circle', 
+                    pos=position, color=color_n, 
                     polygon = tracts, data=properties, fixedsize = True)
         count += 1
         latest_node = list(graph.nodes(data=False))[-1]
