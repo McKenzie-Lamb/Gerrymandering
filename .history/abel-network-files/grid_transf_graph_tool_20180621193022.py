@@ -33,7 +33,7 @@ def get_position(x, y, old_max_x, old_max_y):
     return (new_x, new_y)
 
 
-# Takes a key and values from dictionary and loops through to get
+# Takes a key and values from dictionary and loops through to get 
 # weighted average or sum
 def sum_data(old_dict, new_dict):
     return_dict = dict()
@@ -52,11 +52,10 @@ def add_data(grid, data, wisconsin_graph, array):
     for n in wisconsin_graph.vertices():
         point = wisconsin_graph.vp.pos[n]
         nearest_point_index = spatial.KDTree(array).query(point)[1]
-
+        
         vertex_data_wi = wisconsin_graph.vp.data[n]
         if nearest_point_index in check:
-            data[grid.vertex(nearest_point_index)] = sum_data(
-                data[grid.vertex(nearest_point_index)], vertex_data_wi)
+            data[grid.vertex(nearest_point_index)] = sum_data(data[grid.vertex(nearest_point_index)], vertex_data_wi)
         else:
             data[grid.vertex(nearest_point_index)] = vertex_data_wi
 
@@ -64,7 +63,7 @@ def add_data(grid, data, wisconsin_graph, array):
     return data
 
 
-def main(x, y):
+def main(x,y):
     x_total_ver = x
     y_total_ver = y
     grid = gt.lattice([x_total_ver, y_total_ver])
@@ -82,7 +81,9 @@ def main(x, y):
 
     data = add_data(grid, data, wi_graph, points_array)
     grid.vertex_properties["data"] = data
-    gt.graph_draw(grid, output_size=(3000, 3000), output="tmp_grid.png")
+    gt.graph_draw(grid, output_size=(3000, 3000)
+                  , output="tmp_grid.png")
 
 
 main(70, 70)
+
