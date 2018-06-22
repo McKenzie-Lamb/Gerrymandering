@@ -8,7 +8,7 @@
 # main function with a different value, this will not change the overall
 # size of the function, more like the number of nodes contained in the 
 # inside
-
+import time
 import networkx as nx
 from scipy import spatial
 import numpy as np
@@ -68,8 +68,9 @@ def add_data(grid_graph, wisconsin_graph, array):
 # Main function that runs the whole project, and creates the .dot file
 # Inputs: total number of x nodes
 def main(nodes):
-    wisconsin_graph = nx.Graph(nx.drawing.nx_pydot.read_dot('e:/Projects/Gerrymandering/Gerrymandering/abel-network-files/data/data.dot')) #Graph previously created
-    print('here')
+    #wisconsin_graph = nx.Graph(nx.drawing.nx_pydot.read_dot('e:/Projects/Gerrymandering/Gerrymandering/abel-network-files/data/data.dot')) #Graph previously created
+    print('creating')
+    start = time.time()
     grid_graph = nx.Graph(directed=False)
     total_nodes = nodes
     list_positions = []
@@ -98,15 +99,18 @@ def main(nodes):
                 grid_graph.add_edge(str(i)+','+str(j), str(i+1)+','+str(j))
             count+= 1
 
-    grid_graph = nx.relabel_nodes(grid_graph, label_dict)
+    #grid_graph = nx.relabel_nodes(grid_graph, label_dict)
     array = np.asarray(list_positions)
-    grid_graph = add_data(grid_graph, wisconsin_graph, array)
+    #grid_graph = add_data(grid_graph, wisconsin_graph, array)
     
     #compose = nx.compose(wisconsin_graph, grid_graph)
     #Unix
     #nx.drawing.nx_pydot.write_dot(grid_graph, 'abel-network-files/data/grid_data.dot')
     #Windows
-    nx.drawing.nx_pydot.write_dot(grid_graph, 'e:/Projects/Gerrymandering/Gerrymandering/abel-network-files/data/data.dot')
+    end = time.time()
+    print(end-start)
+    print("Drawing")
+    nx.drawing.nx_pydot.write_dot(grid_graph, 'abel-network-files/data/data.dot')
     return grid_graph
 
-grid_graph= main(70)
+grid_graph= main(200)
