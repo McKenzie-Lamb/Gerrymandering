@@ -90,6 +90,7 @@ def get_position(x,y):
     return (new_x,new_y)
 
 with fiona.open(daShapefile) as shapes:
+    pprint.pprint(shapes)
     graph = gt.Graph(directed=False)
     pos = graph.new_vertex_property("vector<double>")
     color = graph.new_vertex_property("vector<double>")
@@ -98,7 +99,6 @@ with fiona.open(daShapefile) as shapes:
     index = 0
     polygons = dict()
     for feat in shapes:
-        pprint.pprint(feat)
         properties = eval(str(feat['properties'])[7:].lower())
 
         tract_id = int(feat['id'])

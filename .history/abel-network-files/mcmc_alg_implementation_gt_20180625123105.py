@@ -6,7 +6,6 @@
 # algorithm explained by Benjamin Fifield Michael Higgins Kosuke Imai
 # and Alexander Tarr using graph tool
 import random
-import time
 import numpy as np
 import graph_tool.all as gt
 from pathlib import Path
@@ -33,13 +32,15 @@ def get_position(x, y, old_max_x, old_max_y, old_min_x, old_min_y):
     new_y = (((y - old_min_y) * new_range)/old_range_y)
     return (new_x, new_y)
 
-def draw_grap(state):
-    state.draw(pos=graph.vp.pos, output="abel-network-files/tmp/d"+str(time.time())+".png")
+def draw_state(S, S_min, b_min):
+    state.draw(output="abel-network-files/tmp/tmp_alg_states"+str(S)+".png")
+
+
 
 data_folder = Path("abel-network-files/data/")
 images_folder = Path("abel-network-files/images/")
 
-size_array = np.random.random([50, 2])
+size_array = np.random.random([10, 2])
 graph, pos = gt.triangulation(size_array, type='delaunay')
 data = graph.new_vertex_property("object")
 color = graph.new_vertex_property("vector<double>")
@@ -63,9 +64,9 @@ for v in graph.vertices():
     pop = random.randint(500,1000)
     rep = random.randint(0,pop)
     data[v] = {'CONREP14': rep, 'CONDEM14': pop-rep}
-graph.vp.pos = pos
+l = 123
 state = gt.minimize_blockmodel_dl(graph, 2,2)
-gt.mcmc_equilibrate(state, callback=draw_grap, mcmc_args={'niter':2}, max_niter=20)
-
+state.exhaustive_sweep(callback=draw_state)
+graph.vp.pos = pos
 state.draw(pos=graph.vp.pos, output="abel-network-files/tmp_alg_states.png")
 gt.graph_draw(graph, pos, output="abel-network-files/tmp_alg.png", bg_color=(255,255,255,1))

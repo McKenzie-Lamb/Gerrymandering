@@ -6,7 +6,6 @@
 # algorithm explained by Benjamin Fifield Michael Higgins Kosuke Imai
 # and Alexander Tarr using graph tool
 import random
-import time
 import numpy as np
 import graph_tool.all as gt
 from pathlib import Path
@@ -34,7 +33,7 @@ def get_position(x, y, old_max_x, old_max_y, old_min_x, old_min_y):
     return (new_x, new_y)
 
 def draw_grap(state):
-    state.draw(pos=graph.vp.pos, output="abel-network-files/tmp/d"+str(time.time())+".png")
+    state.draw(pos=graph.vp.pos, output="abel-network-files/tmp/d"+str(random.randint(1,1000))+".png")
 
 data_folder = Path("abel-network-files/data/")
 images_folder = Path("abel-network-files/images/")

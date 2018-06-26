@@ -11,7 +11,7 @@ import graph_tool.all as gt
 import random
 from shapely.geometry import Polygon
 from shapely.geometry import Point
-import pprint
+
 
 #Unix-like Path
 daShapefile = r"./Wards_fall_2014.shape/Wards_Final_Geo_111312_2014_ED.shp"
@@ -98,7 +98,6 @@ with fiona.open(daShapefile) as shapes:
     index = 0
     polygons = dict()
     for feat in shapes:
-        pprint.pprint(feat)
         properties = eval(str(feat['properties'])[7:].lower())
 
         tract_id = int(feat['id'])
