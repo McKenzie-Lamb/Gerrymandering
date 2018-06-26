@@ -1,5 +1,5 @@
 # Author: Abel Gonzalez
-# Date: 06/24/18
+# Date: 06/22/18
 #
 # Description:
 # This program aims to implement the Markov Chain Montecarlo Simulation
@@ -62,12 +62,11 @@ for v in graph.vertices():
     pos[v] = get_position(pos[v][0], pos[v][1], minx, miny, maxx, maxy)
     pop = random.randint(500,1000)
     rep = random.randint(0,pop)
-    data[v] = {'CONREP14': rep, 'CONDEM14': pop-rep, 'PERSONS': pop}
+    data[v] = {'CONREP14': rep, 'CONDEM14': pop-rep}
 graph.vp.pos = pos
-graph.vp.data = data
 state = gt.minimize_blockmodel_dl(graph, 2,2)
 gt.mcmc_equilibrate(state, callback=draw_grap, mcmc_args={'niter':2}, max_niter=20)
 
 state.draw(pos=graph.vp.pos, output="abel-network-files/tmp_alg_states.png")
 gt.graph_draw(graph, pos, output="abel-network-files/tmp_alg.png", bg_color=(255,255,255,1))
-graph.save("abel-network-files/data/tmp_graph.gt")
+graph.save("abel-network-files/data/graph_creat.gt")

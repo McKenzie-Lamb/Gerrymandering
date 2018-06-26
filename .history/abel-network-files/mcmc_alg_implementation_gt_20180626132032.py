@@ -62,7 +62,7 @@ for v in graph.vertices():
     pos[v] = get_position(pos[v][0], pos[v][1], minx, miny, maxx, maxy)
     pop = random.randint(500,1000)
     rep = random.randint(0,pop)
-    data[v] = {'CONREP14': rep, 'CONDEM14': pop-rep, 'PERSONS': pop}
+    data[v] = {'CONREP14': rep, 'CONDEM14': pop-rep}
 graph.vp.pos = pos
 graph.vp.data = data
 state = gt.minimize_blockmodel_dl(graph, 2,2)
