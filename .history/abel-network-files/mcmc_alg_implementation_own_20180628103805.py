@@ -55,15 +55,15 @@ def do_swap(graph, district_no, draw_no, ring_color_):
     # Swap edges group
     selected_nodes = dict()
     turned_on = list()
-    neighbor_of_proposed = list()
     for e in graph.vertices():
         if e in selected_nodes.keys() or e in selected_nodes.values():
             continue
         value = random.randint(0,4)
         if value == 1:
-
+            neighbors_list = list()
+            border = False
             for neighbor in e.all_neighbors():
-
+                neighbors_list.append(neighbor)
                 if district_no[neighbor] != district_no[e]:
                     selected_nodes[e] = neighbor
                     del neighbors_list[-1]

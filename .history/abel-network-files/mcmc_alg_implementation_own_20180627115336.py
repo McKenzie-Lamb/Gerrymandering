@@ -25,54 +25,29 @@ def get_districts_data(graph, color, blocks):
             districts_data[blocks[i]] = graph.vp.data[i]
     return districts_data
 
-def get_districts_data_2(graph, color):
-    # Assigning the district to each vertex as a property map
-    districts_data = {}
-    for i in graph.vertices():
-        color[graph.vertex(i)] = (255, 255, 0, 1) if district_no[graph.vertex(i)] == 1 else (0, 255, 255, 1)
-
-        if district_no[graph.vertex(i)] in districts_data.keys():
-            for j in districts_data[district_no[graph.vertex(i)]].keys():
-                districts_data[district_no[graph.vertex(i)]][j] += graph.vp.data[i][j]
-        else:
-            districts_data[district_no[graph.vertex(i)]] = graph.vp.data[i]
-    return districts_data
-
 
 def adjust_color(districts_data, ring_color):
     # Assign ring color based on democrats total votes:
+    districts_vertices = dict()
     for i in districts_data.keys():
         if districts_data[i]['CONDEM14'] > districts_data[i]['CONREP14']:
             ring_color_ = (0, 0, 255, 1)
         else:
             ring_color_ = (255, 0, 0, 1)
         matched_vertices = gt.find_vertex(graph, district_no, i)
+        districts_vertices[i] = matched_vertices
         for j in matched_vertices:
             ring_color[graph.vertex(j)] = ring_color_
+    return districts_vertices
 
 
-def do_swap(graph, district_no, draw_no, ring_color_):
-    # Swap edges group
-    selected_nodes = dict()
+def turn_on_edges(graph):
+    # Turns on the edges that will be used
     turned_on = list()
-    neighbor_of_proposed = list()
-    for e in graph.vertices():
-        if e in selected_nodes.keys() or e in selected_nodes.values():
-            continue
-        value = random.randint(0,4)
+    for e in graph.edges():
+        value = random.randint(0,5)
         if value == 1:
-
-            for neighbor in e.all_neighbors():
-
-                if district_no[neighbor] != district_no[e]:
-                    selected_nodes[e] = neighbor
-                    del neighbors_list[-1]
-
-    for i in selected_nodes.keys():
-        district_no[i] = district_no[selected_nodes[i]]
-        adjust_color(get_districts_data_2(graph, color), ring_color)
-    gt.graph_draw(graph, bg_color=(255, 255, 255, 1), vertex_fill_color=ring_color, vertex_color=color, pos=graph.vp.pos,
-              vertex_text=graph.vertex_index, output='abel-network-files/tmp'+str(draw_no)+'.png')
+            turned_on.append(e)
     return turned_on
 
 
@@ -89,11 +64,9 @@ ring_color = graph.new_vertex_property("vector<double>")
 # Separates graph into blocks
 districts_vert_no = {}
 districts = gt.minimize_blockmodel_dl(graph, 2,2)
+
 adjust_color(get_districts_data(graph, color, districts), ring_color)
+turn_on_edges(graph)
+
 gt.graph_draw(graph, bg_color=(255, 255, 255, 1), vertex_fill_color=ring_color, vertex_color=color, pos=graph.vp.pos,
               vertex_text=graph.vertex_index, output='abel-network-files/tmp.png')
-
-for i in range(10):
-    do_swap(graph, district_no, i, ring_color)
-    do_swap(graph, district_no, i, ring_color)
-

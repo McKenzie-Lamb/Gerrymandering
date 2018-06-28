@@ -55,19 +55,27 @@ def do_swap(graph, district_no, draw_no, ring_color_):
     # Swap edges group
     selected_nodes = dict()
     turned_on = list()
-    neighbor_of_proposed = list()
     for e in graph.vertices():
         if e in selected_nodes.keys() or e in selected_nodes.values():
             continue
         value = random.randint(0,4)
         if value == 1:
-
+            neighbors_list = list()
+            border = False
+            
             for neighbor in e.all_neighbors():
-
+                neighbors_list.append(neighbor)
                 if district_no[neighbor] != district_no[e]:
+                    border = True
                     selected_nodes[e] = neighbor
                     del neighbors_list[-1]
-
+            if border == True:
+                value_two = random.randint(0,3)
+                if value_two == 1:
+                    for i in neighbors_list:
+                        value_three = random.randint(0,4)
+                        if value_three == 1:
+                            selected_nodes[i] = border_district
     for i in selected_nodes.keys():
         district_no[i] = district_no[selected_nodes[i]]
         adjust_color(get_districts_data_2(graph, color), ring_color)

@@ -25,19 +25,6 @@ def get_districts_data(graph, color, blocks):
             districts_data[blocks[i]] = graph.vp.data[i]
     return districts_data
 
-def get_districts_data_2(graph, color):
-    # Assigning the district to each vertex as a property map
-    districts_data = {}
-    for i in graph.vertices():
-        color[graph.vertex(i)] = (255, 255, 0, 1) if district_no[graph.vertex(i)] == 1 else (0, 255, 255, 1)
-
-        if district_no[graph.vertex(i)] in districts_data.keys():
-            for j in districts_data[district_no[graph.vertex(i)]].keys():
-                districts_data[district_no[graph.vertex(i)]][j] += graph.vp.data[i][j]
-        else:
-            districts_data[district_no[graph.vertex(i)]] = graph.vp.data[i]
-    return districts_data
-
 
 def adjust_color(districts_data, ring_color):
     # Assign ring color based on democrats total votes:
@@ -55,22 +42,29 @@ def do_swap(graph, district_no, draw_no, ring_color_):
     # Swap edges group
     selected_nodes = dict()
     turned_on = list()
-    neighbor_of_proposed = list()
     for e in graph.vertices():
-        if e in selected_nodes.keys() or e in selected_nodes.values():
-            continue
         value = random.randint(0,4)
         if value == 1:
-
+            neighbors_list = list()
+            border = False
             for neighbor in e.all_neighbors():
-
+                neighbors_list.append(neighbor)
                 if district_no[neighbor] != district_no[e]:
-                    selected_nodes[e] = neighbor
+                    border = True
+                    border_district = district_no[neighbor]
+                    selected_nodes[e] = border_district
                     del neighbors_list[-1]
-
+            if border == True:
+                value_two = random.randint(0,2)
+                if value_two == 1:
+                    for i in neighbors_list:
+                        value_three = random.randint(0,3)
+                        if value_three == 1:
+                            selected_nodes[i] = border_district
     for i in selected_nodes.keys():
-        district_no[i] = district_no[selected_nodes[i]]
-        adjust_color(get_districts_data_2(graph, color), ring_color)
+        district_no[i] = selected_nodes[i]
+        color[i] = (255, 255, 0, 1) if district_no[i] == 1 else (0, 255, 255, 1)
+    print(selected_nodes)
     gt.graph_draw(graph, bg_color=(255, 255, 255, 1), vertex_fill_color=ring_color, vertex_color=color, pos=graph.vp.pos,
               vertex_text=graph.vertex_index, output='abel-network-files/tmp'+str(draw_no)+'.png')
     return turned_on
@@ -92,8 +86,6 @@ districts = gt.minimize_blockmodel_dl(graph, 2,2)
 adjust_color(get_districts_data(graph, color, districts), ring_color)
 gt.graph_draw(graph, bg_color=(255, 255, 255, 1), vertex_fill_color=ring_color, vertex_color=color, pos=graph.vp.pos,
               vertex_text=graph.vertex_index, output='abel-network-files/tmp.png')
-
-for i in range(10):
-    do_swap(graph, district_no, i, ring_color)
-    do_swap(graph, district_no, i, ring_color)
+do_swap(graph, district_no, 1, ring_color)
+do_swap(graph, district_no, 2, ring_color)
 

@@ -6,6 +6,7 @@
 # represents a census tract and the edge represents adjacency between each
 # tract, usign graph-tool instead of networkx
 import random
+import numpy as np
 import graph_tool.all as gt
 from pathlib import Path
 
@@ -53,23 +54,36 @@ def adjust_color(districts_data, ring_color):
 
 def do_swap(graph, district_no, draw_no, ring_color_):
     # Swap edges group
-    selected_nodes = dict()
-    turned_on = list()
-    neighbor_of_proposed = list()
-    for e in graph.vertices():
-        if e in selected_nodes.keys() or e in selected_nodes.values():
-            continue
-        value = random.randint(0,4)
+    boundaries_vertices = list()
+    total_edges = list(graph.get_edges())
+    turned_on = random.sample(total_edges, 20)
+    vertices_boundary = set()
+    for edges in turned_on:
+        for nodes in edges[:-1]:
+            print(nodes)
+
+
+    for e in graph.edges():
+        value = random.randint(0,5)
         if value == 1:
-
+            neighbors_list = list()
+            border = False
             for neighbor in e.all_neighbors():
-
+                neighbors_list.append(neighbor)
                 if district_no[neighbor] != district_no[e]:
-                    selected_nodes[e] = neighbor
+                    border = True
+                    border_district = district_no[neighbor]
+                    selected_nodes[e] = border_district
                     del neighbors_list[-1]
-
+            if border == True:
+                value_two = random.randint(0,3)
+                if value_two == 1:
+                    for i in neighbors_list:
+                        value_three = random.randint(0,4)
+                        if value_three == 1:
+                            selected_nodes[i] = border_district
     for i in selected_nodes.keys():
-        district_no[i] = district_no[selected_nodes[i]]
+        district_no[i] = selected_nodes[i]
         adjust_color(get_districts_data_2(graph, color), ring_color)
     gt.graph_draw(graph, bg_color=(255, 255, 255, 1), vertex_fill_color=ring_color, vertex_color=color, pos=graph.vp.pos,
               vertex_text=graph.vertex_index, output='abel-network-files/tmp'+str(draw_no)+'.png')
