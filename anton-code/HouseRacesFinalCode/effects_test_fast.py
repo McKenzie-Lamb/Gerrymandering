@@ -1,6 +1,4 @@
-from __future__ import print_function
-
-import utils
+import random
 
 def generate_many_samples(all_ambient_districts, state_sz, ratio_target, ratio_margin, max_attempts, max_samples):
     """ Generates a collection of samples for the Effects Test
@@ -19,7 +17,7 @@ def generate_many_samples(all_ambient_districts, state_sz, ratio_target, ratio_m
     Output:
 
     seat_prob_dist (list of floats) -- probability distribution for the Effects Test
-    all_samples -- list of all the generated samples (see fn. generate_one_sample for more information)
+    all_samples -- list of all the generated samples (outputs of generate_one_sample, see function below for more information)
     """
     
     # counts total weight of samples by number of democratic seats
@@ -38,10 +36,10 @@ def generate_many_samples(all_ambient_districts, state_sz, ratio_target, ratio_m
                                                         ratio_target,
                                                         ratio_margin)
         
-        if sample_info is not None:
-            seat_prob_dist[dem_seats] += weight # update distribution
+        if sample_dem_seats is not None:
+            seat_prob_dist[sample_dem_seats] += weight # update distribution
             
-            all_samples.append(sample_info)
+            all_samples.append( (sample_dem_seats, weight, sample_inx) )
             
             success_count += 1
 
@@ -52,14 +50,14 @@ def generate_many_samples(all_ambient_districts, state_sz, ratio_target, ratio_m
     
 
 def generate_one_sample(all_ambient_districts, state_sz, ratio_target, ratio_margin):
-    """ Generates a one samples for the Effects Test 
+    """ Generates one sample for the Effects Test 
 
     Input:
 
     all_ambient_districts (list of floats) -- list of ambient districts from which the sample is taken,
         each element is the ratio of democratic votes in that district
         (to conform with the Effects Test make sure to exclude the districts corresponding to the sampled state)
-    state_sz -- size of each sample
+    state_sz -- size of the sample
     ratio_target (float) -- (see below)
     ratio_margin (float) -- each generated sample should have ratio of democratic votes within the margin of target
 
@@ -89,7 +87,7 @@ def generate_one_sample(all_ambient_districts, state_sz, ratio_target, ratio_mar
         if i == 0:
             make_pick_fn = _make_first_pick
         elif i < state_sz - 1:
-            make_pick_fn = _make_middle_pick
+            make_pick_fn = _make_selective_pick
         else:
             make_pick_fn = _make_last_pick
 
@@ -111,11 +109,11 @@ def generate_one_sample(all_ambient_districts, state_sz, ratio_target, ratio_mar
             
 
     sample_ratios = [all_ambient_districts[i] for i in sample_inx]
-    sample_dem_ratio = utils.avg(sample_ratios)
+    sample_dem_ratio = _average(sample_ratios)
     sample_dem_seats = sum([1 for r in sample_ratios if r > .5])
 
     # sanity check: generated sample should have valid ratio of democratic votes
-    assert utils.within(sample_dem_ratio, ratio_target, ratio_margin)
+    assert _within(sample_dem_ratio, ratio_target, ratio_margin)
 
     # sanity check: correct length of lists
     assert len(sample_inx) == len(sample_meta)
@@ -133,71 +131,60 @@ def _make_first_pick(available_districts_inx, all_ambient_districts, sample_inx,
 
     return pick_index, pick_meta_info
 
-def _make_middle_pick(sample_inx, sample_meta, available_districts_inx, conf):
-    meta = dummy()
+# algorithm for selective picking
+def _make_selective_pick(available_districts_inx, all_ambient_districts, sample_inx, state_sz, ratio_target, ratio_margin):
+    picks_remain = state_sz - len(sample_inx) # number of picks left to make
 
-    picks_remain = conf.state_sz - len(sample_inx)
-    assert len(sample_inx) > 0
-    assert picks_remain > 1
+    sample_ratios = [all_ambient_districts[i] for i in sample_inx] # ratios of districts picked so far
+    sample_dem_ratio_sum = sum(sample_ratios) # sum of these ratios
 
-    smpl, vote_now, pop_now = get_sample_info(sample_inx, conf)
-    ratio_now = float(vote_now)/pop_now
-    
-    dist_ratios = [conf.all_ambient_districts[i][0] for i in available_districts_inx]
-    dist_pops = [conf.all_ambient_districts[i][1] for i in available_districts_inx]
-    
-    min_pop = min(dist_pops)
-    max_pop = max(dist_pops)
+    # compute low and high thresholds
+    low_threshold  = _compute_threshold(sample_dem_ratio_sum, picks_remain, state_sz, ratio_target - ratio_margin)
+    high_threshold = _compute_threshold(sample_dem_ratio_sum, picks_remain, state_sz, ratio_target + ratio_margin)
 
-    if ratio_now > conf.ratio_target - conf.ratio_margin:
-        lt_pop_level = min_pop
-    else:
-        lt_pop_level = max_pop
+    # functions to determine low-excluded and high-excluded districts
+    low_filter_fn  = lambda district_ratio: district_ratio <= low_threshold
+    high_filter_fn = lambda district_ratio: district_ratio >= high_threshold
+
+    # pools of low-allowed and high-allowed districts (or, more precisely, district indices)
+    low_pool  = [i for i in available_districts_inx if not low_filter_fn(all_ambient_districts[i])]
+    high_pool = [i for i in available_districts_inx if not high_filter_fn(all_ambient_districts[i])]
+
+    # how many districts were low-excluded? high-excluded?
+    low_filtered_num  = len(available_districts_inx) - len(low_pool)
+    high_filtered_num = len(available_districts_inx) - len(high_pool)
+
+    # low threshold doesn't apply if we have to make more picks than the low-excluded districts
+    # (since we are picking without replacement)
+    if low_filtered_num < picks_remain:
+        low_filter_fn = lambda _: False
+        low_pool = available_districts_inx
+
+    # similarly for high threshold
+    if high_filtered_num < picks_remain:
+        high_filter_fn = lambda _: False
+        high_pool = available_districts_inx
+
+    # pick the most restrictive exclusion
+    if len(low_pool) < len(high_pool): # low exclusion is more restrictive
+        final_pool = low_pool
+        final_filter_fn = low_filter_fn
+    else:                           # high exclusion is more restrictive
+        final_pool = high_pool
+        final_filter_fn = high_filter_fn
         
-    if ratio_now < conf.ratio_target + conf.ratio_margin:
-        ht_pop_level = min_pop
-    else:
-        ht_pop_level = max_pop
+    if len(final_pool) == 0: # no picks resulted in a valid sample
+        return None, None 
 
-    lt = threshold(vote_now, pop_now, picks_remain, lt_pop_level, conf.ratio_target - conf.ratio_margin)
-    ht = threshold(vote_now, pop_now, picks_remain, ht_pop_level, conf.ratio_target + conf.ratio_margin)
-
-    lt_filter_fn = lambda dist: dist[0] <= lt
-    ht_filter_fn = lambda dist: dist[0] >= ht
+    pick_index = random.choice(final_pool) # pick random district from pool
     
-    lt_pool = [i for i in available_districts_inx if not lt_filter_fn(conf.all_ambient_districts[i])]
-    ht_pool = [i for i in available_districts_inx if not ht_filter_fn(conf.all_ambient_districts[i])]
+    pick_meta_info = dummy()
+    pick_meta_info.filter_fn = final_filter_fn
 
-    lt_filtered_num = len(available_districts_inx) - len(lt_pool)
-    ht_filtered_num = len(available_districts_inx) - len(ht_pool)
-    
-    if lt_filtered_num < picks_remain:
-        lt_filter_fn = lambda _: False
-        lt_pool = available_districts_inx
-        
-    if ht_filtered_num < picks_remain:
-        ht_filter_fn = lambda _: False
-        ht_pool = available_districts_inx
+    # compute what proportion of districts were available to pick
+    pick_meta_info.ratio = float(len(final_pool))/len(available_districts_inx)
 
-    if len(lt_pool) < len(ht_pool):
-        pool = lt_pool
-        meta.filter_fn = lt_filter_fn
-    else:
-        pool = ht_pool
-        meta.filter_fn = ht_filter_fn
-        
-    meta.ratio = float(len(pool))/len(available_districts_inx)
-
-    if len(pool) == 0:
-        return False
-    
-    i = random.choice(pool)
-    available_districts_inx.remove(i)
-
-    sample_inx.append(i)
-    sample_meta.append(meta)
-
-    return True
+    return pick_index, pick_meta_info
 
 # look over all the possible last picks and choose a random one that results in a valid ratio
 # (that is a ratio that is within margin of the target)
@@ -214,10 +201,10 @@ def _make_last_pick(available_districts_inx, all_ambient_districts, sample_inx, 
         pick_dem_ratio = all_ambient_districts[i] # ratio of the last pick
         final_dem_ratio = float(sample_dem_ratio_sum + pick_dem_ratio)/state_sz # ratio of the sample with the last pick
         
-        if within(final_ratio, conf.ratio_target, conf.ratio_margin): # valid if close to the target
+        if _within(final_dem_ratio, ratio_target, ratio_margin): # valid if close to the target
             pool.append(i)
             
-    if len(pool) == 0: # no picks resulted in a valid sample
+    if len(pool) == 0: # no picks resulted in a valid samplew
         return None, None 
 
     pick_index = random.choice(pool) # pick random valid last pick
@@ -267,3 +254,27 @@ def _compute_sample_weight(sample_inx, sample_ratios, sample_meta):
     total_weight *= sample_meta[-1].ratio
 
     return total_weight
+
+# function to compute lower and upper thresholds
+def _compute_threshold(sample_dem_ratio_sum, picks_remain, state_sz, limit):
+    p = float(limit * state_sz - sample_dem_ratio_sum) / picks_remain
+
+    # sanity check: p should be a solution to this equation
+    assert _almost_equal((sample_dem_ratio_sum + p * picks_remain)/state_sz, limit)
+
+    return p
+
+# does value lie within margin of target?
+def _within(value, target, margin):
+    return abs(value - target) < margin
+
+# compute average of the array
+def _average(arr):
+    return float(sum(arr))/len(arr)
+
+# to compare floats ignoring rounding errors
+def _almost_equal(a, b):
+    return abs(a - b) <= .000001
+
+class dummy:
+    pass
