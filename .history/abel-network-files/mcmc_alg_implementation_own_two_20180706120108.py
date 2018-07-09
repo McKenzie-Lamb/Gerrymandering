@@ -7,34 +7,11 @@
 # tract, usign graph-tool instead of networkx
 import random
 import copy
-import metis
 import math
 import numpy as np
 import graph_tool.all as gt
 import time
 from pathlib import Path
-
-
-def gen_initial_distribution(graph, district_no):
-    # Uses the metis package to create a graph partition whose initial values
-    # of population are similar
-    # IPUTS: graph to be partitioned and property map with 
-    # OUTPUTS: 
-    adjlist = []
-    nodew = []
-
-    for i in graph.vertices():
-        neighbors = tuple([j for j in i.all_neighbors()])
-        adjlist.append(neighbors)
-        #print(graph.vp.data[i]['PERSONS'])
-        nodew.append(graph.vp.data[i]['PERSONS'])
-
-    metis_graph = metis.adjlist_to_metis(adjlist, nodew=nodew)
-    objval, parts = metis.part_graph(metis_graph, nparts=4)
-
-    for i in range(len(parts)):
-        district_no[graph.vertex(i)] = parts[i]
-    return graph, district_no
 
 
 def create_graph_views(district_total_no):
@@ -252,29 +229,26 @@ data_folder = Path("abel-network-files/data/")
 images_folder = Path("abel-network-files/images/")
 
 # Loading the previous created Graph and creating the prop maps
-graph = gt.load_graph(str(data_folder / "tmp_graph1000.gt"))
+graph = gt.load_graph(str(data_folder / "tmp_graph100.gt"))
 color = graph.new_vertex_property("string")
 ring_color = graph.new_vertex_property("vector<float>")
 cp_label = graph.new_vertex_property("int")
 neighbor_district = graph.new_vertex_property('int')
 current_district = graph.new_vertex_property('int')
 district_of_vertex = graph.new_vertex_property('int')
-district_no = graph.new_vertex_property('int')
 graph.vp.nd = neighbor_district
 graph.vp.cd = current_district
 
 # Init variables
 district_total_no = 4
-swaps_to_try = 10
+swaps_to_try = 50
 
-# # Separates graph into blocks
+# Separates graph into blocks
 districts = gt.minimize_blockmodel_dl(
-     graph, district_total_no, district_total_no)
+    graph, district_total_no, district_total_no)
 district_no = districts.get_blocks()
 
-
 # Create the different graphs
-#graph, district_no = gen_initial_distribution(graph, district_no)
 districts_graphs = create_graph_views(district_total_no)
 
 # Initialize data and draw first image
@@ -288,15 +262,14 @@ for i in districts_graphs:
         dem_seats += 1
     else:
         rep_seats += 1
-gt.graph_draw(graph, vertex_color = ring_color, vertex_fill_color = color, vertex_text = district_of_vertex,
+gt.graph_draw(graph, vertex_color = ring_color, vertex_fill_color = color, vertex_text = graph.vp.district_of_vertex,
               output = str(main_folder / ('tmp.png')), bg_color=(255, 255, 255, 1), pos=graph.vp.pos)
 
 
-print('Swapping census tracts...')
+print('Swaping census tracts...')
 start = time.time()
 #Actual function calling part of algorithm
 for i in range(swaps_to_try):
-    print(i)
     turned_on_graphs = turn_off_edges(districts_graphs)
     labels_in_boundaries = get_cp_boundaries(graph, turned_on_graphs)
     selected_vertices = get_non_adjacent_v(labels_in_boundaries, graph)
@@ -315,9 +288,6 @@ for i in districts_graphs:
         dem_seats_f += 1
     else:
         rep_seats_f += 1
-color, ring_color, ring_colors_dict = adjust_color(districts_graphs, color, ring_color, district_of_vertex)
-gt.graph_draw(graph, vertex_color = ring_color, vertex_fill_color = color, vertex_text = district_of_vertex,
-              output = str(main_folder / ('tmpf.png')), bg_color=(255, 255, 255, 1), pos=graph.vp.pos)
 
 print('Statistics:')
 print('-----------')

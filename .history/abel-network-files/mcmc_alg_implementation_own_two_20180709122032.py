@@ -268,13 +268,13 @@ district_total_no = 4
 swaps_to_try = 10
 
 # # Separates graph into blocks
-districts = gt.minimize_blockmodel_dl(
-     graph, district_total_no, district_total_no)
-district_no = districts.get_blocks()
+# districts = gt.minimize_blockmodel_dl(
+#     graph, district_total_no, district_total_no)
+# district_no = districts.get_blocks()
 
 
 # Create the different graphs
-#graph, district_no = gen_initial_distribution(graph, district_no)
+graph, district_no = gen_initial_distribution(graph, district_no)
 districts_graphs = create_graph_views(district_total_no)
 
 # Initialize data and draw first image

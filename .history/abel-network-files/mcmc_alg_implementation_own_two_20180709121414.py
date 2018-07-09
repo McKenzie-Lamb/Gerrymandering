@@ -252,7 +252,7 @@ data_folder = Path("abel-network-files/data/")
 images_folder = Path("abel-network-files/images/")
 
 # Loading the previous created Graph and creating the prop maps
-graph = gt.load_graph(str(data_folder / "tmp_graph1000.gt"))
+graph = gt.load_graph(str(data_folder / "tmp_graph100.gt"))
 color = graph.new_vertex_property("string")
 ring_color = graph.new_vertex_property("vector<float>")
 cp_label = graph.new_vertex_property("int")
@@ -265,16 +265,16 @@ graph.vp.cd = current_district
 
 # Init variables
 district_total_no = 4
-swaps_to_try = 10
+swaps_to_try = 100
 
 # # Separates graph into blocks
-districts = gt.minimize_blockmodel_dl(
-     graph, district_total_no, district_total_no)
-district_no = districts.get_blocks()
+# districts = gt.minimize_blockmodel_dl(
+#     graph, district_total_no, district_total_no)
+# district_no = districts.get_blocks()
 
 
 # Create the different graphs
-#graph, district_no = gen_initial_distribution(graph, district_no)
+graph, district_no = gen_initial_distribution(graph, district_no)
 districts_graphs = create_graph_views(district_total_no)
 
 # Initialize data and draw first image
@@ -296,7 +296,6 @@ print('Swapping census tracts...')
 start = time.time()
 #Actual function calling part of algorithm
 for i in range(swaps_to_try):
-    print(i)
     turned_on_graphs = turn_off_edges(districts_graphs)
     labels_in_boundaries = get_cp_boundaries(graph, turned_on_graphs)
     selected_vertices = get_non_adjacent_v(labels_in_boundaries, graph)

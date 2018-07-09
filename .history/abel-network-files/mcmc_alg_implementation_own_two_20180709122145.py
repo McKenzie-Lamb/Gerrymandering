@@ -268,9 +268,9 @@ district_total_no = 4
 swaps_to_try = 10
 
 # # Separates graph into blocks
-districts = gt.minimize_blockmodel_dl(
+ districts = gt.minimize_blockmodel_dl(
      graph, district_total_no, district_total_no)
-district_no = districts.get_blocks()
+ district_no = districts.get_blocks()
 
 
 # Create the different graphs
