@@ -67,7 +67,7 @@ for i in graph.vertices():
     nodew.append(weights)
 
 metis_graph = metis.adjlist_to_metis(adjlist, nodew=nodew)
-objval, parts = metis.part_graph(metis_graph, nparts=4, tpwgts=[(0.25,0.50,0.25),(0.25,0.15,0.25),(0.25, 0.15,0.25),(0.25, 0.20, 0.25)])
+objval, parts = metis.part_graph(metis_graph, nparts=4, tpwgts=[(0.25,0.40,0.20),(0.25,0.25,0.35),(0.25, 0.20,0.25),(0.25, 0.15, 0.20)])
 
 rep_dis = {p:0 for p in parts}
 dem_dis = {p:0 for p in parts}

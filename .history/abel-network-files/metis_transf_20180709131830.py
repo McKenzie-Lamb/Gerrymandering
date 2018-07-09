@@ -36,12 +36,10 @@ objval, parts = metis.part_graph(metis_graph, nparts=4)
 rep_dis = {p:0 for p in parts}
 dem_dis = {p:0 for p in parts}
 dis_v = {p:[] for p in parts}
-pop = {p:0 for p in parts}
 for i, p in enumerate(parts):
     rep_dis[p] += graph.vp.data[i]['CONREP14']
     dem_dis[p] += graph.vp.data[i]['CONDEM14']
     dis_v[p].append(graph.vertex(i))
-    pop[p] += graph.vp.data[i]['PERSONS']
 
 for p in dis_v.keys():
     if rep_dis[p] > dem_dis[p]:
@@ -53,7 +51,6 @@ for p in dis_v.keys():
 
 for i in range(len(parts)):
     name[graph.vertex(i)] = parts[i]
-print(pop, dem_dis, rep_dis)
 gt.graph_draw(graph, pos=graph.vp.pos, vertex_fill_color=color, vertex_text=name, output=str(main_folder / 'tmp_metis_init.png'), bg_color=(255,255,255,1))
 
 adjlist = []
@@ -67,17 +64,15 @@ for i in graph.vertices():
     nodew.append(weights)
 
 metis_graph = metis.adjlist_to_metis(adjlist, nodew=nodew)
-objval, parts = metis.part_graph(metis_graph, nparts=4, tpwgts=[(0.25,0.50,0.25),(0.25,0.15,0.25),(0.25, 0.15,0.25),(0.25, 0.20, 0.25)])
+objval, parts = metis.part_graph(metis_graph, nparts=4, tpwgts=[(0.25,0.40,0.20),(0.25,0.25,0.35),(0.25, 0.20,0.25),(0.25, 0.15, 0.20)])
 
 rep_dis = {p:0 for p in parts}
 dem_dis = {p:0 for p in parts}
 dis_v = {p:[] for p in parts}
-pop = {p:0 for p in parts}
 for i, p in enumerate(parts):
     rep_dis[p] += graph.vp.data[i]['CONREP14']
     dem_dis[p] += graph.vp.data[i]['CONDEM14']
     dis_v[p].append(graph.vertex(i))
-    pop[p] += graph.vp.data[i]['PERSONS']
 
 for p in dis_v.keys():
     if rep_dis[p] > dem_dis[p]:
@@ -89,5 +84,5 @@ for p in dis_v.keys():
 
 for i in range(len(parts)):
     name[graph.vertex(i)] = parts[i]
-print(pop, dem_dis, rep_dis)
+
 gt.graph_draw(graph, pos=graph.vp.pos, vertex_text=name, vertex_fill_color = color, output=str(main_folder / 'tmp_metis_fin.png'),bg_color=(255,255,255,1))
