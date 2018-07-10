@@ -1,0 +1,2019 @@
+{
+  "MI": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 1.5130071449279785,
+            "success_num": 25,
+            "level": 1000,
+            "success_ratio": 0.25
+          },
+          {
+            "time_per_success": 3.0274501462136545,
+            "success_num": 62,
+            "level": 10000,
+            "success_ratio": 0.62
+          }
+        ],
+        "lmt": 3,
+        "best_level": 1000
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.14683908939361573,
+            "success_num": 100,
+            "level": 1000,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 12,
+        "best_level": 1000
+      }
+    ],
+    "best_level": 1000
+  },
+  "MS": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.0008725769379559686,
+            "success_num": 68,
+            "level": 0,
+            "success_ratio": 0.68
+          },
+          {
+            "time_per_success": 0.0019221914575455036,
+            "success_num": 94,
+            "level": 10,
+            "success_ratio": 0.94
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.001138897503123564,
+            "success_num": 51,
+            "level": 0,
+            "success_ratio": 0.51
+          },
+          {
+            "time_per_success": 0.0017659270886293391,
+            "success_num": 97,
+            "level": 10,
+            "success_ratio": 0.97
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      }
+    ],
+    "best_level": 0
+  },
+  "GA": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.1308879852294922,
+            "success_num": 1,
+            "level": 0,
+            "success_ratio": 0.01
+          },
+          {
+            "time_per_success": 0.39435768127441406,
+            "success_num": 2,
+            "level": 10,
+            "success_ratio": 0.02
+          },
+          {
+            "time_per_success": 0.13542949069630017,
+            "success_num": 44,
+            "level": 100,
+            "success_ratio": 0.44
+          },
+          {
+            "time_per_success": 0.0719627332687378,
+            "success_num": 100,
+            "level": 1000,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 1000
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.6620180841902612,
+            "success_num": 71,
+            "level": 1000,
+            "success_ratio": 0.71
+          },
+          {
+            "time_per_success": 0.7609218469600088,
+            "success_num": 97,
+            "level": 10000,
+            "success_ratio": 0.97
+          }
+        ],
+        "lmt": 9,
+        "best_level": 1000
+      }
+    ],
+    "best_level": 1000
+  },
+  "NJ": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.13337321474094582,
+            "success_num": 99,
+            "level": 1000,
+            "success_ratio": 0.99
+          }
+        ],
+        "lmt": 4,
+        "best_level": 1000
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.47328758239746094,
+            "success_num": 1,
+            "level": 10,
+            "success_ratio": 0.01
+          },
+          {
+            "time_per_success": 0.03500303328037262,
+            "success_num": 80,
+            "level": 100,
+            "success_ratio": 0.8
+          },
+          {
+            "time_per_success": 0.03294209241867065,
+            "success_num": 100,
+            "level": 1000,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 10,
+        "best_level": 1000
+      }
+    ],
+    "best_level": 1000
+  },
+  "IL": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.32138156349008734,
+            "success_num": 88,
+            "level": 1000,
+            "success_ratio": 0.88
+          },
+          {
+            "time_per_success": 0.3204939270019531,
+            "success_num": 100,
+            "level": 10000,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 6,
+        "best_level": 10000
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.13920608758926392,
+            "success_num": 100,
+            "level": 1000,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 16,
+        "best_level": 1000
+      }
+    ],
+    "best_level": 10000
+  },
+  "FL": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 1000,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 141.5672386487325,
+            "success_num": 3,
+            "level": 10000,
+            "success_ratio": 0.03
+          }
+        ],
+        "lmt": 2,
+        "best_level": 10000
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 1000,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 145.1141639550527,
+            "success_num": 3,
+            "level": 10000,
+            "success_ratio": 0.03
+          }
+        ],
+        "lmt": 20,
+        "best_level": 10000
+      }
+    ],
+    "best_level": 10000
+  },
+  "LA": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.001893769292270436,
+            "success_num": 68,
+            "level": 0,
+            "success_ratio": 0.68
+          },
+          {
+            "time_per_success": 0.004945551476827482,
+            "success_num": 82,
+            "level": 10,
+            "success_ratio": 0.82
+          },
+          {
+            "time_per_success": 0.005225529670715332,
+            "success_num": 100,
+            "level": 100,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 32.309102177619934,
+            "success_num": 2,
+            "level": 1000,
+            "success_ratio": 0.02
+          },
+          {
+            "time_per_success": 662.3447268009186,
+            "success_num": 1,
+            "level": 10000,
+            "success_ratio": 0.01
+          }
+        ],
+        "lmt": 4,
+        "best_level": 1000
+      }
+    ],
+    "best_level": 1000
+  },
+  "CA": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 66.32026958465576,
+            "success_num": 1,
+            "level": 1000,
+            "success_ratio": 0.01
+          },
+          {
+            "time_per_success": 1.4184809017181397,
+            "success_num": 100,
+            "level": 10000,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 29,
+        "best_level": 10000
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.35306553840637206,
+            "success_num": 100,
+            "level": 1000,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 51,
+        "best_level": 1000
+      }
+    ],
+    "best_level": 10000
+  },
+  "MO": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.002914730707804362,
+            "success_num": 45,
+            "level": 0,
+            "success_ratio": 0.45
+          },
+          {
+            "time_per_success": 0.009413447873345736,
+            "success_num": 58,
+            "level": 10,
+            "success_ratio": 0.58
+          },
+          {
+            "time_per_success": 0.007359063625335694,
+            "success_num": 100,
+            "level": 100,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.05887913703918457,
+            "success_num": 1,
+            "level": 0,
+            "success_ratio": 0.01
+          },
+          {
+            "time_per_success": 0.08859974145889282,
+            "success_num": 4,
+            "level": 10,
+            "success_ratio": 0.04
+          },
+          {
+            "time_per_success": 0.016314324644423023,
+            "success_num": 97,
+            "level": 100,
+            "success_ratio": 0.97
+          }
+        ],
+        "lmt": 4,
+        "best_level": 100
+      }
+    ],
+    "best_level": 100
+  },
+  "AZ": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.006278793017069499,
+            "success_num": 12,
+            "level": 0,
+            "success_ratio": 0.12
+          },
+          {
+            "time_per_success": 0.012884601469962828,
+            "success_num": 31,
+            "level": 10,
+            "success_ratio": 0.31
+          },
+          {
+            "time_per_success": 0.011506032943725587,
+            "success_num": 100,
+            "level": 100,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 1.685446512131464,
+            "success_num": 21,
+            "level": 1000,
+            "success_ratio": 0.21
+          },
+          {
+            "time_per_success": 8.62757083773613,
+            "success_num": 32,
+            "level": 10000,
+            "success_ratio": 0.32
+          }
+        ],
+        "lmt": 7,
+        "best_level": 1000
+      }
+    ],
+    "best_level": 1000
+  },
+  "AR": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.0008543178216734929,
+            "success_num": 67,
+            "level": 0,
+            "success_ratio": 0.67
+          },
+          {
+            "time_per_success": 0.0016111508011817932,
+            "success_num": 96,
+            "level": 10,
+            "success_ratio": 0.96
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.0008696245424675219,
+            "success_num": 66,
+            "level": 0,
+            "success_ratio": 0.66
+          },
+          {
+            "time_per_success": 0.0013949871063232422,
+            "success_num": 99,
+            "level": 10,
+            "success_ratio": 0.99
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      }
+    ],
+    "best_level": 0
+  },
+  "MN": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.11921589605269893,
+            "success_num": 31,
+            "level": 100,
+            "success_ratio": 0.31
+          },
+          {
+            "time_per_success": 0.049829258918762206,
+            "success_num": 100,
+            "level": 1000,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 1000
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.002993927001953125,
+            "success_num": 25,
+            "level": 0,
+            "success_ratio": 0.25
+          },
+          {
+            "time_per_success": 0.008273400200737847,
+            "success_num": 45,
+            "level": 10,
+            "success_ratio": 0.45
+          },
+          {
+            "time_per_success": 0.00776665449142456,
+            "success_num": 100,
+            "level": 100,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 6,
+        "best_level": 0
+      }
+    ],
+    "best_level": 1000
+  },
+  "SC": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.002115522605785425,
+            "success_num": 69,
+            "level": 0,
+            "success_ratio": 0.69
+          },
+          {
+            "time_per_success": 0.005268138647079468,
+            "success_num": 80,
+            "level": 10,
+            "success_ratio": 0.8
+          },
+          {
+            "time_per_success": 0.005459818840026855,
+            "success_num": 100,
+            "level": 100,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.026447010040283204,
+            "success_num": 5,
+            "level": 0,
+            "success_ratio": 0.05
+          },
+          {
+            "time_per_success": 0.0395749242682206,
+            "success_num": 19,
+            "level": 10,
+            "success_ratio": 0.19
+          },
+          {
+            "time_per_success": 0.018161082267761232,
+            "success_num": 100,
+            "level": 100,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 4,
+        "best_level": 100
+      }
+    ],
+    "best_level": 100
+  },
+  "WI": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.002915196948581272,
+            "success_num": 27,
+            "level": 0,
+            "success_ratio": 0.27
+          },
+          {
+            "time_per_success": 0.009936169574135229,
+            "success_num": 38,
+            "level": 10,
+            "success_ratio": 0.38
+          },
+          {
+            "time_per_success": 0.007156326770782471,
+            "success_num": 100,
+            "level": 100,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.08988953772045317,
+            "success_num": 42,
+            "level": 100,
+            "success_ratio": 0.42
+          },
+          {
+            "time_per_success": 0.06303438186645507,
+            "success_num": 100,
+            "level": 1000,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 6,
+        "best_level": 1000
+      }
+    ],
+    "best_level": 1000
+  },
+  "AL": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.0018889558488044186,
+            "success_num": 69,
+            "level": 0,
+            "success_ratio": 0.69
+          },
+          {
+            "time_per_success": 0.0052193403244018555,
+            "success_num": 80,
+            "level": 10,
+            "success_ratio": 0.8
+          },
+          {
+            "time_per_success": 0.0056551933288574215,
+            "success_num": 100,
+            "level": 100,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 10.546763261159262,
+            "success_num": 6,
+            "level": 1000,
+            "success_ratio": 0.06
+          },
+          {
+            "time_per_success": 87.92311947686332,
+            "success_num": 7,
+            "level": 10000,
+            "success_ratio": 0.07
+          }
+        ],
+        "lmt": 4,
+        "best_level": 1000
+      }
+    ],
+    "best_level": 1000
+  },
+  "MD": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 1.120925744374593,
+            "success_num": 6,
+            "level": 100,
+            "success_ratio": 0.06
+          },
+          {
+            "time_per_success": 0.13445255756378174,
+            "success_num": 100,
+            "level": 1000,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 3,
+        "best_level": 1000
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.0013805179185764763,
+            "success_num": 93,
+            "level": 0,
+            "success_ratio": 0.93
+          }
+        ],
+        "lmt": 6,
+        "best_level": 0
+      }
+    ],
+    "best_level": 1000
+  },
+  "OK": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.12556493282318115,
+            "success_num": 6,
+            "level": 10,
+            "success_ratio": 0.06
+          },
+          {
+            "time_per_success": 0.02521089351538456,
+            "success_num": 99,
+            "level": 100,
+            "success_ratio": 0.99
+          }
+        ],
+        "lmt": 2,
+        "best_level": 100
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.06409156322479248,
+            "success_num": 2,
+            "level": 0,
+            "success_ratio": 0.02
+          },
+          {
+            "time_per_success": 0.19430243968963623,
+            "success_num": 4,
+            "level": 10,
+            "success_ratio": 0.04
+          },
+          {
+            "time_per_success": 0.028167683668810912,
+            "success_num": 99,
+            "level": 100,
+            "success_ratio": 0.99
+          }
+        ],
+        "lmt": 2,
+        "best_level": 100
+      }
+    ],
+    "best_level": 100
+  },
+  "MA": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.01834838730948312,
+            "success_num": 7,
+            "level": 0,
+            "success_ratio": 0.07
+          },
+          {
+            "time_per_success": 0.09394627809524536,
+            "success_num": 8,
+            "level": 10,
+            "success_ratio": 0.08
+          },
+          {
+            "time_per_success": 0.030822978019714356,
+            "success_num": 100,
+            "level": 100,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 5,
+        "best_level": 0
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.0013712349758353284,
+            "success_num": 93,
+            "level": 0,
+            "success_ratio": 0.93
+          }
+        ],
+        "lmt": 7,
+        "best_level": 0
+      }
+    ],
+    "best_level": 0
+  },
+  "TX": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.19303117513656617,
+            "success_num": 100,
+            "level": 1000,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 1000
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 1000,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 5.077547622578485,
+            "success_num": 56,
+            "level": 10000,
+            "success_ratio": 0.56
+          }
+        ],
+        "lmt": 18,
+        "best_level": 10000
+      }
+    ],
+    "best_level": 10000
+  },
+  "OH": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.13271212577819824,
+            "success_num": 1,
+            "level": 0,
+            "success_ratio": 0.01
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.1395563114257086,
+            "success_num": 42,
+            "level": 100,
+            "success_ratio": 0.42
+          },
+          {
+            "time_per_success": 0.08199009895324708,
+            "success_num": 100,
+            "level": 1000,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 1000
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.16354019403457642,
+            "success_num": 100,
+            "level": 1000,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 9,
+        "best_level": 1000
+      }
+    ],
+    "best_level": 1000
+  },
+  "CT": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.04283436139424642,
+            "success_num": 3,
+            "level": 0,
+            "success_ratio": 0.03
+          },
+          {
+            "time_per_success": 0.06288105249404907,
+            "success_num": 12,
+            "level": 10,
+            "success_ratio": 0.12
+          },
+          {
+            "time_per_success": 0.022315070629119874,
+            "success_num": 100,
+            "level": 100,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 100
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.001473174698051365,
+            "success_num": 87,
+            "level": 0,
+            "success_ratio": 0.87
+          },
+          {
+            "time_per_success": 0.0028656794100391622,
+            "success_num": 98,
+            "level": 10,
+            "success_ratio": 0.98
+          }
+        ],
+        "lmt": 3,
+        "best_level": 0
+      }
+    ],
+    "best_level": 100
+  },
+  "CO": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.0011534690856933594,
+            "success_num": 64,
+            "level": 0,
+            "success_ratio": 0.64
+          },
+          {
+            "time_per_success": 0.003535048602378532,
+            "success_num": 73,
+            "level": 10,
+            "success_ratio": 0.73
+          },
+          {
+            "time_per_success": 0.0035676145553588867,
+            "success_num": 100,
+            "level": 100,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.0836496353149414,
+            "success_num": 1,
+            "level": 0,
+            "success_ratio": 0.01
+          },
+          {
+            "time_per_success": 0.12840375900268555,
+            "success_num": 5,
+            "level": 10,
+            "success_ratio": 0.05
+          },
+          {
+            "time_per_success": 0.015915519059306445,
+            "success_num": 99,
+            "level": 100,
+            "success_ratio": 0.99
+          }
+        ],
+        "lmt": 5,
+        "best_level": 100
+      }
+    ],
+    "best_level": 100
+  },
+  "IA": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.0007182853390472104,
+            "success_num": 99,
+            "level": 0,
+            "success_ratio": 0.99
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.0007572225345078335,
+            "success_num": 93,
+            "level": 0,
+            "success_ratio": 0.93
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      }
+    ],
+    "best_level": 0
+  },
+  "WA": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 1.0275204181671143,
+            "success_num": 4,
+            "level": 100,
+            "success_ratio": 0.04
+          },
+          {
+            "time_per_success": 0.09626051601098508,
+            "success_num": 98,
+            "level": 1000,
+            "success_ratio": 0.98
+          }
+        ],
+        "lmt": 3,
+        "best_level": 1000
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.013580600420633951,
+            "success_num": 6,
+            "level": 0,
+            "success_ratio": 0.06
+          },
+          {
+            "time_per_success": 0.10527071952819825,
+            "success_num": 5,
+            "level": 10,
+            "success_ratio": 0.05
+          },
+          {
+            "time_per_success": 0.016535944408840604,
+            "success_num": 99,
+            "level": 100,
+            "success_ratio": 0.99
+          }
+        ],
+        "lmt": 8,
+        "best_level": 0
+      }
+    ],
+    "best_level": 1000
+  },
+  "UT": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.0036135561325970817,
+            "success_num": 17,
+            "level": 0,
+            "success_ratio": 0.17
+          },
+          {
+            "time_per_success": 0.004821932315826416,
+            "success_num": 60,
+            "level": 10,
+            "success_ratio": 0.6
+          },
+          {
+            "time_per_success": 0.0038849520683288574,
+            "success_num": 100,
+            "level": 100,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.003227836207339638,
+            "success_num": 19,
+            "level": 0,
+            "success_ratio": 0.19
+          },
+          {
+            "time_per_success": 0.004436349868774414,
+            "success_num": 65,
+            "level": 10,
+            "success_ratio": 0.65
+          },
+          {
+            "time_per_success": 0.0038449788093566895,
+            "success_num": 100,
+            "level": 100,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      }
+    ],
+    "best_level": 0
+  },
+  "KY": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.0018594817838807037,
+            "success_num": 69,
+            "level": 0,
+            "success_ratio": 0.69
+          },
+          {
+            "time_per_success": 0.004449156827704851,
+            "success_num": 86,
+            "level": 10,
+            "success_ratio": 0.86
+          },
+          {
+            "time_per_success": 0.005156974792480468,
+            "success_num": 100,
+            "level": 100,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.049263409205845425,
+            "success_num": 7,
+            "level": 10,
+            "success_ratio": 0.07
+          },
+          {
+            "time_per_success": 0.01611841093633593,
+            "success_num": 97,
+            "level": 100,
+            "success_ratio": 0.97
+          }
+        ],
+        "lmt": 3,
+        "best_level": 100
+      }
+    ],
+    "best_level": 100
+  },
+  "TN": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.0036726062362258498,
+            "success_num": 37,
+            "level": 0,
+            "success_ratio": 0.37
+          },
+          {
+            "time_per_success": 0.008255492723905123,
+            "success_num": 65,
+            "level": 10,
+            "success_ratio": 0.65
+          },
+          {
+            "time_per_success": 0.009403700828552247,
+            "success_num": 100,
+            "level": 100,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.3238460838153798,
+            "success_num": 93,
+            "level": 1000,
+            "success_ratio": 0.93
+          }
+        ],
+        "lmt": 5,
+        "best_level": 1000
+      }
+    ],
+    "best_level": 1000
+  },
+  "NC": {
+    "best_level": 1000,
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.5777853216443744,
+            "success_num": 7,
+            "level": 100,
+            "success_ratio": 0.07
+          },
+          {
+            "time_per_success": 0.06767105102539063,
+            "success_num": 100,
+            "level": 1000,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 1000
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.1138589310646057,
+            "success_num": 100,
+            "level": 1000,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 9,
+        "best_level": 1000
+      }
+    ]
+  },
+  "IN": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.00281177248273577,
+            "success_num": 49,
+            "level": 0,
+            "success_ratio": 0.49
+          },
+          {
+            "time_per_success": 0.006603798396150831,
+            "success_num": 71,
+            "level": 10,
+            "success_ratio": 0.71
+          },
+          {
+            "time_per_success": 0.008152558803558349,
+            "success_num": 100,
+            "level": 100,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.3792436403386733,
+            "success_num": 17,
+            "level": 100,
+            "success_ratio": 0.17
+          },
+          {
+            "time_per_success": 0.10528448581695557,
+            "success_num": 100,
+            "level": 1000,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 5,
+        "best_level": 1000
+      }
+    ],
+    "best_level": 1000
+  },
+  "PA": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.20748304834171216,
+            "success_num": 98,
+            "level": 1000,
+            "success_ratio": 0.98
+          }
+        ],
+        "lmt": 2,
+        "best_level": 1000
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 10.972888171672821,
+            "success_num": 4,
+            "level": 1000,
+            "success_ratio": 0.04
+          },
+          {
+            "time_per_success": 21.737652512157666,
+            "success_num": 17,
+            "level": 10000,
+            "success_ratio": 0.17
+          }
+        ],
+        "lmt": 13,
+        "best_level": 1000
+      }
+    ],
+    "best_level": 1000
+  },
+  "KS": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.0011264389636469823,
+            "success_num": 51,
+            "level": 0,
+            "success_ratio": 0.51
+          },
+          {
+            "time_per_success": 0.0022479870740105125,
+            "success_num": 85,
+            "level": 10,
+            "success_ratio": 0.85
+          },
+          {
+            "time_per_success": 0.0021958112716674804,
+            "success_num": 100,
+            "level": 100,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.001258993148803711,
+            "success_num": 45,
+            "level": 0,
+            "success_ratio": 0.45
+          },
+          {
+            "time_per_success": 0.0021136958947342434,
+            "success_num": 89,
+            "level": 10,
+            "success_ratio": 0.89
+          },
+          {
+            "time_per_success": 0.002320866584777832,
+            "success_num": 100,
+            "level": 100,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      }
+    ],
+    "best_level": 0
+  },
+  "NV": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.0006508244408501519,
+            "success_num": 90,
+            "level": 0,
+            "success_ratio": 0.9
+          },
+          {
+            "time_per_success": 0.001174907684326172,
+            "success_num": 100,
+            "level": 10,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.0006139252496802288,
+            "success_num": 92,
+            "level": 0,
+            "success_ratio": 0.92
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      }
+    ],
+    "best_level": 0
+  },
+  "VA": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.4791901111602783,
+            "success_num": 1,
+            "level": 10,
+            "success_ratio": 0.01
+          },
+          {
+            "time_per_success": 0.04082145055135091,
+            "success_num": 75,
+            "level": 100,
+            "success_ratio": 0.75
+          },
+          {
+            "time_per_success": 0.03730809450149536,
+            "success_num": 100,
+            "level": 1000,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 1000
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 0.20091736693131296,
+            "success_num": 95,
+            "level": 1000,
+            "success_ratio": 0.95
+          }
+        ],
+        "lmt": 8,
+        "best_level": 1000
+      }
+    ],
+    "best_level": 1000
+  },
+  "OR": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.004315765698750814,
+            "success_num": 30,
+            "level": 0,
+            "success_ratio": 0.3
+          },
+          {
+            "time_per_success": 0.01093316914742453,
+            "success_num": 57,
+            "level": 10,
+            "success_ratio": 0.57
+          },
+          {
+            "time_per_success": 0.007299938201904297,
+            "success_num": 100,
+            "level": 100,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 2,
+        "best_level": 0
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.001394007795600481,
+            "success_num": 93,
+            "level": 0,
+            "success_ratio": 0.93
+          }
+        ],
+        "lmt": 3,
+        "best_level": 0
+      }
+    ],
+    "best_level": 0
+  },
+  "NY": {
+    "endpoints": [
+      {
+        "run_results": [
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 0,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 10,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 100,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 100000,
+            "success_num": 0,
+            "level": 1000,
+            "success_ratio": 0.0
+          },
+          {
+            "time_per_success": 2.6665759953585537,
+            "success_num": 99,
+            "level": 10000,
+            "success_ratio": 0.99
+          }
+        ],
+        "lmt": 15,
+        "best_level": 10000
+      },
+      {
+        "run_results": [
+          {
+            "time_per_success": 0.01900921549115862,
+            "success_num": 7,
+            "level": 0,
+            "success_ratio": 0.07
+          },
+          {
+            "time_per_success": 0.0446227490901947,
+            "success_num": 16,
+            "level": 10,
+            "success_ratio": 0.16
+          },
+          {
+            "time_per_success": 0.0460655628880368,
+            "success_num": 79,
+            "level": 100,
+            "success_ratio": 0.79
+          },
+          {
+            "time_per_success": 0.037021942138671875,
+            "success_num": 100,
+            "level": 1000,
+            "success_ratio": 1.0
+          }
+        ],
+        "lmt": 25,
+        "best_level": 0
+      }
+    ],
+    "best_level": 10000
+  }
+}

@@ -1,0 +1,657 @@
+{
+  "AK": {
+    "name": "AK",
+    "seats": 1,
+    "dem_seats": 0,
+    "dem_ratio": 0.445617937331332,
+    "two_test_range": null,
+    "two_test_min": 0,
+    "two_test_max": 0,
+    "math_min": 0,
+    "math_max": 0
+  },
+  "AL": {
+    "name": "AL",
+    "seats": 7,
+    "dem_seats": 1,
+    "dem_ratio": 0.3631045837026981,
+    "two_test_range": [
+      2,
+      4
+    ],
+    "two_test_min": 2,
+    "two_test_max": 4,
+    "math_min": 0,
+    "math_max": 4
+  },
+  "AR": {
+    "name": "AR",
+    "seats": 4,
+    "dem_seats": 0,
+    "dem_ratio": 0.3907043703586896,
+    "two_test_range": [
+      2,
+      2
+    ],
+    "two_test_min": 2,
+    "two_test_max": 2,
+    "math_min": 0,
+    "math_max": 3
+  },
+  "AZ": {
+    "name": "AZ",
+    "seats": 9,
+    "dem_seats": 4,
+    "dem_ratio": 0.46430856542019083,
+    "two_test_range": [
+      2,
+      7
+    ],
+    "two_test_min": 2,
+    "two_test_max": 7,
+    "math_min": 0,
+    "math_max": 8
+  },
+  "CA": {
+    "name": "CA",
+    "seats": 53,
+    "dem_seats": 39,
+    "dem_ratio": 0.5836687150609761,
+    "two_test_range": [
+      29,
+      51
+    ],
+    "two_test_min": 29,
+    "two_test_max": 51,
+    "math_min": 10,
+    "math_max": 53
+  },
+  "CO": {
+    "name": "CO",
+    "seats": 7,
+    "dem_seats": 3,
+    "dem_ratio": 0.47998508009756563,
+    "two_test_range": [
+      2,
+      5
+    ],
+    "two_test_min": 2,
+    "two_test_max": 5,
+    "math_min": 0,
+    "math_max": 6
+  },
+  "CT": {
+    "name": "CT",
+    "seats": 5,
+    "dem_seats": 5,
+    "dem_ratio": 0.6033809775063887,
+    "two_test_range": [
+      2,
+      3
+    ],
+    "two_test_min": 2,
+    "two_test_max": 3,
+    "math_min": 2,
+    "math_max": 5
+  },
+  "DE": {
+    "name": "DE",
+    "seats": 1,
+    "dem_seats": 1,
+    "dem_ratio": 0.617144116152646,
+    "two_test_range": null,
+    "two_test_min": 1,
+    "two_test_max": 1,
+    "math_min": 1,
+    "math_max": 1
+  },
+  "FL": {
+    "name": "FL",
+    "seats": 27,
+    "dem_seats": 12,
+    "dem_ratio": 0.4874620900304918,
+    "two_test_range": [
+      2,
+      20
+    ],
+    "two_test_min": 2,
+    "two_test_max": 20,
+    "math_min": 0,
+    "math_max": 25
+  },
+  "GA": {
+    "name": "GA",
+    "seats": 14,
+    "dem_seats": 4,
+    "dem_ratio": 0.4440930904301736,
+    "two_test_range": [
+      2,
+      9
+    ],
+    "two_test_min": 2,
+    "two_test_max": 9,
+    "math_min": 0,
+    "math_max": 12
+  },
+  "HI": {
+    "name": "HI",
+    "seats": 2,
+    "dem_seats": 2,
+    "dem_ratio": 0.663906093927878,
+    "two_test_range": null,
+    "two_test_min": 2,
+    "two_test_max": 2,
+    "math_min": 1,
+    "math_max": 2
+  },
+  "IA": {
+    "name": "IA",
+    "seats": 4,
+    "dem_seats": 1,
+    "dem_ratio": 0.46047505586204857,
+    "two_test_range": [
+      2,
+      2
+    ],
+    "two_test_min": 2,
+    "two_test_max": 2,
+    "math_min": 0,
+    "math_max": 3
+  },
+  "ID": {
+    "name": "ID",
+    "seats": 2,
+    "dem_seats": 0,
+    "dem_ratio": 0.36814380798137264,
+    "two_test_range": null,
+    "two_test_min": 0,
+    "two_test_max": 0,
+    "math_min": 0,
+    "math_max": 1
+  },
+  "IL": {
+    "name": "IL",
+    "seats": 18,
+    "dem_seats": 10,
+    "dem_ratio": 0.5328713988314598,
+    "two_test_range": [
+      6,
+      16
+    ],
+    "two_test_min": 6,
+    "two_test_max": 16,
+    "math_min": 2,
+    "math_max": 18
+  },
+  "IN": {
+    "name": "IN",
+    "seats": 9,
+    "dem_seats": 2,
+    "dem_ratio": 0.39593455242146086,
+    "two_test_range": [
+      2,
+      5
+    ],
+    "two_test_min": 2,
+    "two_test_max": 5,
+    "math_min": 0,
+    "math_max": 6
+  },
+  "KS": {
+    "name": "KS",
+    "seats": 4,
+    "dem_seats": 0,
+    "dem_ratio": 0.3642958994814603,
+    "two_test_range": [
+      2,
+      2
+    ],
+    "two_test_min": 2,
+    "two_test_max": 2,
+    "math_min": 0,
+    "math_max": 2
+  },
+  "KY": {
+    "name": "KY",
+    "seats": 6,
+    "dem_seats": 1,
+    "dem_ratio": 0.35968227240423617,
+    "two_test_range": [
+      2,
+      3
+    ],
+    "two_test_min": 2,
+    "two_test_max": 3,
+    "math_min": 0,
+    "math_max": 4
+  },
+  "LA": {
+    "name": "LA",
+    "seats": 6,
+    "dem_seats": 1,
+    "dem_ratio": 0.4046406018007203,
+    "two_test_range": [
+      2,
+      4
+    ],
+    "two_test_min": 2,
+    "two_test_max": 4,
+    "math_min": 0,
+    "math_max": 4
+  },
+  "MA": {
+    "name": "MA",
+    "seats": 9,
+    "dem_seats": 9,
+    "dem_ratio": 0.6303497917232477,
+    "two_test_range": [
+      5,
+      7
+    ],
+    "two_test_min": 5,
+    "two_test_max": 7,
+    "math_min": 3,
+    "math_max": 9
+  },
+  "MD": {
+    "name": "MD",
+    "seats": 8,
+    "dem_seats": 7,
+    "dem_ratio": 0.5893660710575352,
+    "two_test_range": [
+      3,
+      6
+    ],
+    "two_test_min": 3,
+    "two_test_max": 6,
+    "math_min": 2,
+    "math_max": 8
+  },
+  "ME": {
+    "name": "ME",
+    "seats": 2,
+    "dem_seats": 1,
+    "dem_ratio": 0.567017095649099,
+    "two_test_range": null,
+    "two_test_min": 1,
+    "two_test_max": 1,
+    "math_min": 1,
+    "math_max": 2
+  },
+  "MI": {
+    "name": "MI",
+    "seats": 14,
+    "dem_seats": 5,
+    "dem_ratio": 0.517070657366102,
+    "two_test_range": [
+      3,
+      12
+    ],
+    "two_test_min": 3,
+    "two_test_max": 12,
+    "math_min": 1,
+    "math_max": 14
+  },
+  "MN": {
+    "name": "MN",
+    "seats": 8,
+    "dem_seats": 5,
+    "dem_ratio": 0.522912367964509,
+    "two_test_range": [
+      2,
+      6
+    ],
+    "two_test_min": 2,
+    "two_test_max": 6,
+    "math_min": 1,
+    "math_max": 8
+  },
+  "MO": {
+    "name": "MO",
+    "seats": 8,
+    "dem_seats": 2,
+    "dem_ratio": 0.38666686106315695,
+    "two_test_range": [
+      2,
+      4
+    ],
+    "two_test_min": 2,
+    "two_test_max": 4,
+    "math_min": 0,
+    "math_max": 6
+  },
+  "MS": {
+    "name": "MS",
+    "seats": 4,
+    "dem_seats": 1,
+    "dem_ratio": 0.3782621993408516,
+    "two_test_range": [
+      2,
+      2
+    ],
+    "two_test_min": 2,
+    "two_test_max": 2,
+    "math_min": 0,
+    "math_max": 2
+  },
+  "MT": {
+    "name": "MT",
+    "seats": 1,
+    "dem_seats": 0,
+    "dem_ratio": 0.42174262042596883,
+    "two_test_range": null,
+    "two_test_min": 0,
+    "two_test_max": 0,
+    "math_min": 0,
+    "math_max": 0
+  },
+  "NC": {
+    "name": "NC",
+    "seats": 13,
+    "dem_seats": 3,
+    "dem_ratio": 0.47136165545418596,
+    "two_test_range": [
+      2,
+      9
+    ],
+    "two_test_min": 2,
+    "two_test_max": 9,
+    "math_min": 0,
+    "math_max": 12
+  },
+  "ND": {
+    "name": "ND",
+    "seats": 1,
+    "dem_seats": 0,
+    "dem_ratio": 0.4092686223682297,
+    "two_test_range": null,
+    "two_test_min": 0,
+    "two_test_max": 0,
+    "math_min": 0,
+    "math_max": 0
+  },
+  "NE": {
+    "name": "NE",
+    "seats": 3,
+    "dem_seats": 1,
+    "dem_ratio": 0.35853471113374963,
+    "two_test_range": null,
+    "two_test_min": 1,
+    "two_test_max": 1,
+    "math_min": 0,
+    "math_max": 2
+  },
+  "NH": {
+    "name": "NH",
+    "seats": 2,
+    "dem_seats": 1,
+    "dem_ratio": 0.5160544182909069,
+    "two_test_range": null,
+    "two_test_min": 1,
+    "two_test_max": 1,
+    "math_min": 1,
+    "math_max": 2
+  },
+  "NJ": {
+    "name": "NJ",
+    "seats": 12,
+    "dem_seats": 6,
+    "dem_ratio": 0.5453354373410624,
+    "two_test_range": [
+      4,
+      10
+    ],
+    "two_test_min": 4,
+    "two_test_max": 10,
+    "math_min": 2,
+    "math_max": 12
+  },
+  "NM": {
+    "name": "NM",
+    "seats": 3,
+    "dem_seats": 2,
+    "dem_ratio": 0.5188967181049612,
+    "two_test_range": null,
+    "two_test_min": 2,
+    "two_test_max": 2,
+    "math_min": 1,
+    "math_max": 3
+  },
+  "NV": {
+    "name": "NV",
+    "seats": 4,
+    "dem_seats": 1,
+    "dem_ratio": 0.4391424850130129,
+    "two_test_range": [
+      2,
+      2
+    ],
+    "two_test_min": 2,
+    "two_test_max": 2,
+    "math_min": 0,
+    "math_max": 3
+  },
+  "NY": {
+    "name": "NY",
+    "seats": 27,
+    "dem_seats": 18,
+    "dem_ratio": 0.6200246339697634,
+    "two_test_range": [
+      15,
+      25
+    ],
+    "two_test_min": 15,
+    "two_test_max": 25,
+    "math_min": 7,
+    "math_max": 27
+  },
+  "OH": {
+    "name": "OH",
+    "seats": 16,
+    "dem_seats": 4,
+    "dem_ratio": 0.4333475502335486,
+    "two_test_range": [
+      2,
+      9
+    ],
+    "two_test_min": 2,
+    "two_test_max": 9,
+    "math_min": 0,
+    "math_max": 13
+  },
+  "OK": {
+    "name": "OK",
+    "seats": 5,
+    "dem_seats": 0,
+    "dem_ratio": 0.29020463547242176,
+    "two_test_range": [
+      2,
+      2
+    ],
+    "two_test_min": 2,
+    "two_test_max": 2,
+    "math_min": 0,
+    "math_max": 2
+  },
+  "OR": {
+    "name": "OR",
+    "seats": 5,
+    "dem_seats": 4,
+    "dem_ratio": 0.5730355121181506,
+    "two_test_range": [
+      2,
+      3
+    ],
+    "two_test_min": 2,
+    "two_test_max": 3,
+    "math_min": 1,
+    "math_max": 5
+  },
+  "PA": {
+    "name": "PA",
+    "seats": 18,
+    "dem_seats": 5,
+    "dem_ratio": 0.4754897115485218,
+    "two_test_range": [
+      2,
+      13
+    ],
+    "two_test_min": 2,
+    "two_test_max": 13,
+    "math_min": 0,
+    "math_max": 16
+  },
+  "RI": {
+    "name": "RI",
+    "seats": 2,
+    "dem_seats": 2,
+    "dem_ratio": 0.6100156530848027,
+    "two_test_range": null,
+    "two_test_min": 2,
+    "two_test_max": 2,
+    "math_min": 1,
+    "math_max": 2
+  },
+  "SC": {
+    "name": "SC",
+    "seats": 7,
+    "dem_seats": 1,
+    "dem_ratio": 0.42511612793071346,
+    "two_test_range": [
+      2,
+      4
+    ],
+    "two_test_min": 2,
+    "two_test_max": 4,
+    "math_min": 0,
+    "math_max": 5
+  },
+  "SD": {
+    "name": "SD",
+    "seats": 1,
+    "dem_seats": 0,
+    "dem_ratio": 0.33470373010904064,
+    "two_test_range": null,
+    "two_test_min": 0,
+    "two_test_max": 0,
+    "math_min": 0,
+    "math_max": 0
+  },
+  "TN": {
+    "name": "TN",
+    "seats": 9,
+    "dem_seats": 2,
+    "dem_ratio": 0.37879883813441073,
+    "two_test_range": [
+      2,
+      5
+    ],
+    "two_test_min": 2,
+    "two_test_max": 5,
+    "math_min": 0,
+    "math_max": 6
+  },
+  "TX": {
+    "name": "TX",
+    "seats": 36,
+    "dem_seats": 11,
+    "dem_ratio": 0.4222846101850728,
+    "two_test_range": [
+      2,
+      18
+    ],
+    "two_test_min": 2,
+    "two_test_max": 18,
+    "math_min": 0,
+    "math_max": 29
+  },
+  "UT": {
+    "name": "UT",
+    "seats": 4,
+    "dem_seats": 0,
+    "dem_ratio": 0.3403891588800367,
+    "two_test_range": [
+      2,
+      2
+    ],
+    "two_test_min": 2,
+    "two_test_max": 2,
+    "math_min": 0,
+    "math_max": 2
+  },
+  "VA": {
+    "name": "VA",
+    "seats": 11,
+    "dem_seats": 3,
+    "dem_ratio": 0.4657140537920082,
+    "two_test_range": [
+      2,
+      8
+    ],
+    "two_test_min": 2,
+    "two_test_max": 8,
+    "math_min": 0,
+    "math_max": 10
+  },
+  "VT": {
+    "name": "VT",
+    "seats": 1,
+    "dem_seats": 1,
+    "dem_ratio": 0.6748458537813011,
+    "two_test_range": null,
+    "two_test_min": 1,
+    "two_test_max": 1,
+    "math_min": 1,
+    "math_max": 1
+  },
+  "WA": {
+    "name": "WA",
+    "seats": 10,
+    "dem_seats": 6,
+    "dem_ratio": 0.5384419767913431,
+    "two_test_range": [
+      3,
+      8
+    ],
+    "two_test_min": 3,
+    "two_test_max": 8,
+    "math_min": 1,
+    "math_max": 10
+  },
+  "WI": {
+    "name": "WI",
+    "seats": 8,
+    "dem_seats": 3,
+    "dem_ratio": 0.47646376028765003,
+    "two_test_range": [
+      2,
+      6
+    ],
+    "two_test_min": 2,
+    "two_test_max": 6,
+    "math_min": 0,
+    "math_max": 7
+  },
+  "WV": {
+    "name": "WV",
+    "seats": 3,
+    "dem_seats": 0,
+    "dem_ratio": 0.4301047890615723,
+    "two_test_range": null,
+    "two_test_min": 0,
+    "two_test_max": 0,
+    "math_min": 0,
+    "math_max": 2
+  },
+  "WY": {
+    "name": "WY",
+    "seats": 1,
+    "dem_seats": 0,
+    "dem_ratio": 0.25061488587320424,
+    "two_test_range": null,
+    "two_test_min": 0,
+    "two_test_max": 0,
+    "math_min": 0,
+    "math_max": 0
+  }
+}
