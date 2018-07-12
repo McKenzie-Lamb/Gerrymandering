@@ -5,7 +5,6 @@ Created on Fri Jul  6 14:06:35 2018
 
 @author: lambm
 """
-
 import networkx as nx
 import metis
 import random
@@ -28,7 +27,7 @@ H = metis.networkx_to_metis(G)
 colors = ['red','blue','green', 'gray']
 for i, p in enumerate(parts):
     G.node[i]['color'] = colors[p]
-#nx.write_dot(G, 'example.dot') # Requires pydot or pygraphviz
+# nx.write_dot(G, 'example.dot') # Requires pydot or pygraphviz
 pos = nx.kamada_kawai_layout(G)
 labels = {n: str(G.node[n]['pop']) for n in G.nodes()}
 nx.draw(G, with_labels=False, node_color = [G.node[i]['color'] for i in G.nodes()],  pos = pos)

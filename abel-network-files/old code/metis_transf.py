@@ -1,10 +1,12 @@
-# Author: Abel Gonzalez
-# Date: 06/26/18
-#
-# Description:
-# This program uses the .shp file to create a network graph where each node
-# represents a census tract and the edge represents adjacency between each
-# tract, usign graph-tool instead of networkx
+'''
+Author: Abel Gonzalez
+Date: 06/26/18
+
+Description:
+This program tries to use the metis package to do a districts distribution where 
+the population of each distreicts is similar and the republican, democrats 
+share are adjusted to maximize one or the other.
+'''
 
 import graph_tool.all as gt
 import metis
@@ -31,7 +33,7 @@ for i in graph.vertices():
     nodew_pop.append(weights)
 
 metis_graph = metis.adjlist_to_metis(adjlist_pop, nodew=nodew_pop)
-objval, parts = metis.part_graph(metis_graph, nparts=4)
+objval, parts = metis.part_graph(metis_graph, nparts=4, contig=True, ufactor=99)
 
 rep_dis = {p:0 for p in parts}
 dem_dis = {p:0 for p in parts}
@@ -67,7 +69,7 @@ for i in graph.vertices():
     nodew.append(weights)
 
 metis_graph = metis.adjlist_to_metis(adjlist, nodew=nodew)
-objval, parts = metis.part_graph(metis_graph, nparts=4, tpwgts=[(0.25,0.50,0.25),(0.25,0.15,0.25),(0.25, 0.15,0.25),(0.25, 0.20, 0.25)])
+objval, parts = metis.part_graph(metis_graph, nparts=4, ufactor=99, tpwgts=[(0.25,0.50,0.25),(0.25,0.15,0.25),(0.25, 0.15,0.25),(0.25, 0.20, 0.25)], contig=True)
 
 rep_dis = {p:0 for p in parts}
 dem_dis = {p:0 for p in parts}

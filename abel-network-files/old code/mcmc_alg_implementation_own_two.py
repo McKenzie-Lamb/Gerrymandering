@@ -26,7 +26,7 @@ def gen_initial_distribution(graph, district_no):
     for i in graph.vertices():
         neighbors = tuple([j for j in i.all_neighbors()])
         adjlist.append(neighbors)
-        #print(graph.vp.data[i]['PERSONS'])
+        # print(graph.vp.data[i]['PERSONS'])
         nodew.append(graph.vp.data[i]['PERSONS'])
 
     metis_graph = metis.adjlist_to_metis(adjlist, nodew=nodew)
@@ -58,7 +58,8 @@ def turn_off_edges(districts_graphs):
         to_delete = districts_graphs[district].new_edge_property('bool')
         edges = districts_graphs[district].get_edges()
         selected = edges[np.random.randint(
-            edges.shape[0], size=random.randint((len(edges)//2), 2*len(edges)//3)), :] # Here is the prob for edge turn off
+            edges.shape[0], size=random.randint((len(edges) // 2), 2 * len(edges) // 3)),
+                   :]  # Here is the prob for edge turn off
         for i in selected:
             to_delete[i] = True
         turned_off_graphs.append(gt.GraphView(
@@ -99,24 +100,8 @@ def get_cp_boundaries(graph, turned_on_graphs):
 
 def get_non_adjacent_v(labels_in_boundaries, graph):
     list_to_swap = random.sample(
-        labels_in_boundaries, random.randint(len(labels_in_boundaries)//3, len(labels_in_boundaries)//2)) # Prob for choosing from boundaries
-    index_to_del = set()
-    # for l in range(len(list_to_swap)):
-    #     for v in range(len(list_to_swap[l])):
-    #         for l_two in range(len(list_to_swap)):
-    #             if l == l_two:
-    #                 continue
-    #             for v_two in range(len(list_to_swap[l_two])):
-    #                 if len(gt.shortest_path(graph, graph.vertex(list_to_swap[l][v]), graph.vertex(list_to_swap[l_two][v_two]))[0]) < 3:
-    #                     index_to_del.add(l_two)
-    # for i in range(len(list_to_swap)):
-    #     print(list_to_swap)
-    #     if i in index_to_del:
-    #         try:
-    #             del list_to_swap[i]
-    #         except IndexError:
-    #             print('list empty')
-    #             continue
+        labels_in_boundaries, random.randint(len(labels_in_boundaries) // 3,
+                                             len(labels_in_boundaries) // 2))  # Prob for choosing from boundaries
     return list_to_swap
 
 
@@ -137,8 +122,9 @@ def gather_districts_data(districts_graphs):
             districts_graphs[i].graph_properties["rep_vote"] += graph.vp.data[v]["CONREP14"]
     return districts_graphs
 
+
 def random_color():
-    colors_list = ['black','silver','firebrick','sienna', 'gold', ]
+    colors_list = ['black', 'silver', 'firebrick', 'sienna', 'gold', ]
     r = random.uniform(0, 1)
     g = random.uniform(0, 1)
     b = random.uniform(0, 1)
@@ -147,7 +133,7 @@ def random_color():
     return color_to_return
 
 
-def adjust_color(districts_graphs, color, ring_color, district_of_vertex, niter_type = 'first', ring_colors_dict = None):
+def adjust_color(districts_graphs, color, ring_color, district_of_vertex, niter_type='first', ring_colors_dict=None):
     if niter_type == 'nonfirst':
         for i in range(len(districts_graphs)):
             if districts_graphs[i].graph_properties["dem_vote"] > districts_graphs[i].graph_properties["rep_vote"]:
@@ -165,10 +151,10 @@ def adjust_color(districts_graphs, color, ring_color, district_of_vertex, niter_
             ring_colors_dict[i] = random_color().copy()
             if districts_graphs[i].graph_properties["dem_vote"] > districts_graphs[i].graph_properties["rep_vote"]:
                 color_ = 'blue'
-                #color_ = to_color
+                # color_ = to_color
             else:
                 color_ = 'red'
-                #color_ = to_color
+                # color_ = to_color
             for v in districts_graphs[i].vertices():
                 color[v] = color_
                 ring_color[v] = ring_colors_dict[i]
@@ -210,22 +196,22 @@ def propose_swap(districts_graphs, proposed_components, graph, labels_in_boundar
     for i in changes.keys():
         if i == 0:
             continue
-        similar_pop = math.isclose(changes[i][0], changes[i-1][0], rel_tol=0.20) # Here is the population difference
+        similar_pop = math.isclose(changes[i][0], changes[i - 1][0], rel_tol=0.20)  # Here is the population difference
     if similar_pop == True:
         contiguos = True
         # Check for contiguity
         d_copy = copy.deepcopy(districts_graphs)
         for i in range(len(districts_graphs)):
             for j in vertex_to_add[i]:
-                #if len(vertex_to_add[i]) == 0:
+                # if len(vertex_to_add[i]) == 0:
                 #    break
                 districts_graphs[i].vp.valid[j] = True
-                #previous_graph.vp.valid[j] = True
+                # previous_graph.vp.valid[j] = True
             for j in vertex_to_delete[i]:
-                #if len(vertex_to_delete[i]) == 0:
+                # if len(vertex_to_delete[i]) == 0:
                 #    break
                 districts_graphs[i].vp.valid[j] = False
-                #previous_graph[j] = False
+                # previous_graph[j] = False
             components_check, hist = gt.label_components(districts_graphs[i])
             if np.sum(components_check.a) != 0:
                 contiguos = False
@@ -247,8 +233,7 @@ def propose_swap(districts_graphs, proposed_components, graph, labels_in_boundar
 
 print('Initialazing...')
 # Paths
-main_folder = Path("abel-network-files/")
-data_folder = Path("abel-network-files/data/")
+data_folder = Path("./data/")
 images_folder = Path("abel-network-files/images/")
 
 # Loading the previous created Graph and creating the prop maps
@@ -268,13 +253,12 @@ district_total_no = 4
 swaps_to_try = 10
 
 # # Separates graph into blocks
-districts = gt.minimize_blockmodel_dl(
-     graph, district_total_no, district_total_no)
-district_no = districts.get_blocks()
-
+#districts = gt.minimize_blockmodel_dl(
+#    graph, district_total_no, district_total_no)
+#district_no = districts.get_blocks()
 
 # Create the different graphs
-#graph, district_no = gen_initial_distribution(graph, district_no)
+# graph, district_no = gen_initial_distribution(graph, district_no)
 districts_graphs = create_graph_views(district_total_no)
 
 # Initialize data and draw first image
@@ -288,21 +272,21 @@ for i in districts_graphs:
         dem_seats += 1
     else:
         rep_seats += 1
-gt.graph_draw(graph, vertex_color = ring_color, vertex_fill_color = color, vertex_text = district_of_vertex,
-              output = str(main_folder / ('tmp.png')), bg_color=(255, 255, 255, 1), pos=graph.vp.pos)
-
+gt.graph_draw(graph, vertex_color=ring_color, vertex_fill_color=color, vertex_text=district_of_vertex,
+              bg_color=(255, 255, 255, 1), pos=graph.vp.pos)
 
 print('Swapping census tracts...')
 start = time.time()
-#Actual function calling part of algorithm
+# Actual function calling part of algorithm
 for i in range(swaps_to_try):
     print(i)
     turned_on_graphs = turn_off_edges(districts_graphs)
     labels_in_boundaries = get_cp_boundaries(graph, turned_on_graphs)
     selected_vertices = get_non_adjacent_v(labels_in_boundaries, graph)
-    districts_graphs, actual_swaps = propose_swap(districts_graphs, selected_vertices, graph, labels_in_boundaries, actual_swaps)
-    #color, ring_color = adjust_color(districts_graphs, color, ring_color, niter_type = 'nonfirst', ring_colors_dict = ring_colors_dict)
-    #gt.graph_draw(graph, vertex_color = ring_color, vertex_fill_color = color,
+    districts_graphs, actual_swaps = propose_swap(districts_graphs, selected_vertices, graph, labels_in_boundaries,
+                                                  actual_swaps)
+    # color, ring_color = adjust_color(districts_graphs, color, ring_color, niter_type = 'nonfirst', ring_colors_dict = ring_colors_dict)
+    # gt.graph_draw(graph, vertex_color = ring_color, vertex_fill_color = color,
     #              output = str(main_folder / ('tmp'+str(i)+'.png')), bg_color=(255, 255, 255, 1), pos=graph.vp.pos)
 end = time.time()
 print('DONE')
@@ -316,13 +300,13 @@ for i in districts_graphs:
     else:
         rep_seats_f += 1
 color, ring_color, ring_colors_dict = adjust_color(districts_graphs, color, ring_color, district_of_vertex)
-gt.graph_draw(graph, vertex_color = ring_color, vertex_fill_color = color, vertex_text = district_of_vertex,
-              output = str(main_folder / ('tmpf.png')), bg_color=(255, 255, 255, 1), pos=graph.vp.pos)
+gt.graph_draw(graph, vertex_color=ring_color, vertex_fill_color=color, vertex_text=district_of_vertex,
+              output=str(main_folder / ('tmpf.png')), bg_color=(255, 255, 255, 1), pos=graph.vp.pos)
 
 print('Statistics:')
 print('-----------')
 print('Total Number of districts:', district_total_no)
-print('Dem Seats:', dem_seats,'-',dem_seats_f) #Initial, final
-print('Rep Seats:', rep_seats,'-',rep_seats_f)
-print('Swaps:', swaps_to_try, actual_swaps) #Tried, actuald swaps done
+print('Dem Seats:', dem_seats, '-', dem_seats_f)  # Initial, final
+print('Rep Seats:', rep_seats, '-', rep_seats_f)
+print('Swaps:', swaps_to_try, actual_swaps)  # Tried, actuald swaps done
 print('Time for swaps:', end - start)
