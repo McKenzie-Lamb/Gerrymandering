@@ -1,0 +1,8 @@
+-- Created pictures and usage of built-in mcmc
+- Entropy? Can we change that? Maybe weights? IDK
+- Maybe using just callbacks? Maybe changing the entropy?
+-- Own algorithm
+- Confusing, there seems to be a bug in graph_tool when adding vertex
+- Maybe there is no need for separation?
+- Mark subgraph seems a little diferent
+-- Exaustive sweep?
