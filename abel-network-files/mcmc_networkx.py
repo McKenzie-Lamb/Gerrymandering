@@ -12,15 +12,19 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 
-def draw_graph(graph):
+def draw_graph(graph, districts_graphs):
     """
     Draw a graph using the matplotlib module
     :param graph: networkx graph to be drawn
     :return: None
     """
+    colors = ['lightpink', 'yellow', 'lime', 'cyan', 'purple', 'slategray', 'peru']
+    for i in districts_graphs.keys():
+        for n in districts_graphs[i].nodes():
+            graph.node[n]['color'] = colors[i]
     nx.draw(graph, pos=graph.graph['positions'], node_color=[graph.node[i]['color'] for i in graph.nodes()],
             with_labels=True)
-
+    plt.show()
 
 def separate_graphs(graph, total_no_districts, draw=False, verbose=False):
     """
@@ -54,7 +58,7 @@ def separate_graphs(graph, total_no_districts, draw=False, verbose=False):
         for i in subgraphs.keys():
             for n in subgraphs[i].nodes():
                 graph.node[n]['color'] = colors[i]
-            draw_graph(subgraphs[i])
+            draw_graph(graph, subgraphs)
 
     return subgraphs
 
@@ -78,7 +82,6 @@ def turn_off_edges(districts_graphs, draw=False):
     if draw:
         for i in districts_graphs.keys():
             draw_graph(turned_off_graphs[i])
-        plt.show()
     return turned_off_graphs
 
 
@@ -96,27 +99,37 @@ def gather_connected_components(graph, turned_off_graphs, districts_graphs):
 
     components_dict_add = {i: [] for i in connected_components.keys()}  # components and districts associated with
     components_dict_delete = {i: [] for i in connected_components.keys()}
+    components_check = []
     for district in connected_components.keys():
         outside_districts_nodes = {i: list(districts_graphs[i].nodes) for i in districts_graphs.keys() if i != district}
         for component in connected_components[district]:
             skip = random.randint(1,4)
-            if skip < 4:
+            if list(component) in components_check:
                 continue
-            if component in components_dict_add.values():
+            if skip < 4:
                 continue
             for outside_district in outside_districts_nodes.keys():
                 if len(nx.node_boundary(graph, component, outside_districts_nodes[outside_district])) > 0:
-                    components_dict_add[outside_district].append(list(component))
-                    components_dict_delete[district].append(list(component))
+                    components_check.append((list(component)))
+                    components_dict_add[outside_district]+=(list(component))
+                    components_dict_delete[district]+=(list(component))
+                    break
 
     print(components_dict_add)
+    print(components_dict_delete)
     return [components_dict_add, components_dict_delete]
 
 
-#def propose_swap(graph, districts_graphs, selected_components):
+def propose_swap(graph, districts_graphs, selected_components, draw=False):
+    new_districts_graphs = dict()
+    for district in districts_graphs.keys():
+        new_districts_nodes = set(selected_components[0][district]) | set(districts_graphs[district].nodes())
+        new_districts_nodes -= set(selected_components[1][district])
+        new_districts_graphs[district] = nx.subgraph(graph, new_districts_nodes)
 
-
-
+    if draw:
+        draw_graph(graph, new_districts_graphs)
+    return districts_graphs
 
 def main(graph_file_name, total_no_districts):
     """
@@ -138,6 +151,6 @@ def main(graph_file_name, total_no_districts):
     # gather connected components in boundaries
     turned_off_graphs = turn_off_edges(districts_graphs, draw=False)
     connected_components = gather_connected_components(graph, turned_off_graphs, districts_graphs)
-    # propose_swap()
+    propose_swap(graph, districts_graphs, connected_components, draw=True)
 
 main('tmp_graph1100.gpickle', 3)
