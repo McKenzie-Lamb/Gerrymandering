@@ -18,7 +18,6 @@ def draw_graph(graph, districts_graphs, name):
     """
     Draw a graph using the matplotlib module
     :param graph: networkx graph to be drawn
-    :param districts_graphs: dictionary with graphs
     :return: None
     """
     colors = ['lightpink', 'yellow', 'lime', 'cyan', 'purple', 'slategray', 'peru']
@@ -108,26 +107,18 @@ def gather_connected_components(graph, turned_off_graphs, districts_graphs):
             for outside_district in outside_districts_nodes.keys():
                 if len(nx.node_boundary(graph, component, outside_districts_nodes[outside_district])) >= len(component)/2:
                     components_check.append((list(component)))
-                    components_dict_add[outside_district].append(list(component))
-                    components_dict_delete[district].append(list(component))
+                    components_dict_add[outside_district] += (list(component))
+                    components_dict_delete[district] += (list(component))
                     break
-    components_dict_add, components_dict_delete = _reduce_connected_components(components_dict_add, components_dict_delete)
     return [components_dict_add, components_dict_delete]
 
 
-def _reduce_connected_components(components_dict_add, components_dict_delete):
-    new_components_dict_add = {i: [] for i in components_dict_add.keys()}
-    new_components_dict_delete = {i: [] for i in components_dict_delete.keys()}
-    for i in components_dict_add:
-        sample = random.sample(components_dict_add[i], 2)
-        new_components_dict_add[i] = [node for component in sample for node in component]
-        for j in components_dict_delete.keys():
-            for c in components_dict_delete[j]:
-                if c in sample:
-                    new_components_dict_delete[j].append(c)
-    for i in new_components_dict_delete.keys():
-        new_components_dict_delete[i] = [node for component in new_components_dict_delete[i] for node in component]
-    return new_components_dict_add, new_components_dict_delete
+def _reduce_connected_components(connected_components):
+    for i in connected_components.keys():
+        print(connected_components)
+        connected_components[i] = random.sample(list(connected_components[i]), len(list(connected_components[i]))//4)
+        print(connected_components)
+    return connected_components
 
 
 def propose_swap(graph, districts_graphs, selected_components, districts_data, filename, swaps, draw=False):
@@ -148,7 +139,7 @@ def propose_swap(graph, districts_graphs, selected_components, districts_data, f
         # value
         try:
             if nx.is_connected(new_districts_graphs[i]) and math.isclose(new_districts_data[i][0],
-                                                                         new_districts_data[i + 1][0], rel_tol=0.20):
+                                                                         new_districts_data[i + 1][0], rel_tol=0.10):
                 continue
             else:
                 return districts_graphs, districts_data, swaps
@@ -180,7 +171,7 @@ def main(graph_file_name, total_no_districts, swaps_to_try):
     graph = nx.read_gpickle(graph_file_name)
 
     # create partitions using metis
-    districts_graphs, districts_data = separate_graphs(graph, total_no_districts, draw=False)
+    districts_graphs, districts_data = separate_graphs(graph, total_no_districts, draw=True)
     actual_swaps = 0
     # gather connected components in boundaries
     print('Swapping...')
@@ -190,6 +181,7 @@ def main(graph_file_name, total_no_districts, swaps_to_try):
         connected_components = gather_connected_components(graph, turned_off_graphs, districts_graphs)
         districts_graphs, districts_data, actual_swaps = propose_swap(graph, districts_graphs, connected_components,
                                                                       districts_data, str(i), actual_swaps, draw=False)
+        print(districts_data)
     end = time.time()
 
     print('DONE')
@@ -198,5 +190,5 @@ def main(graph_file_name, total_no_districts, swaps_to_try):
     print('Swaps:', swaps_to_try, '-', actual_swaps)
     print('Time:', end - start)
 
-main('tmp_graph1000.gpickle', 6, 100)
+main('tmp_graph500.gpickle', 2, 100)
 

@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 # random points to be used
 nodes = [i for i in range(100)]
-points = [(random.randint(0,100),random.randint(0,100)) for i in range(100)]
+points = [(random.uniform(0,100),random.uniform(0,100)) for i in range(len(nodes))]
 
 # make a Delaunay triangulation of the point data
 t = scipy.spatial.Delaunay(points)
@@ -33,7 +33,7 @@ graph.add_nodes_from(nodes)
 graph.add_edges_from(edges)
 pos = dict(zip(nodes, points))
 nx.draw(graph,pos)
-plt.show()
+
 # populate the graph with random values
 for i in graph.nodes():
     pop = random.randint(500,2000)
@@ -43,6 +43,6 @@ for i in graph.nodes():
     graph.nodes[i]['rep'] = rep
     graph.nodes[i]['dem'] = dem
 # save graph to file
-
-nx.write_gpickle(graph, 'tmp_graph1100.gpickle')
+print(graph.node[23]['pop'])
+nx.write_gpickle(graph, 'tmp_graph100.gpickle')
 

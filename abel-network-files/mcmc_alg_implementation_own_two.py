@@ -237,7 +237,7 @@ data_folder = Path("./data/")
 images_folder = Path("abel-network-files/images/")
 
 # Loading the previous created Graph and creating the prop maps
-graph = gt.load_graph(str(data_folder / "tmp_graph1000.gt"))
+graph = gt.load_graph(str(data_folder / "tmp_graph100.gt"))
 color = graph.new_vertex_property("string")
 ring_color = graph.new_vertex_property("vector<float>")
 cp_label = graph.new_vertex_property("int")
@@ -249,7 +249,7 @@ graph.vp.nd = neighbor_district
 graph.vp.cd = current_district
 
 # Init variables
-district_total_no = 4
+district_total_no = 2
 swaps_to_try = 10
 
 # # Separates graph into blocks
@@ -272,8 +272,8 @@ for i in districts_graphs:
         dem_seats += 1
     else:
         rep_seats += 1
-gt.graph_draw(graph, vertex_color=ring_color, vertex_fill_color=color, vertex_text=district_of_vertex,
-              bg_color=(255, 255, 255, 1), pos=graph.vp.pos)
+#gt.graph_draw(graph, vertex_color=ring_color, vertex_fill_color=color, vertex_text=district_of_vertex,
+#              bg_color=(255, 255, 255, 1), pos=graph.vp.pos)
 
 print('Swapping census tracts...')
 start = time.time()
@@ -300,8 +300,8 @@ for i in districts_graphs:
     else:
         rep_seats_f += 1
 color, ring_color, ring_colors_dict = adjust_color(districts_graphs, color, ring_color, district_of_vertex)
-gt.graph_draw(graph, vertex_color=ring_color, vertex_fill_color=color, vertex_text=district_of_vertex,
-              output=str(main_folder / ('tmpf.png')), bg_color=(255, 255, 255, 1), pos=graph.vp.pos)
+#gt.graph_draw(graph, vertex_color=ring_color, vertex_fill_color=color, vertex_text=district_of_vertex,
+#              output=str(main_folder / ('tmpf.png')), bg_color=(255, 255, 255, 1), pos=graph.vp.pos)
 
 print('Statistics:')
 print('-----------')
