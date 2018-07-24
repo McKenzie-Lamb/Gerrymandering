@@ -106,7 +106,7 @@ def gather_connected_components(graph, turned_off_graphs, districts_graphs):
             if list(component) in components_check:
                 continue
             for outside_district in outside_districts_nodes.keys():
-                if len(nx.node_boundary(graph, component, outside_districts_nodes[outside_district])) >= len(component)/2:
+                if len(nx.node_boundary(graph, component, outside_districts_nodes[outside_district])) == len(component):
                     components_check.append((list(component)))
                     components_dict_add[outside_district].append(list(component))
                     components_dict_delete[district].append(list(component))
@@ -119,7 +119,7 @@ def _reduce_connected_components(components_dict_add, components_dict_delete):
     new_components_dict_add = {i: [] for i in components_dict_add.keys()}
     new_components_dict_delete = {i: [] for i in components_dict_delete.keys()}
     for i in components_dict_add:
-        sample = random.sample(components_dict_add[i], 2)
+        sample = random.sample(components_dict_add[i], len(components_dict_add[i])//2)
         new_components_dict_add[i] = [node for component in sample for node in component]
         for j in components_dict_delete.keys():
             for c in components_dict_delete[j]:
@@ -198,5 +198,5 @@ def main(graph_file_name, total_no_districts, swaps_to_try):
     print('Swaps:', swaps_to_try, '-', actual_swaps)
     print('Time:', end - start)
 
-main('tmp_graph1000.gpickle', 6, 100)
+main('tmp_graph100.gpickle', 4, 10)
 
