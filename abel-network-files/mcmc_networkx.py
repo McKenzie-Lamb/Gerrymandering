@@ -147,10 +147,14 @@ def propose_swap(graph, districts_graphs, selected_components, districts_data, f
         # check that current and following district has same pop, the excepts handling is in case of getting to the last
         # value
         try:
-            if nx.is_connected(new_districts_graphs[i]) and math.isclose(new_districts_data[i][0],
-                                                                         new_districts_data[i + 1][0], rel_tol=0.20):
-                continue
+            if nx.is_connected(new_districts_graphs[i]):
+                if math.isclose(new_districts_data[i][0],new_districts_data[i + 1][0], rel_tol=0.20):
+                    continue
+                else:
+                    print('Pop disparity')
+                    return districts_graphs, districts_data, swaps
             else:
+                print('Discontinuous graph')
                 return districts_graphs, districts_data, swaps
         except KeyError:
             if nx.is_connected(new_districts_graphs[i]):
