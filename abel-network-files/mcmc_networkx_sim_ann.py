@@ -18,6 +18,7 @@ def draw_graph(graph, districts_graphs, name):
     """
     Draw a graph using the matplotlib module
     :param graph: networkx graph to be drawn
+    :param districts_graphs: dictionary with graphs
     :return: None
     """
     colors = ['lightpink', 'yellow', 'lime', 'cyan', 'purple', 'slategray', 'peru']
@@ -59,7 +60,7 @@ def separate_graphs(graph, total_no_districts, draw=False):
         for i in subgraphs.keys():
             for n in subgraphs[i].nodes():
                 graph.node[n]['color'] = colors[i]
-            draw_graph(graph, subgraphs, 'tmp_main')
+            draw_graph(graph, subgraphs, 'main')
 
     return subgraphs, districts_data
 
@@ -105,23 +106,36 @@ def gather_connected_components(graph, turned_off_graphs, districts_graphs):
             if list(component) in components_check:
                 continue
             for outside_district in outside_districts_nodes.keys():
-                if len(nx.node_boundary(graph, component, outside_districts_nodes[outside_district])) >= len(component)/2:
+                if len(nx.node_boundary(graph, outside_districts_nodes[outside_district],component)) == len(component):
                     components_check.append((list(component)))
-                    components_dict_add[outside_district] += (list(component))
-                    components_dict_delete[district] += (list(component))
+                    components_dict_add[outside_district].append(list(component))
+                    components_dict_delete[district].append(list(component))
                     break
+
+    components_dict_add, components_dict_delete = _reduce_connected_components(components_dict_add, components_dict_delete)
     return [components_dict_add, components_dict_delete]
 
 
-def _reduce_connected_components(connected_components):
-    for i in connected_components.keys():
-        print(connected_components)
-        connected_components[i] = random.sample(list(connected_components[i]), len(list(connected_components[i]))//4)
-        print(connected_components)
-    return connected_components
+def _reduce_connected_components(components_dict_add, components_dict_delete):
+    new_components_dict_add = {i: [] for i in components_dict_add.keys()}
+    new_components_dict_delete = {i: [] for i in components_dict_delete.keys()}
+    for i in components_dict_add:
+        #print(components_dict_add[i])
+        sample = random.sample(components_dict_add[i], len(components_dict_add[i])//2)
+        new_components_dict_add[i] = [node for component in sample for node in component]
+        for j in components_dict_delete.keys():
+            for c in components_dict_delete[j]:
+                if c in sample:
+                    new_components_dict_delete[j].append(c)
+    for i in new_components_dict_delete.keys():
+        new_components_dict_delete[i] = [node for component in new_components_dict_delete[i] for node in component]
+    return new_components_dict_add, new_components_dict_delete
 
 
-def propose_swap(graph, districts_graphs, selected_components, districts_data, filename, swaps, draw=False):
+def propose_swap(graph, districts_graphs, districts_data):
+    turned_off_graphs = turn_off_edges(graph, districts_graphs)
+    selected_components = gather_connected_components(graph, turned_off_graphs, districts_graphs)
+    #print(selected_components[0][1])
     new_districts_graphs = dict()
     new_districts_data = copy.deepcopy(districts_data)
     for district in districts_graphs.keys():
@@ -138,25 +152,64 @@ def propose_swap(graph, districts_graphs, selected_components, districts_data, f
         # check that current and following district has same pop, the excepts handling is in case of getting to the last
         # value
         try:
-            if nx.is_connected(new_districts_graphs[i]) and math.isclose(new_districts_data[i][0],
-                                                                         new_districts_data[i + 1][0], rel_tol=0.10):
-                continue
+            if nx.is_connected(new_districts_graphs[i]):
+                if math.isclose(new_districts_data[i][0],new_districts_data[i + 1][0], rel_tol=0.20):
+                    continue
+                else:
+                    #print('Pop disparity')
+                    return districts_graphs, districts_data
             else:
-                return districts_graphs, districts_data, swaps
+                #print('Discontinuous graph')
+                return districts_graphs, districts_data
         except KeyError:
             if nx.is_connected(new_districts_graphs[i]):
                 continue
             else:
-                return districts_graphs, districts_data, swaps
-    districts_graphs = copy.deepcopy(new_districts_graphs)
-    districts_data = copy.deepcopy(new_districts_data)
-    swaps += 1
-    if draw:
-        draw_graph(graph, districts_graphs, filename)
-    return districts_graphs, districts_data, swaps
+                return districts_graphs, districts_data
+    return new_districts_graphs, new_districts_data
 
 
-def main(graph_file_name, total_no_districts, swaps_to_try):
+def total_dem(data):
+    diff = 0
+    #print(data)
+    for i in data.keys():
+        suming = data[i][1] / data[i][2]
+        diff += suming
+    #print(diff)
+    return diff
+
+
+def _acceptance_prob(old_cost, new_cost, T):
+    ap = math.e * ((new_cost-old_cost)/T)
+    if ap > 1:
+        return 1
+    else:
+        return ap
+
+
+def anneal(districts_data, graph, districts_graphs):
+    old_cost = total_dem(districts_data)
+    T = 1.0
+    T_min = 0.00001
+    alpha = 0.9
+    swaps = [100, 0]
+    while T > T_min:
+        i = 1
+        while i <= swaps[0]:
+            new_districts_graphs, new_districts_data = propose_swap(graph, districts_graphs, districts_data)
+            new_cost = total_dem(new_districts_data)
+            ap = _acceptance_prob(old_cost, new_cost, T)
+            if ap > random.random():
+                swaps[1] += 1
+                districts_graphs = copy.deepcopy(new_districts_graphs)
+                districts_data = copy.deepcopy(new_districts_data)
+                old_cost = new_cost
+            i += 1
+        T = T*alpha
+    return new_districts_graphs, new_districts_data, swaps
+
+
+def main(graph_file_name, total_no_districts):
     """
     Main function to run the algorithm
     :param graph_file_name: the name of the file that we want to import
@@ -171,24 +224,20 @@ def main(graph_file_name, total_no_districts, swaps_to_try):
     graph = nx.read_gpickle(graph_file_name)
 
     # create partitions using metis
-    districts_graphs, districts_data = separate_graphs(graph, total_no_districts, draw=True)
-    actual_swaps = 0
+    districts_graphs, districts_data = separate_graphs(graph, total_no_districts, draw=False)
+    start_dem = districts_data
     # gather connected components in boundaries
     print('Swapping...')
     start = time.time()
-    for i in range(swaps_to_try):
-        turned_off_graphs = turn_off_edges(graph, districts_graphs)
-        connected_components = gather_connected_components(graph, turned_off_graphs, districts_graphs)
-        districts_graphs, districts_data, actual_swaps = propose_swap(graph, districts_graphs, connected_components,
-                                                                      districts_data, str(i), actual_swaps, draw=False)
-        print(districts_data)
+    new_districts_graphs, new_districts_data, swaps = anneal(districts_data, graph, districts_graphs)
     end = time.time()
-
+    draw_graph(graph, new_districts_graphs, 'end')
+    end_dem = new_districts_data
     print('DONE')
     print('Statistics:')
     print('-----------')
-    print('Swaps:', swaps_to_try, '-', actual_swaps)
+    print('Swaps', swaps[0], '-', swaps[1])
+    print('Dem Change', start_dem, end_dem)
     print('Time:', end - start)
 
-main('tmp_graph500.gpickle', 2, 100)
-
+main('tmp_graph100.gpickle', 4)
