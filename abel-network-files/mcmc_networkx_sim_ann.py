@@ -121,7 +121,7 @@ def _reduce_connected_components(components_dict_add, components_dict_delete):
     new_components_dict_delete = {i: [] for i in components_dict_delete.keys()}
     for i in components_dict_add:
         #print(components_dict_add[i])
-        sample = random.sample(components_dict_add[i], 1)
+        sample = random.sample(components_dict_add[i], len(components_dict_add[i])//2)
         new_components_dict_add[i] = [node for component in sample for node in component]
         for j in components_dict_delete.keys():
             for c in components_dict_delete[j]:
@@ -135,7 +135,7 @@ def _reduce_connected_components(components_dict_add, components_dict_delete):
 def propose_swap(graph, districts_graphs, districts_data):
     turned_off_graphs = turn_off_edges(graph, districts_graphs)
     selected_components = gather_connected_components(graph, turned_off_graphs, districts_graphs)
-    print(selected_components[0][1])
+    #print(selected_components[0][1])
     new_districts_graphs = dict()
     new_districts_data = copy.deepcopy(districts_data)
     for district in districts_graphs.keys():
@@ -153,7 +153,7 @@ def propose_swap(graph, districts_graphs, districts_data):
         # value
         try:
             if nx.is_connected(new_districts_graphs[i]):
-                if math.isclose(new_districts_data[i][0],new_districts_data[i + 1][0], rel_tol=0.10):
+                if math.isclose(new_districts_data[i][0],new_districts_data[i + 1][0], rel_tol=0.20):
                     continue
                 else:
                     #print('Pop disparity')
@@ -240,5 +240,4 @@ def main(graph_file_name, total_no_districts):
     print('Dem Change', start_dem, end_dem)
     print('Time:', end - start)
 
-main('tmp_graph100.gpickle', 2)
-
+main('tmp_graph100.gpickle', 4)

@@ -21,6 +21,7 @@ def draw_graph(graph, districts_graphs, name):
             graph.node[n]['color'] = colors[i]
     nx.draw(graph, pos=graph.graph['positions'], node_color=[graph.node[i]['color'] for i in graph.nodes()],
             with_labels=True, )
+    plt.savefig(name+'.png')
 
 
 def separate_graphs(graph, total_no_districts, draw=False):
@@ -59,20 +60,24 @@ def separate_graphs(graph, total_no_districts, draw=False):
 
 
 def select_nodes_to_swap(graph, districts_graphs):
-    add_nodes = {i: [] for i in districts_graphs}
-    del_nodes = {i: [] for i in districts_graphs}
-    for i in districts_graphs.keys():
-        if len(add_nodes[i]) == 1:
-            continue
-        for j in districts_graphs.keys():
-            if i == j:
-                continue
-            if len(del_nodes[j]) == 1:
-                continue
-            if len(nx.node_boundary(graph, districts_graphs[i], districts_graphs[j])) > 1:
-                add_nodes[i].append(random.sample(nx.node_boundary(graph, districts_graphs[i], districts_graphs[j]),1))
-                del_nodes[j].append(add_nodes[i][0])
+    add_nodes = dict()
+    del_nodes = dict()
+
+    track_list = []
+    random_district = random.randint(0, len(districts_graphs)-1)
+    for j in range(100):
+        if random_district in track_list:
+            break
+        #print(districts_graphs)
+        boundary_node = random.sample(nx.node_boundary(graph, districts_graphs[random_district]), 2)
+        add_nodes[random_district] = boundary_node
+        for i in districts_graphs.keys():
+            if boundary_node[0] in districts_graphs[i]:
+                del_nodes[i] = boundary_node
+                track_list.append(random_district)
+                random_district = i
                 break
+    #print(add_nodes, del_nodes)
     return [add_nodes, del_nodes]
 
 
@@ -81,17 +86,18 @@ def propose_swap(graph, districts_graphs, districts_data):
     new_districts_graphs = dict()
     new_districts_data = copy.deepcopy(districts_data)
     for district in districts_graphs.keys():
-        if len(selected_components[0][district]) == 0:
+        if district not in selected_components[0] or district not in selected_components[1]:
+            new_districts_graphs[district] = nx.subgraph(graph, districts_graphs[district].nodes())
             continue
-        new_districts_nodes = set(selected_components[0][district][0]) | set(districts_graphs[district].nodes())
-        new_districts_nodes -= set(selected_components[1][district][0])
+        new_districts_nodes = set(selected_components[0][district]) | set(districts_graphs[district].nodes())
+        new_districts_nodes -= set(selected_components[1][district])
         new_districts_graphs[district] = nx.subgraph(graph, list(new_districts_nodes))
-        new_districts_data[district][0] += sum([graph.node[i]['pop'] for i in selected_components[0][district][0]])
-        new_districts_data[district][0] -= sum([graph.node[i]['pop'] for i in selected_components[1][district][0]])
-        new_districts_data[district][1] += sum([graph.node[i]['dem'] for i in selected_components[0][district][0]])
-        new_districts_data[district][1] -= sum([graph.node[i]['dem'] for i in selected_components[1][district][0]])
-        new_districts_data[district][2] += sum([graph.node[i]['rep'] for i in selected_components[0][district][0]])
-        new_districts_data[district][2] -= sum([graph.node[i]['rep'] for i in selected_components[1][district][0]])
+        new_districts_data[district][0] += sum([graph.node[i]['pop'] for i in selected_components[0][district]])
+        new_districts_data[district][0] -= sum([graph.node[i]['pop'] for i in selected_components[1][district]])
+        new_districts_data[district][1] += sum([graph.node[i]['dem'] for i in selected_components[0][district]])
+        new_districts_data[district][1] -= sum([graph.node[i]['dem'] for i in selected_components[1][district]])
+        new_districts_data[district][2] += sum([graph.node[i]['rep'] for i in selected_components[0][district]])
+        new_districts_data[district][2] -= sum([graph.node[i]['rep'] for i in selected_components[1][district]])
     for i in new_districts_graphs.keys():
         # check that current and following district has same pop, the excepts handling is in case of getting to the last
         # value
@@ -100,10 +106,10 @@ def propose_swap(graph, districts_graphs, districts_data):
                 if math.isclose(new_districts_data[i][0],new_districts_data[i + 1][0], rel_tol=0.20):
                     continue
                 else:
-                    print('Pop disparity')
+                    #print('Pop disparity')
                     return districts_graphs, districts_data
             else:
-                print('Discontinuous graph')
+                #print('Discontinuous graph')
                 return districts_graphs, districts_data
         except KeyError:
             if nx.is_connected(new_districts_graphs[i]):
@@ -112,18 +118,16 @@ def propose_swap(graph, districts_graphs, districts_data):
                 return districts_graphs, districts_data
     return new_districts_graphs, new_districts_data
 
+
 def total_dem(data):
-    diff = 0
-    #print(data)
-    for i in data.keys():
-        suming = data[i][1] / data[i][2]
-        diff += suming
-    #print(diff)
-    return diff
+    goals = sorted([52, 52, 29, 52])
+    current_values = sorted([data[district][1]/data[district][0]*100 for district in data.keys()])
+    score = sum(abs(i-j) for i, j in zip(current_values, goals))
+    return score
 
 
 def _acceptance_prob(old_cost, new_cost, T):
-    ap = math.e * ((new_cost-old_cost)/T)
+    ap = math.e * ((old_cost-new_cost)/T)
     if ap > 1:
         return 1
     else:
@@ -134,7 +138,7 @@ def anneal(districts_data, graph, districts_graphs):
     old_cost = total_dem(districts_data)
     T = 1.0
     T_min = 0.00001
-    alpha = 0.9
+    alpha = 0.8
     swaps = [100, 0]
     while T > T_min:
         i = 1
@@ -161,7 +165,6 @@ def main(graph_file_name, total_no_districts):
 
     # create partitions using metis
     districts_graphs, districts_data = separate_graphs(graph, total_no_districts, draw=True)
-
     start_dem = districts_data
     # gather connected components in boundaries
     print('Swapping...')
