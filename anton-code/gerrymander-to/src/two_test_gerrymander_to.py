@@ -22,6 +22,7 @@ states = sorted([k for k in dist_info])
 #     print(json.dumps(lvls[s], default = lambda o: o.__dict__, indent=2))
 #     print(json.dumps(dist_info[s], default = lambda o: o.__dict__, indent=2))
 
+
 def try_target_once(dem_ratio, total_seats, target_seats, repeats, do_print=False):
     is_close_race = within(dem_ratio, .50, .05)
     
@@ -91,7 +92,43 @@ def TwoTestGerrymanderTo_old(state_name, target_seats):
             PrintTimeInfo(state_name, optimal_level, target_seats)
             print_mode = True
 
-def TwoTestGerrymanderTo(state_name, state_dem_ratio, target_seats,
+def TwoTestCustomGerrymanderTo(dem_ratio, total_seats, target_seats,
+                      max_time = 1000000):
+    is_close_race = within(dem_ratio, .50, .05)
+
+    batch_size = 100
+    repeats_for_each = 10000
+
+    repeats_for_each //= 100
+
+    give_up_time = UpdateTime(max_time)
+    
+    batch_full = [two_test_gerrymander.random_trial(dem_ratio, total_seats, target_seats) for i in range(batch_size)]
+    assert all([res == 'success' for res, ratios in batch_full])
+    
+    batch = [ratios for res, ratios in batch_full]
+
+    for j in range(repeats_for_each):
+        for i in range(len(batch)):
+            batch[i] = two_test_gerrymander.local_search_simple(batch[i], 100)
+            if two_test_gerrymander.fitness(batch[i], is_close_race) == 0:
+                return sorted(batch[i])
+            
+        if give_up_time.is_update_time():
+            print("Ran out of time, giving up.")
+            return None
+            
+        if j == 0:
+            assert len(batch) == batch_size
+            batch_fitness = [two_test_gerrymander.fitness(b, is_close_race) for b in batch]
+            pr = [(batch[i], batch_fitness[i]) for i in range(batch_size)]
+            pr.sort(key = lambda a : a[1])
+            pr = pr[:10]
+            batch = [b for b,f in pr]
+            assert len(batch) == 10
+    return None
+
+def TwoTestStateGerrymanderTo(state_name, state_dem_ratio, target_seats,
                          max_tries = 1000000, max_time = 1000000, optimal_level = None, quiet = False):
     
     if optimal_level is None:
