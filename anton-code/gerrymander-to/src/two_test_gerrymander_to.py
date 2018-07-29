@@ -91,7 +91,9 @@ def TwoTestGerrymanderTo_old(state_name, target_seats):
             PrintTimeInfo(state_name, optimal_level, target_seats)
             print_mode = True
 
-def TwoTestGerrymanderTo(state_name, state_dem_ratio, target_seats, max_tries, optimal_level = None, quiet = False):
+def TwoTestGerrymanderTo(state_name, state_dem_ratio, target_seats,
+                         max_tries = 1000000, max_time = 1000000, optimal_level = None, quiet = False):
+    
     if optimal_level is None:
         optimal_level = lvls[state_name].best_level
 
@@ -99,6 +101,8 @@ def TwoTestGerrymanderTo(state_name, state_dem_ratio, target_seats, max_tries, o
 
     ut = UpdateTime(30)
     print_mode = False
+
+    give_up_time = UpdateTime(max_time)
 
     for i in range(max_tries):
         is_successfull, ratios = try_target_once(state_dem_ratio, state_info.seats, target_seats, optimal_level, print_mode)
@@ -109,5 +113,13 @@ def TwoTestGerrymanderTo(state_name, state_dem_ratio, target_seats, max_tries, o
         if not print_mode and ut.is_update_time() and quiet == False:
             PrintTimeInfo(state_name, optimal_level, target_seats)
             print_mode = True
+
+        if give_up_time.is_update_time():
+            if quiet == False:
+                print("Ran out of time, giving up.")
+            return None
+        
+    if quiet == False:
+        print("Ran out of tries, giving up.")
             
 
