@@ -69,6 +69,18 @@ with open('./src/districts_adj_code_simple.json', 'r') as f:
 dist_arr = my_serializer.districts_from_json(data['sm_districts'])
 dist_arr_ratios = [d.get_dem_ratio() for d in dist_arr]
 
+state_names, state_all = simple_district.get_state_dict(dist_arr)
+
+# ooo = {}
+
+# for st in state_names:
+#     rt = [d.get_dem_ratio() for d in state_all[st]]
+#     ooo[st] = rt
+
+# with open('__districts_adj_code_simple__.json', 'w') as f:
+#     json.dump(ooo, f)
+
+
 def get_wang_trial(dem_ratio, total_seats, target_seats, max_tries):
     is_close_race = within(dem_ratio, .50, .05)
     for i in range(max_tries):
