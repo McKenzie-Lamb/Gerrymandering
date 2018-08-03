@@ -9,14 +9,12 @@ import fiona
 import networkx as nx
 from shapely.geometry import Polygon
 from shapely.geometry import Point
-import pyproj as proj
-
-
+import matplotlib.pyplot as plt
+import random
 #Unix-like Path
 #daShapefile = r"./Wards_fall_2014.shape/Wards_Final_Geo_111312_2014_ED.shp" 
 #Windows path
-daShapefile = r"E:\Projects\Gerrymandering\Gerrymandering\
-                Wards_fall_2014.shape\Wards_Final_Geo_111312_2014_ED.shp"
+daShapefile = r"E:\Projects\Gerrymandering\Gerrymandering\Drawing Wisconsin by Ward\Wards_fall_2014.shape\Wards_Final_Geo_111312_2014_ED.shp"
 
 # Checks for adjacency between two shapes
 # Inputs: Two polygons object
@@ -36,7 +34,6 @@ def get_poly(rings):
             print("BAD!")
             continue
         poly = Polygon(ptlst)
-        tracts 
         return poly
 
 # Produces the color of the node based on republican and democrats share
@@ -88,17 +85,16 @@ def get_position(x,y):
     new_x = (((x - old_min_x) * new_range)/old_range_x)
     new_y = (((y - old_min_y) * new_range)/old_range_y)
 
-    return str(new_x)+','+str(new_y)+'!'
-    
+    return new_x, new_y
+
 
 # Main for loop that reads the file, creates the graph,
 # add nodes, and edges
 with fiona.open(daShapefile) as shapes:
     graph = nx.Graph(directed=False)
     count = 0
-    positions = []
     print("Creating Graph...")
-    for feat in shapes[:500]: 
+    for feat in shapes:
         properties = feat['properties']
         tract_id = feat['id']
         color_n = get_color(feat)
@@ -107,23 +103,33 @@ with fiona.open(daShapefile) as shapes:
         for rings in rlist:
             tracts = get_poly(rings)
         
-        position = get_position(tracts.centroid.x,tracts.centroid.y)
-
-        graph.add_node(tract_id,style = 'filled',shape = 'circle', 
-                    pos=position, color=color_n, 
-                    polygon = tracts, data=properties, fixedsize = True)
+        positionx, positiony = get_position(tracts.centroid.x,tracts.centroid.y)
+        graph.add_node(int(tract_id), polygon=tracts, pop=properties['PERSONS'], rep=properties['CONREP14'], dem=properties['CONDEM14'], pos=(positionx, positiony))
         count += 1
         latest_node = list(graph.nodes(data=False))[-1]
         for n in list(graph.nodes())[:count-1]:
             if is_adjacent(graph.node[n]['polygon'], graph.node[latest_node]['polygon']):
                 graph.add_edge(n,latest_node)
-    print("Cleaning...")
-    for n in list(graph.nodes()):
-        del graph.node[n]['polygon']
+print("Cleaning...")
+nodes_to_del = []
+positions = dict()
+for i in nx.connected_components(graph):
+    if len(i) < 27:
+        for j in i:
+            nodes_to_del.append(j)
+print(len(graph))
+graph.remove_nodes_from(nodes_to_del)
+for i in graph.nodes():
+    positions[i] = (graph.node[i]['pos'])
+print(len(positions))
+print(positions)
+print(len(graph))
+graph.graph['positions'] = positions
+
+small_graph = nx.ego_graph(graph, random.randint(0, len(graph)), radius=20)
+print(len(small_graph))
 
 
-#Unix-Like
-#nx.drawing.nx_pydot.write_dot(graph, 'abel-network-files/data/data.dot')
-#Windows
-nx.drawing.nx_pydot.write_dot(graph, 'e:/Projects/Gerrymandering/Gerrymandering/abel-network-files/data/short_data.dot')
-print("Done")
+nx.draw(small_graph, positions, node_size=(10))
+nx.write_gpickle(small_graph, 'small_map_no_discontiguos.gpickle')
+plt.show()
