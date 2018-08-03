@@ -20,7 +20,7 @@ def draw_graph(graph, districts_graphs, name):
         for n in districts_graphs[i].nodes():
             graph.node[n]['color'] = colors[i]
     nx.draw(graph, pos=graph.graph['positions'], node_color=[graph.node[i]['color'] for i in graph.nodes()],
-            with_labels=True, )
+            with_labels=False, node_size=100)
     plt.savefig(name+'.png')
 
 
@@ -69,7 +69,7 @@ def select_nodes_to_swap(graph, districts_graphs):
         if random_district in track_list:
             break
         #print(districts_graphs)
-        boundary_node = random.sample(nx.node_boundary(graph, districts_graphs[random_district]), 2)
+        boundary_node = random.sample(nx.node_boundary(graph, districts_graphs[random_district]), 1)
         add_nodes[random_district] = boundary_node
         for i in districts_graphs.keys():
             if boundary_node[0] in districts_graphs[i]:

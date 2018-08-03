@@ -65,24 +65,24 @@ def select_nodes_to_swap(graph, districts_graphs):
     graph_copy = graph.copy()
     startd, endd = _select_sded(graph, districts_graphs)
     graph_copy.remove_nodes_from(list(districts_graphs[startd].nodes()))
-    track_list = []
     random_district = startd
     for j in range(100):
-        if random_district in track_list:
-            break
+
         # print(districts_graphs)
-        boundary_node = random.sample(nx.node_boundary(graph_copy, districts_graphs[random_district]), 1)
+        try:
+            boundary_node = random.sample(nx.node_boundary(graph_copy, districts_graphs[random_district]), 1)
+        except ValueError:
+            del add_nodes[]
         add_nodes[random_district] = boundary_node
         selected_district = _get_node_district(boundary_node[0])
 
         if selected_district == endd:
-            if j >= 3:
-                boundary_node = random.sample(nx.node_boundary(graph, districts_graphs[endd], districts_graphs[startd]), 1)
-                add_nodes[endd] = boundary_node
-                del_nodes[startd] = boundary_node
+            boundary_node = random.sample(nx.node_boundary(graph, districts_graphs[endd], districts_graphs[startd]), 1)
+            add_nodes[endd] = boundary_node
+            del_nodes[startd] = boundary_node
+            break
         else:
             del_nodes[selected_district] = boundary_node
-            track_list.append(random_district)
             random_district = selected_district
             graph_copy.remove_nodes_from(list(districts_graphs[random_district].nodes()))
 
