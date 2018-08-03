@@ -10,7 +10,7 @@ import networkx as nx
 from shapely.geometry import Polygon
 from shapely.geometry import Point
 import matplotlib.pyplot as plt
-
+import random
 #Unix-like Path
 #daShapefile = r"./Wards_fall_2014.shape/Wards_Final_Geo_111312_2014_ED.shp" 
 #Windows path
@@ -125,6 +125,11 @@ print(len(positions))
 print(positions)
 print(len(graph))
 graph.graph['positions'] = positions
-nx.draw(graph, positions,node_size=(10))
-nx.write_gpickle(graph, 'whole_map_no_discontiguos.gpickle')
+
+small_graph = nx.ego_graph(graph, random.randint(0, len(graph)), radius=20)
+print(len(small_graph))
+
+
+nx.draw(small_graph, positions, node_size=(10))
+nx.write_gpickle(small_graph, 'small_map_no_discontiguos.gpickle')
 plt.show()
