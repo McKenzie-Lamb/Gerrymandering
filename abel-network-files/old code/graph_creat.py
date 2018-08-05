@@ -11,6 +11,7 @@ from shapely.geometry import Polygon
 from shapely.geometry import Point
 import matplotlib.pyplot as plt
 import random
+import math
 #Unix-like Path
 #daShapefile = r"./Wards_fall_2014.shape/Wards_Final_Geo_111312_2014_ED.shp" 
 #Windows path
@@ -44,15 +45,15 @@ def get_color(feat):
     rep_vote = feat['properties']['CONREP14']
 
     if dem_vote == 0 and rep_vote == 0:
-            color_n = '#FFFF0080'
+            color_n = ()
     else:
         dem_share = dem_vote/(dem_vote+rep_vote)
         if dem_share > .5:
             alph = dem_share
-            color_n = ['#0000ff'+hex(int(alph*100))[2:]]
+            color_n = (0,0,1)
         else :
             alph = (1-dem_share)
-            color_n = '#ff0000'+hex(int(alph*100))[2:]
+            color_n = (1,0,0)
     return color_n
 
 # Produces the r_list necessary to create th polygons
@@ -88,6 +89,19 @@ def get_position(x,y):
     return new_x, new_y
 
 
+def separate_properties(properties):
+    pop = int(properties['PERSONS'])
+    dem = int(properties['CONDEM14'])
+    rep = int(properties['CONREP14'])
+    print(pop)
+    try:
+        dem_share = dem/(dem+rep)
+    except ZeroDivisionError:
+        dem_share = .5
+    dem = math.floor(pop*dem_share)
+    rep = pop - dem
+    return [pop,dem,rep]
+
 # Main for loop that reads the file, creates the graph,
 # add nodes, and edges
 with fiona.open(daShapefile) as shapes:
@@ -99,12 +113,11 @@ with fiona.open(daShapefile) as shapes:
         tract_id = feat['id']
         color_n = get_color(feat)
         rlist = get_rlist(feat)
-        
         for rings in rlist:
             tracts = get_poly(rings)
-        
+        properties = separate_properties(properties)
         positionx, positiony = get_position(tracts.centroid.x,tracts.centroid.y)
-        graph.add_node(int(tract_id), polygon=tracts, pop=properties['PERSONS'], rep=properties['CONREP14'], dem=properties['CONDEM14'], pos=(positionx, positiony))
+        graph.add_node(int(tract_id), polygon=tracts, pop=properties[0], rep=properties[1], dem=properties[2], pos=(positionx, positiony), color=list(color_n))
         count += 1
         latest_node = list(graph.nodes(data=False))[-1]
         for n in list(graph.nodes())[:count-1]:
@@ -113,6 +126,7 @@ with fiona.open(daShapefile) as shapes:
 print("Cleaning...")
 nodes_to_del = []
 positions = dict()
+color_map = []
 for i in nx.connected_components(graph):
     if len(i) < 27:
         for j in i:
@@ -121,15 +135,17 @@ print(len(graph))
 graph.remove_nodes_from(nodes_to_del)
 for i in graph.nodes():
     positions[i] = (graph.node[i]['pos'])
+    color_map.append((graph.node[i]['color']))
+print(color_map)
 print(len(positions))
 print(positions)
 print(len(graph))
 graph.graph['positions'] = positions
 
-small_graph = nx.ego_graph(graph, random.randint(0, len(graph)), radius=20)
-print(len(small_graph))
+#small_graph = nx.ego_graph(graph, random.randint(0, len(graph)), radius=15)
+#print(len(small_graph))
 
 
-nx.draw(small_graph, positions, node_size=(10))
-nx.write_gpickle(small_graph, 'small_map_no_discontiguos.gpickle')
+nx.draw(graph, positions, node_size=(10))
+nx.write_gpickle(graph, 'whole_map_no_discontiguos.gpickle')
 plt.show()
