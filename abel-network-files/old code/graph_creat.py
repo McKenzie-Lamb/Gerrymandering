@@ -147,5 +147,5 @@ print(len(small_graph))
 
 
 nx.draw(small_graph, positions, node_size=(10))
-nx.write_gpickle(small_graph, 'small_map_no_discontiguos.gpickle')
+nx.write_gpickle(small_graph, 'small_map3_no_discontiguos.gpickle')
 plt.show()
