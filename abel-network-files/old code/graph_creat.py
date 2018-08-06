@@ -142,10 +142,10 @@ print(positions)
 print(len(graph))
 graph.graph['positions'] = positions
 
-#small_graph = nx.ego_graph(graph, random.randint(0, len(graph)), radius=15)
-#print(len(small_graph))
+small_graph = nx.ego_graph(graph, random.randint(0, len(graph)), radius=15)
+print(len(small_graph))
 
 
-nx.draw(graph, positions, node_size=(10))
-nx.write_gpickle(graph, 'whole_map_no_discontiguos.gpickle')
+nx.draw(small_graph, positions, node_size=(10))
+nx.write_gpickle(small_graph, 'small_map_no_discontiguos.gpickle')
 plt.show()
