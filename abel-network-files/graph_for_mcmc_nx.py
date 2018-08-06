@@ -11,7 +11,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 # random points to be used
-nodes = [i for i in range(100)]
+nodes = [i for i in range(10000)]
 points = [(random.uniform(0,100),random.uniform(0,100)) for i in range(len(nodes))]
 
 # make a Delaunay triangulation of the point data
@@ -44,5 +44,5 @@ for i in graph.nodes():
     graph.nodes[i]['dem'] = dem
 # save graph to file
 print(graph.node[23]['pop'])
-nx.write_gpickle(graph, 'tmp_graph100.gpickle')
+nx.write_gpickle(graph, 'tmp_graph10000.gpickle')
 

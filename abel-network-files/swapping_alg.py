@@ -8,6 +8,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 
+
 def draw_graph(graph, districts_graphs, name):
     """
     Draw a graph using the matplotlib module
@@ -118,11 +119,11 @@ def propose_swap(graph, districts_graphs, districts_data):
                 return districts_graphs, districts_data
     return new_districts_graphs, new_districts_data
 
-
 def total_dem(data):
-    goals = sorted([52, 52, 29, 52])
+    goals = sorted([40, 40, 40, 40])
     current_values = sorted([data[district][1]/data[district][0]*100 for district in data.keys()])
     score = sum(abs(i-j) for i, j in zip(current_values, goals))
+#    print("Score: ", score)
     return score
 
 
@@ -136,6 +137,8 @@ def _acceptance_prob(old_cost, new_cost, T):
 
 def anneal(districts_data, graph, districts_graphs):
     old_cost = total_dem(districts_data)
+    print("Initial Cost: ", old_cost)
+    print("Initial Dem Percents: ", )
     T = 1.0
     T_min = 0.00001
     alpha = 0.8
@@ -147,6 +150,7 @@ def anneal(districts_data, graph, districts_graphs):
             new_cost = total_dem(new_districts_data)
             ap = _acceptance_prob(old_cost, new_cost, T)
             if ap > random.random():
+                print("Score: ", new_cost)
                 swaps[1] += 1
                 districts_graphs = copy.deepcopy(new_districts_graphs)
                 districts_data = copy.deepcopy(new_districts_data)
@@ -164,14 +168,14 @@ def main(graph_file_name, total_no_districts):
     graph = nx.read_gpickle(graph_file_name)
 
     # create partitions using metis
-    districts_graphs, districts_data = separate_graphs(graph, total_no_districts, draw=True)
+    districts_graphs, districts_data = separate_graphs(graph, total_no_districts, draw=False)
     start_dem = districts_data
     # gather connected components in boundaries
     print('Swapping...')
     start = time.time()
     new_districts_graphs, new_districts_data, swaps = anneal(districts_data, graph, districts_graphs)
     end = time.time()
-    draw_graph(graph, new_districts_graphs, 'end')
+#    draw_graph(graph, new_districts_graphs, 'end')
     end_dem = new_districts_data
     print('DONE')
     print('Statistics:')
@@ -180,4 +184,4 @@ def main(graph_file_name, total_no_districts):
     print('Dem Change', start_dem, end_dem)
     print('Time:', end - start)
 
-main('tmp_graph100.gpickle', 4)
+main('tmp_graph1000.gpickle', 4)
