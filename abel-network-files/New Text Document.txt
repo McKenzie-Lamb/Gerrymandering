@@ -1,0 +1,5 @@
+Total nodes = 6634
+No point contac:
+	- 6467
+Point contact:
+	- 6467
