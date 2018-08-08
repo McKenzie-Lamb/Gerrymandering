@@ -26,7 +26,7 @@ function PrintPartition(mg, locs_x, locs_y; name = "partition.svg", filename = "
             # for v in MG.vertices(mg)])
     # dem_props = [max(1, Int(floor(round(100*round(MG.get_prop(mg, v, :dems)/MG.get_prop(mg, v, :pop),2)))))
                 # for v in MG.vertices(mg)]
-    NODESIZE = 100/LG.nv(mg)
+    NODESIZE = 24/LG.nv(mg)
     NODELABELSIZE = 1.0
     # nodefillc = [dem_colors[prop] for prop in dem_props]
     # print(nodefillc)

@@ -20,17 +20,17 @@ const num_parts = 8
 const dem_mean = 0.5
 const dem_sd = 0.5
 const rand_graph = false
-const filename = "whole_map_contig_point_adj.gpickle"
-
+const filename = "whole_map_contig_no_point_adj.gpickle"
+const percent_dem = 51.3
 #Simulated annealing parameters
-const target = [8*51-55*7, 55, 55, 55, 55, 55, 55, 55]
-# const target = append!([50 - 5 * (num_parts - 1)], [55 for n in 1:(num_parts - 1)])
-print(target)
+const safe_percentage = 53
+const target = append!([num_parts*percent_dem-safe_percentage*(num_parts - 1)], [safe_percentage for i in 1:(num_parts - 1)])
 const num_moves = 2
 const bunch_radius = 2
-const T_min = 0.00001
 const alpha = 0.95
-const max_swaps = 200
+const temperature_steps = 100
+const T_min = alpha^temperature_steps
+const max_swaps = 150
 const sa_steps = log(alpha, T_min)
 
 function CalculateDemPercentage(mg, part)
@@ -115,6 +115,7 @@ function Score(mg, target)
     dist_data = MG.get_prop(mg, :dist_dict)
     percentages = sort([dist.dem_prop for dist in values(dist_data)])
     return sqrt(sum([(percentages[i]-target[i])^2 for i in 1:length(target)]))
+    # return maximum([abs(percentages[i]-target[i]) for i in 1:length(target)])
 end
 
 #Create a randomly generated graph and partition it using Metis (via Python)
@@ -175,32 +176,37 @@ function CheckConnectedWithoutBunch(mg, part_from, bunch_to_move)
     return LG.is_connected(subgraph)
 end
 
-#For debugging.
-function MoveCheck(mg)
-    dist_data = MG.get_prop(mg, :dist_dict)
-    parity = MG.get_prop(mg, :parity)
-    margin = parity * MG.get_prop(mg, :par_thresh)
-    for d in keys(dist_data)
-        println("Margin = ", margin)
-        println("District: ", d, ", ", dist_data[d].pop - parity)
+function _get_min_key(d)
+  minkey, minvalue = next(d, start(d))[1]
+  for (key, value) in d
+    if value < minvalue
+      minkey = key
+      minvalue = value
     end
-    part_to = 1
-    bunch_radius = 0
-    part_to_nodes = MG.filter_vertices(mg, :part, part_to)
-    boundary = Boundary(mg, part_to_nodes)
-    base_node_to_move = rand(boundary)
-    part_from = MG.get_prop(mg, base_node_to_move, :part)
-    radius = rand(0:bunch_radius)
-    bunch_to_move = Set(LG.neighborhood(mg, base_node_to_move, radius))
-    bunch_to_move = intersect(bunch_to_move, Set(MG.filter_vertices(mg, :part, part_from)))
-    pop_to_move = sum([MG.get_prop(mg, n, :pop) for n in bunch_to_move])
-    dems_to_move = sum([MG.get_prop(mg, n, :dems) for n in bunch_to_move])
-    println("PTM, DAM: ", (pop_to_move, dems_to_move))
-    println("Parity Margin = ", MG.get_prop(mg, :par_thresh))
-    dist_data = MG.get_prop(mg, :dist_dict)
-    dist_data[part_to].pop += pop_to_move
-    dist_data[part_from].pop -= pop_to_move
-    CheckDictParity(mg, dist_data)
+  end
+  minkey
+end
+
+function UpdateDemProps(mg)
+    for (part, dist) in MG.get_prop(mg, :dist_dict)
+        dist.dem_prop = 100*(dist.dems / dist.pop)
+    end
+end
+
+function FindFarthestDist(mg)
+    dist_dict = MG.get_prop(mg, :dist_dict)
+    UpdateDemProps(mg)
+    percents = sort([dist.dem_prop for dist in values(dist_dict)])
+    diff_list = abs.(target - percents)
+    max_diff_ind = indmax(diff_list)
+    for (key, value) in dist_dict
+        if value.dem_prop == percents[max_diff_ind]
+            # println("Farthest Part = ", key)
+            return key
+        end
+    end
+    # println("Failed to find.")
+    return 1
 end
 
 function MoveNodes(mg, part_to)
@@ -235,6 +241,7 @@ end
 
 function ShuffleNodes(mg)
     mg_temp = deepcopy(mg)
+    # part_to = FindFarthestDist(mg)
     part_to = rand(1:MG.get_prop(mg, :num_parts))
     for i in 1:num_moves
         part_to, success = MoveNodes(mg, part_to)
@@ -266,7 +273,7 @@ function SimulatedAnnealing(mg)
     current_score = Score(mg, target)
     println("Initial Score: ", current_score)
     T = 1.0
-    steps = 0
+    steps_remaining = Int(round(sa_steps))
     swaps = [max_swaps, 0]
     while T > T_min
         i = 1
@@ -287,8 +294,8 @@ function SimulatedAnnealing(mg)
             end
             i += 1
         end
-        steps += 1
-        println("Steps Remaining: ", sa_steps - steps)
+        steps_remaining -= 1
+        println("Steps Remaining: ", steps_remaining)
         T = T * alpha
         println("T = ", T)
     end
@@ -335,6 +342,7 @@ function RunFunc(;print_graph = false, sim = false)
     println("Dem percents = ", dem_percent_before)
     println("Mean dem percent = ", mean_dem_percent_before)
     println("Safe dem seats = ", safe_dem_seats_before)
+    println("Target = ", target)
 
     # for i in 1:10
     #     MoveCheck(mg)
@@ -344,6 +352,7 @@ function RunFunc(;print_graph = false, sim = false)
         @time mg = SimulatedAnnealing(mg)
 
         #Print before and after data.
+        println("**************Before***************")
         println("Number of vertices = ", LG.nv(mg))
         println("Connected before? ", connected_before)
         println("Parity before? ", connected_after)
@@ -351,11 +360,14 @@ function RunFunc(;print_graph = false, sim = false)
         println("Mean dem percent before = ", mean_dem_percent_before)
         println("Safe dem seats before = ", safe_dem_seats_before)
 
+
+        println("**************After***************")
         println("Final Score = ", Score(mg, target))
         println("Connected after? ", AllConnected(mg))
         println("Parity after? ", ParityCheckAll(mg))
         dem_percents_after = DemPercentages(mg)
-        println("Dem percents after = ", dem_percents_after)
+        println("Target = ", target)
+        println("Dem percents after = ", sort(dem_percents_after))
         println("Mean dem percent after = ", mean(dem_percents_after))
         println("Safe dem seats after = ", SafeDemSeats(mg))
         if print_graph == true
