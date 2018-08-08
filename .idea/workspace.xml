@@ -2,9 +2,38 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d207f7a7-e116-46f3-8f50-b54c551e0a63" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/Gerrymandering.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Gerrymandering.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/abel-network-files/old code/graph_creat.py" beforeDir="false" afterPath="$PROJECT_DIR$/abel-network-files/old code/graph_creat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/New Text Document.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/end.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/main.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/mcmc_networkx.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/mcmc_networkx_sim_ann.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/old code/graph_creat.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/old code/graph_creatgt.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/old code/grid_transf.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/old code/grid_transf_gt.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/old code/mcmc_alg_implementation.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/old code/mcmc_alg_implementation_gt.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/old code/mcmc_alg_implementation_own.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/old code/mcmc_alg_implementation_own_two.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/old code/metis_test.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/old code/metis_transf.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/old code/small_map3_no_discontiguos.gpickle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/old code/whole_map_contig_no_point_adj.gpickle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/old code/whole_map_contig_no_point_adj.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/old code/whole_map_contig_point_adj.gpickle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/old code/whole_map_contig_point_adj.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/old code/whole_map_disc_no_point_adj.gpickle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/old code/whole_map_disc_no_point_adj.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/old code/whole_map_disc_point_adj.gpickle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/old code/whole_map_disc_point_adj.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/small_map2_no_discontiguos.gpickle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/small_map3_no_discontiguos.gpickle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/small_map_no_discontiguos.gpickle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/tmp_graph100.gpickle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/tmp_graph1000.gpickle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/tmp_graph10000.gpickle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/abel-network-files/whole_map_no_discontiguos.gpickle" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -57,14 +86,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="graph_creat.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/abel-network-files/old code/graph_creat.py">
+      <file leaf-file-name="metis_test.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/abel-network-files/metis_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="391">
-              <caret line="17" column="83" selection-start-line="17" selection-start-column="83" selection-end-line="17" selection-end-column="83" />
-              <folding>
-                <element signature="e#217#229#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="-218">
+              <caret line="12" column="36" lean-forward="true" selection-start-line="12" selection-start-column="36" selection-end-line="12" selection-end-column="36" />
             </state>
           </provider>
         </entry>
@@ -136,6 +162,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -151,19 +178,12 @@
             <path>
               <item name="Gerrymandering" type="b2602c69:ProjectViewProjectNode" />
               <item name="Gerrymandering" type="462c0819:PsiDirectoryNode" />
-              <item name="abel-network-files" type="462c0819:PsiDirectoryNode" />
-              <item name="old code" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Gerrymandering" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Gerrymandering" type="462c0819:PsiDirectoryNode" />
               <item name="Drawing Wisconsin by Ward" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -456,7 +476,7 @@
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18177028" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18177028" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49894625" weight="0.32779622" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5126449" side_tool="true" visible="true" weight="0.32779622" />
       <window_info anchor="bottom" id="Version Control" order="9" sideWeight="0.49863762" weight="0.20819491" />
@@ -533,7 +553,6 @@
     <option name="LAST_COMMIT_MESSAGE" value="Wisconsin grahs" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/abel-network-files/tmp_graph100" />
     <entry file="file://$PROJECT_DIR$/abel-network-files/old code/mcmc_alg_implementation_gt.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="312">
@@ -656,6 +675,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="115">
           <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/abel-network-files/metis_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-218">
+          <caret line="12" column="36" lean-forward="true" selection-start-line="12" selection-start-column="36" selection-end-line="12" selection-end-column="36" />
         </state>
       </provider>
     </entry>
