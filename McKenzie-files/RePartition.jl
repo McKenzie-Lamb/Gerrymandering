@@ -5,25 +5,33 @@ using LightGraphs; LG = LightGraphs
 using MetaGraphs; MG = MetaGraphs
 unshift!(PyVector(pyimport("sys")["path"]), "")
 @pyimport networkx; nx = networkx
+cd("/Users/lambm/Documents/GitHub/Gerrymandering/McKenzie-files")
 @pyimport RandomPartitionedGraph2; RPG = RandomPartitionedGraph2
 using GraphPlot, Compose
 GP = GraphPlot
 include("PrintPartition.jl")
 include("Districts.jl")
+
 # using Districts
 
 #Graph parameters
-size = 400
-num_parts = 8
-dem_mean = 0.5
-dem_sd = 0.5
-filename = "small_map_no_discontiguos.gpickle"
+const size = 1000
+const num_parts = 8
+const dem_mean = 0.5
+const dem_sd = 0.5
+const rand_graph = false
+const filename = "whole_map_contig_point_adj.gpickle"
 
 #Simulated annealing parameters
-target = [15, 55, 55, 55, 55, 55, 55, 55]
-num_moves = 2
-bunch_radius = 2
-
+const target = [8*51-55*7, 55, 55, 55, 55, 55, 55, 55]
+# const target = append!([50 - 5 * (num_parts - 1)], [55 for n in 1:(num_parts - 1)])
+print(target)
+const num_moves = 2
+const bunch_radius = 2
+const T_min = 0.00001
+const alpha = 0.95
+const max_swaps = 200
+const sa_steps = log(alpha, T_min)
 
 function CalculateDemPercentage(mg, part)
     part_nodes = MG.filter_vertices(mg, :part, part)
@@ -66,7 +74,6 @@ function CalculateParity(mg)
 end
 
 function ParityCheckOne(mg, part)
-    parity_bool = true
     part_nodes = MG.filter_vertices(mg, :part, part)
     part_pop = sum([MG.get_prop(mg, v, :pop) for v in part_nodes])
     parity = MG.get_prop(mg, :parity)
@@ -105,13 +112,15 @@ end
 
 #Always >= 0.  Closer to 0 is better.
 function Score(mg, target)
-    percentages = sort(DemPercentages(mg))
-    return sum([abs(percentages[i]-target[i]) for i in 1:length(target)])
+    dist_data = MG.get_prop(mg, :dist_dict)
+    percentages = sort([dist.dem_prop for dist in values(dist_data)])
+    return sqrt(sum([(percentages[i]-target[i])^2 for i in 1:length(target)]))
 end
 
 #Create a randomly generated graph and partition it using Metis (via Python)
 function InitialGraphPartition()
-    G, parts = RPG.MakeGraphPartition(size = size, num_parts = num_parts, dem_sd = dem_sd, filename = filename)
+    G, parts = RPG.MakeGraphPartition(size = size, num_parts = num_parts,
+            dem_sd = dem_sd, filename = filename, rand_graph = rand_graph)
     parts = [i+1 for i in parts]
     g = LG.SimpleGraph()
     LG.add_vertices!(g, length(G[:nodes]()))
@@ -140,13 +149,23 @@ function InitialGraphPartition()
 
     dist_dict = Dict(part => CalculateDistData(mg, part) for part in 1:num_parts)
     MG.set_prop!(mg, :dist_dict, dist_dict)
-
+    # println("Dist Data = ", dist_dict)
     return mg, G
 end
 
-function UpdatePart(mg, part_to, bunch_to_move)
-    dist_dict = MG.get_prop(mg, :dist_dict)
-    MG.set_prop!(mg, :dist_dict, dist_dict)
+
+function CheckDictParity(mg, dist_data)
+    parity_bool = true
+    parity = MG.get_prop(mg, :parity)
+    threshold = MG.get_prop(mg, :par_thresh)
+    for part in 1:MG.get_prop(mg, :num_parts)
+        if !(abs(dist_data[part].pop - parity)/parity < threshold)
+            # println("Parity Break: ", part, ", ", dist_data[part].pop, ", ", parity)
+            parity_bool = false
+            break
+        end
+    end
+    return parity_bool
 end
 
 function CheckConnectedWithoutBunch(mg, part_from, bunch_to_move)
@@ -156,39 +175,79 @@ function CheckConnectedWithoutBunch(mg, part_from, bunch_to_move)
     return LG.is_connected(subgraph)
 end
 
-function MoveNodes(mg, part_to; nbhd_size = 2, bunch_radius = 0)
+#For debugging.
+function MoveCheck(mg)
+    dist_data = MG.get_prop(mg, :dist_dict)
+    parity = MG.get_prop(mg, :parity)
+    margin = parity * MG.get_prop(mg, :par_thresh)
+    for d in keys(dist_data)
+        println("Margin = ", margin)
+        println("District: ", d, ", ", dist_data[d].pop - parity)
+    end
+    part_to = 1
+    bunch_radius = 0
     part_to_nodes = MG.filter_vertices(mg, :part, part_to)
     boundary = Boundary(mg, part_to_nodes)
     base_node_to_move = rand(boundary)
     part_from = MG.get_prop(mg, base_node_to_move, :part)
     radius = rand(0:bunch_radius)
     bunch_to_move = Set(LG.neighborhood(mg, base_node_to_move, radius))
-    # println("Bunch size = ", length(bunch_to_move))
+    bunch_to_move = intersect(bunch_to_move, Set(MG.filter_vertices(mg, :part, part_from)))
+    pop_to_move = sum([MG.get_prop(mg, n, :pop) for n in bunch_to_move])
+    dems_to_move = sum([MG.get_prop(mg, n, :dems) for n in bunch_to_move])
+    println("PTM, DAM: ", (pop_to_move, dems_to_move))
+    println("Parity Margin = ", MG.get_prop(mg, :par_thresh))
+    dist_data = MG.get_prop(mg, :dist_dict)
+    dist_data[part_to].pop += pop_to_move
+    dist_data[part_from].pop -= pop_to_move
+    CheckDictParity(mg, dist_data)
+end
+
+function MoveNodes(mg, part_to)
+    part_to_nodes = MG.filter_vertices(mg, :part, part_to)
+    boundary = Boundary(mg, part_to_nodes)
+    base_node_to_move = rand(boundary)
+    part_from = MG.get_prop(mg, base_node_to_move, :part)
+    radius = rand(0:bunch_radius)
+    bunch_to_move = Set(LG.neighborhood(mg, base_node_to_move, radius))
     bunch_to_move = intersect(bunch_to_move, Set(MG.filter_vertices(mg, :part, part_from)))
     # println(length(Set(MG.filter_vertices(mg, :part, part_from))))
     # println("Bunch size in part_from = ", length(bunch_to_move))
     if CheckConnectedWithoutBunch(mg, part_from, bunch_to_move)
+        pop_to_move = sum([MG.get_prop(mg, n, :pop) for n in bunch_to_move])
+        dems_to_move = sum([MG.get_prop(mg, n, :dems) for n in bunch_to_move])
+        dist_data = MG.get_prop(mg, :dist_dict)
+        dist_data[part_to].pop += pop_to_move
+        dist_data[part_from].pop -= pop_to_move
+        dist_data[part_to].dems += dems_to_move
+        dist_data[part_from].dems -= dems_to_move
+        dist_data[part_to].dem_prop = 100 * (dist_data[part_to].dems / dist_data[part_to].pop)
+        dist_data[part_from].dem_prop = 100 * (dist_data[part_from].dems / dist_data[part_from].pop)
+        MG.set_prop!(mg, :dist_dict, dist_data)
         for n in bunch_to_move
             MG.set_prop!(mg, n, :part, part_to)
         end
-    # else
-    #     println("Not connected.")
+        return part_from, true
+    else
+        return part_from, false
     end
-    # UpdatePart(mg, part_to, bunch_to_move)
-    return part_from
 end
 
 function ShuffleNodes(mg)
     mg_temp = deepcopy(mg)
     part_to = rand(1:MG.get_prop(mg, :num_parts))
     for i in 1:num_moves
-        part_to = MoveNodes(mg, part_to, bunch_radius = bunch_radius)
+        part_to, success = MoveNodes(mg, part_to)
+        if success == false
+            # println("Failed")
+            return mg_temp, false
+        end
     end
     # ac = AllConnected(mg)
-    pca = ParityCheckAll(mg)
-    if pca #!(ac & pca)
+    if !CheckDictParity(mg, MG.get_prop(mg, :dist_dict))
         return mg_temp, false
     else
+        # println("Succeeded.")
         return mg, true
     end
 end
@@ -207,9 +266,8 @@ function SimulatedAnnealing(mg)
     current_score = Score(mg, target)
     println("Initial Score: ", current_score)
     T = 1.0
-    T_min = 0.0001
-    alpha = 0.80
-    swaps = [100, 0]
+    steps = 0
+    swaps = [max_swaps, 0]
     while T > T_min
         i = 1
         while i <= swaps[1]
@@ -229,7 +287,10 @@ function SimulatedAnnealing(mg)
             end
             i += 1
         end
+        steps += 1
+        println("Steps Remaining: ", sa_steps - steps)
         T = T * alpha
+        println("T = ", T)
     end
     return mg
 end
@@ -243,14 +304,16 @@ function RunFunc(;print_graph = false, sim = false)
     Comment out if not plotting before and after.=#
     if print_graph == true
         #For randomly generated graph.
-        pos = nx.spectral_layout(G)
-        locs_x = [pos[node_coords][1] for node_coords in sort(collect(keys(pos)))]
-        locs_y = [pos[node_coords][2] for node_coords in sort(collect(keys(pos)))]
-
-        #For gpickle files.
-        # pos_dict = Dict(nx.get_node_attributes(G,"pos"))
-        # locs_x = [pos_dict[n][1] for n in G[:nodes]()]
-        # locs_y = [-pos_dict[n][2] for n in G[:nodes]()]
+        if rand_graph == true
+            pos = nx.spectral_layout(G)
+            locs_x = [pos[node_coords][1] for node_coords in sort(collect(keys(pos)))]
+            locs_y = [pos[node_coords][2] for node_coords in sort(collect(keys(pos)))]
+        else
+            #For gpickle files.
+            pos_dict = Dict(nx.get_node_attributes(G,"pos"))
+            locs_x = [pos_dict[n][1] for n in G[:nodes]()]
+            locs_y = [-pos_dict[n][2] for n in G[:nodes]()]
+        end
         # println(locs_x)
         PrintPartition(mg, locs_x, locs_y, name = "before.svg")
     end
@@ -272,6 +335,10 @@ function RunFunc(;print_graph = false, sim = false)
     println("Dem percents = ", dem_percent_before)
     println("Mean dem percent = ", mean_dem_percent_before)
     println("Safe dem seats = ", safe_dem_seats_before)
+
+    # for i in 1:10
+    #     MoveCheck(mg)
+    # end
 
     if sim == true
         @time mg = SimulatedAnnealing(mg)
@@ -303,4 +370,4 @@ end
 
 #Testing Code
 using RePartition
-mg, G = RePartition.RunFunc(print_graph = false, sim = true)
+mg, G = RePartition.RunFunc(print_graph = true, sim = true)

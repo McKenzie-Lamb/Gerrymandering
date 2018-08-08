@@ -14,33 +14,30 @@ import math
 from scipy.stats import truncnorm
 import numpy as np
 import math
+import os
 
 def get_truncated_normal(mean=0, sd=1, low=0, upp=10):
     return truncnorm((low - mean) / sd, (upp - mean) / sd, loc=mean, scale=sd)
 
-def MakeNXGraphOld(size = 100, dem_mean = 0.5, dem_sd = 0.3, filename = 'small_map_no_discontiguos.gpickle'):
-    H = nx.connected_watts_strogatz_graph(n=size, k=8, p=0.1)
-    side_dim = math.floor(math.sqrt(size))
-#    H = nx.grid_2d_graph(side_dim, side_dim, periodic=False, create_using=None)
-#    H = nx.triangular_lattice_graph(size, size)
+def MakeNXGraphFile(filename = 'small_map3_no_discontiguos.gpickle'):
+    os.chdir('/Users/lambm/Documents/GitHub/Gerrymandering/McKenzie-files')
     H = nx.read_gpickle(filename)
     G = nx.convert_node_labels_to_integers(H)
-#    pop_generator = get_truncated_normal(mean=100, sd=20, low=0, upp=200)
-#    dem_percent_generator = get_truncated_normal(mean=dem_mean, sd=dem_sd, low=0, upp=1)
-#    for node in G.nodes():
-#        #Generate a random (positive) population for each node.
-#        G.nodes[node]['pop'] = int(round(pop_generator.rvs()))
-#        dem_percent = dem_percent_generator.rvs()
-#        G.nodes[node]['dem'] =int(round(dem_percent * G.nodes[node]['pop']))
     return G
 
-def MakeNXGraph(size = 100, dem_mean = 0.5, dem_sd = 0.3):
+def MakeNXGraphRand(size = 100, dem_mean = 0.5, dem_sd = 0.3):
+    # H = nx.connected_watts_strogatz_graph(n=size, k=8, p=0.1)
+    # side_dim = math.floor(math.sqrt(size))
+#    H = nx.grid_2d_graph(side_dim, side_dim, periodic=False, create_using=None)
+#    H = nx.triangular_lattice_graph(size, size)
     if size == 100:
         multiplier = 165
     elif size == 400:
         multiplier = 370
     elif size == 1000:
         multiplier = 675
+    elif size == 10000:
+        multiplier =4500
     side_dim = math.floor(math.sqrt(size))
     G = nx.grid_2d_graph(side_dim, side_dim, periodic=False, create_using=None)
 #    G = nx.convert_node_labels_to_integers(H)
@@ -57,8 +54,11 @@ def MakeNXGraph(size = 100, dem_mean = 0.5, dem_sd = 0.3):
     return G
 
 #G = metis.example_networkx()
-def MakeGraphPartition(size = 100, num_parts = 4, dem_mean = 0.5, dem_sd = 0.3, filename = 'small_map_no_discontiguos.gpickle'):
-    G = MakeNXGraph(size, dem_mean = dem_mean, dem_sd = dem_sd)
+def MakeGraphPartition(size = 100, num_parts = 4, dem_mean = 0.5, dem_sd = 0.3, filename = 'small_map3_no_discontiguos.gpickle', rand_graph = True):
+    if rand_graph == True:
+        G = MakeNXGraphRand(size, dem_mean = dem_mean, dem_sd = dem_sd)
+    else:
+        G = MakeNXGraphFile(filename)
     G = nx.convert_node_labels_to_integers(G)
     for n in G.nodes():
         G.nodes[n]['pop']= int(G.nodes[n]['pop'])
@@ -82,8 +82,10 @@ def MakeGraphPartition(size = 100, num_parts = 4, dem_mean = 0.5, dem_sd = 0.3, 
 #    edgelist = [(a,b) for (a,b,c) in nx.to_edgelist(G)]
     return G, parts
 
-G, parts = MakeGraphPartition(size = 100, num_parts = 4)
-print("Mean Dem Percentage = ", np.mean([G.nodes[n]['dem'] for n in G.nodes()]))
+os.chdir('/Users/lambm/Documents/GitHub/Gerrymandering/McKenzie-files')
+print(os.getcwd())
+G, parts = MakeGraphPartition(size = 10000, num_parts = 4, filename = 'whole_map_no_discontiguos.gpickle', rand_graph = False)
+print("Mean Dem Percentage = ", np.mean([G.nodes[n]['dem']/G.nodes[n]['pop'] for n in G.nodes() if G.nodes[n]['pop'] != 0]))
 #nx.draw(G, pos=pos)
 #nx.draw(part1_subgraph, with_labels=True, pos=pos, node_color='b')
 #layout = nx.spectral_layout(G)
