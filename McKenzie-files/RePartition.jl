@@ -5,12 +5,13 @@ using LightGraphs; LG = LightGraphs
 using MetaGraphs; MG = MetaGraphs
 unshift!(PyVector(pyimport("sys")["path"]), "")
 @pyimport networkx; nx = networkx
+cd("/Users/lambm/Documents/GitHub/Gerrymandering/McKenzie-files")
 @pyimport RandomPartitionedGraph2; RPG = RandomPartitionedGraph2
 using GraphPlot, Compose
 GP = GraphPlot
 include("PrintPartition.jl")
 include("Districts.jl")
-cd("/Users/lambm/Documents/GitHub/Gerrymandering/McKenzie-files")
+
 # using Districts
 
 #Graph parameters
@@ -18,18 +19,19 @@ const size = 1000
 const num_parts = 8
 const dem_mean = 0.5
 const dem_sd = 0.5
-const rand_graph = true
-const filename = "whole_map_no_discontiguos.gpickle"
+const rand_graph = false
+const filename = "whole_map_contig_point_adj.gpickle"
 
 #Simulated annealing parameters
-const target = [25, 55, 55, 55, 55, 55, 55, 55]
+const target = [8*51-55*7, 55, 55, 55, 55, 55, 55, 55]
 # const target = append!([50 - 5 * (num_parts - 1)], [55 for n in 1:(num_parts - 1)])
 print(target)
 const num_moves = 2
 const bunch_radius = 2
-const T_min = 0.0001
+const T_min = 0.00001
 const alpha = 0.95
-
+const max_swaps = 200
+const sa_steps = log(alpha, T_min)
 
 function CalculateDemPercentage(mg, part)
     part_nodes = MG.filter_vertices(mg, :part, part)
@@ -264,24 +266,13 @@ function SimulatedAnnealing(mg)
     current_score = Score(mg, target)
     println("Initial Score: ", current_score)
     T = 1.0
-    swaps = [150, 0]
+    steps = 0
+    swaps = [max_swaps, 0]
     while T > T_min
         i = 1
         while i <= swaps[1]
             new_mg = deepcopy(mg)
             new_mg, success = ShuffleNodes(new_mg)
-            # if success == false
-            #     before_dict = MG.get_prop(mg, :dist_dict)
-            #     after_dict = MG.get_prop(new_mg, :dist_dict)
-            #     # for p in keys(before_dict)
-            #     #     if after_dict[p] != before_dict[p]
-            #     #         println("Changed: ", p, ", ", after_dict[p].pop - before_dict[p].pop)
-            #     #     end
-            #     # end
-            #     # println("Changed? ", !(after_dict == before_dict))
-            #     # println("Before: ", before_dict)
-            #     # println("After: ", after_dict)
-            # end
             new_score = Score(new_mg, target)
             ap = _acceptance_prob(current_score, new_score, T)
             if ap > rand()
@@ -296,6 +287,8 @@ function SimulatedAnnealing(mg)
             end
             i += 1
         end
+        steps += 1
+        println("Steps Remaining: ", sa_steps - steps)
         T = T * alpha
         println("T = ", T)
     end

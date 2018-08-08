@@ -1,10 +1,16 @@
+using Colors
+using LightGraphs; LG = LightGraphs
+using MetaGraphs; MG = MetaGraphs
+using GraphPlot, Compose
+GP = GraphPlot
+
 function EdgeColor(mg, edge)
     src_part = MG.get_prop(mg, LG.src(edge), :part)
     dst_part = MG.get_prop(mg, LG.dst(edge), :part)
     if src_part == dst_part
         return colorant"black"
     else
-        return colorant"lightgray"
+        return colorant"red"
     end
 
 end
