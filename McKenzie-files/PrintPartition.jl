@@ -10,7 +10,7 @@ function EdgeColor(mg, edge)
     if src_part == dst_part
         return colorant"black"
     else
-        return colorant"red"
+        return colorant"lightgrey"
     end
 
 end
@@ -26,7 +26,7 @@ function PrintPartition(mg, locs_x, locs_y; name = "partition.svg", filename = "
             # for v in MG.vertices(mg)])
     # dem_props = [max(1, Int(floor(round(100*round(MG.get_prop(mg, v, :dems)/MG.get_prop(mg, v, :pop),2)))))
                 # for v in MG.vertices(mg)]
-    NODESIZE = 24/LG.nv(mg)
+    NODESIZE = 50/LG.nv(mg)
     NODELABELSIZE = 1.0
     # nodefillc = [dem_colors[prop] for prop in dem_props]
     # print(nodefillc)
@@ -41,7 +41,7 @@ function PrintPartition(mg, locs_x, locs_y; name = "partition.svg", filename = "
     # nodefillc = nodestrokec
     nodestrokec = colorant"lightgray" #colors[partition]
     draw(SVG(name, 16cm, 16cm), GP.gplot(mg, locs_x, locs_y,
-        nodesize = nodesize, nodefillc=nodefillc, nodestrokelw = nodestrokelw,
+        nodefillc=nodefillc, nodestrokelw = nodestrokelw,
         nodestrokec = nodestrokec, edgestrokec=edgestrokec,
         NODESIZE = NODESIZE))
 end

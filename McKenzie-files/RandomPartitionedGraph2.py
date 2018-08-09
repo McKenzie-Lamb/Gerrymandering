@@ -20,7 +20,7 @@ def get_truncated_normal(mean=0, sd=1, low=0, upp=10):
     return truncnorm((low - mean) / sd, (upp - mean) / sd, loc=mean, scale=sd)
 
 def MakeNXGraphFile(filename = 'small_map3_no_discontiguos.gpickle'):
-    os.chdir('/Users/lambm/Documents/GitHub/Gerrymandering/McKenzie-files')
+    os.chdir(os.path.dirname(os.path.realpath(__file__)))
     H = nx.read_gpickle(filename)
     G = nx.convert_node_labels_to_integers(H)
     return G
@@ -82,9 +82,9 @@ def MakeGraphPartition(size = 100, num_parts = 4, dem_mean = 0.5, dem_sd = 0.3, 
 #    edgelist = [(a,b) for (a,b,c) in nx.to_edgelist(G)]
     return G, parts
 
-os.chdir('/Users/lambm/Documents/GitHub/Gerrymandering/McKenzie-files')
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 print(os.getcwd())
-G, parts = MakeGraphPartition(size = 10000, num_parts = 4, filename = 'whole_map_no_discontiguos.gpickle', rand_graph = False)
+G, parts = MakeGraphPartition(size = 10000, num_parts = 4, filename = 'whole_map_contig_point_adj.gpickle', rand_graph = False)
 print("Mean Dem Percentage = ", np.mean([G.nodes[n]['dem']/G.nodes[n]['pop'] for n in G.nodes() if G.nodes[n]['pop'] != 0]))
 #nx.draw(G, pos=pos)
 #nx.draw(part1_subgraph, with_labels=True, pos=pos, node_color='b')

@@ -5,7 +5,7 @@ using LightGraphs; LG = LightGraphs
 using MetaGraphs; MG = MetaGraphs
 unshift!(PyVector(pyimport("sys")["path"]), "")
 @pyimport networkx; nx = networkx
-cd("/Users/lambm/Documents/GitHub/Gerrymandering/McKenzie-files")
+cd(dirname(Base.source_path()))
 @pyimport RandomPartitionedGraph2; RPG = RandomPartitionedGraph2
 using GraphPlot, Compose
 GP = GraphPlot
@@ -20,17 +20,18 @@ const num_parts = 8
 const dem_mean = 0.5
 const dem_sd = 0.5
 const rand_graph = false
-const filename = "whole_map_contig_no_point_adj.gpickle"
-const percent_dem = 51.3
+const filename = "whole_map_contig_point_adj.gpickle"
+percent_dem = 50
 #Simulated annealing parameters
-const safe_percentage = 53
-const target = append!([num_parts*percent_dem-safe_percentage*(num_parts - 1)], [safe_percentage for i in 1:(num_parts - 1)])
+const safe_percentage = 55.0
+target = append!([num_parts*percent_dem-safe_percentage*(num_parts - 1)],
+                [safe_percentage for i in 1:(num_parts - 1)])
 const num_moves = 2
 const bunch_radius = 2
 const alpha = 0.95
-const temperature_steps = 100
+const temperature_steps = 150
 const T_min = alpha^temperature_steps
-const max_swaps = 150
+const max_swaps = 100
 const sa_steps = log(alpha, T_min)
 
 function CalculateDemPercentage(mg, part)
@@ -59,6 +60,20 @@ function SafeDemSeats(mg)
     return length([p for p in percentages if p >= 54])
 end
 
+function InteriorBoundary(mg, nodes)
+    exterior_bdy = Boundary(mg, nodes)
+    b_list = Set()
+    for v in exterior_bdy
+        union!(b_list, LG.neighbors(mg, v))
+    end
+    intersect!(b_list, nodes)
+    return b_list
+end
+
+function Compactness(mg, part)
+    bdy_nodes = InteriorBoundary(MG.filter_vertices(mg, :part, part))
+end
+
 function Boundary(mg, nodes)
     b_list = Set()
     for v in nodes
@@ -80,6 +95,15 @@ function ParityCheckOne(mg, part)
     threshold = MG.get_prop(mg, :par_thresh)
     return abs(part_pop - parity)/parity < threshold
 end
+
+function DistanceToParity(mg)
+    dist_data = MG.get_prop(mg, :dist_dict)
+    percentages = sort([dist.dem_prop for dist in values(dist_data)])
+    pops = sort([dist.pop for dist in values(dist_data)])
+    parity = MG.get_prop(mg, :parity)
+    return [100.0*((p-parity)/parity) for p in pops]
+end
+
 
 function ParityCheckAll(mg)
     parity_bool = true
@@ -111,15 +135,20 @@ end
 
 
 #Always >= 0.  Closer to 0 is better.
-function Score(mg, target)
+function Score(mg)
     dist_data = MG.get_prop(mg, :dist_dict)
     percentages = sort([dist.dem_prop for dist in values(dist_data)])
-    return sqrt(sum([(percentages[i]-target[i])^2 for i in 1:length(target)]))
-    # return maximum([abs(percentages[i]-target[i]) for i in 1:length(target)])
+    pops = sort([dist.pop for dist in values(dist_data)])
+    parity = MG.get_prop(mg, :parity)
+    dist_to_target = sqrt(sum([(percentages[i]-target[i])^2 for i in 1:length(target)]))
+    # dist_to_parity = maximum([(100.0*abs((p-parity)/parity)) for p in pops])
+    return dist_to_target # + (dist_to_parity^2)/(100)
 end
 
 #Create a randomly generated graph and partition it using Metis (via Python)
 function InitialGraphPartition()
+    global target
+    global percent_dem
     G, parts = RPG.MakeGraphPartition(size = size, num_parts = num_parts,
             dem_sd = dem_sd, filename = filename, rand_graph = rand_graph)
     parts = [i+1 for i in parts]
@@ -151,6 +180,12 @@ function InitialGraphPartition()
     dist_dict = Dict(part => CalculateDistData(mg, part) for part in 1:num_parts)
     MG.set_prop!(mg, :dist_dict, dist_dict)
     # println("Dist Data = ", dist_dict)
+
+    percent_dem = 100 * (sum([MG.get_prop(mg, d, :dems) for d in LG.vertices(mg)])
+                / sum([MG.get_prop(mg, d, :pop) for d in LG.vertices(mg)]))
+    println("Overal Dem Percentage = ", percent_dem)
+    target = append!([num_parts*percent_dem-safe_percentage*(num_parts - 1)],
+                    [safe_percentage for i in 1:(num_parts - 1)])
     return mg, G
 end
 
@@ -193,21 +228,6 @@ function UpdateDemProps(mg)
     end
 end
 
-function FindFarthestDist(mg)
-    dist_dict = MG.get_prop(mg, :dist_dict)
-    UpdateDemProps(mg)
-    percents = sort([dist.dem_prop for dist in values(dist_dict)])
-    diff_list = abs.(target - percents)
-    max_diff_ind = indmax(diff_list)
-    for (key, value) in dist_dict
-        if value.dem_prop == percents[max_diff_ind]
-            # println("Farthest Part = ", key)
-            return key
-        end
-    end
-    # println("Failed to find.")
-    return 1
-end
 
 function MoveNodes(mg, part_to)
     part_to_nodes = MG.filter_vertices(mg, :part, part_to)
@@ -270,7 +290,7 @@ function _acceptance_prob(old_score, new_score, T)
 end
 
 function SimulatedAnnealing(mg)
-    current_score = Score(mg, target)
+    current_score = Score(mg)
     println("Initial Score: ", current_score)
     T = 1.0
     steps_remaining = Int(round(sa_steps))
@@ -280,7 +300,7 @@ function SimulatedAnnealing(mg)
         while i <= swaps[1]
             new_mg = deepcopy(mg)
             new_mg, success = ShuffleNodes(new_mg)
-            new_score = Score(new_mg, target)
+            new_score = Score(new_mg)
             ap = _acceptance_prob(current_score, new_score, T)
             if ap > rand()
                 if new_score < current_score
@@ -327,7 +347,7 @@ function RunFunc(;print_graph = false, sim = false)
 
 
     #Record before data.
-    current_score = Score(mg, target)
+    current_score = Score(mg)
     println("Initial Score: ", current_score)
     connected_before = AllConnected(mg)
     connected_after = ParityCheckAll(mg)
@@ -362,9 +382,10 @@ function RunFunc(;print_graph = false, sim = false)
 
 
         println("**************After***************")
-        println("Final Score = ", Score(mg, target))
+        println("Final Score = ", Score(mg))
         println("Connected after? ", AllConnected(mg))
         println("Parity after? ", ParityCheckAll(mg))
+        println("Parity after: ", DistanceToParity(mg))
         dem_percents_after = DemPercentages(mg)
         println("Target = ", target)
         println("Dem percents after = ", sort(dem_percents_after))
@@ -382,4 +403,4 @@ end
 
 #Testing Code
 using RePartition
-mg, G = RePartition.RunFunc(print_graph = true, sim = true)
+mg, G = RePartition.RunFunc(print_graph = true, sim = false)
