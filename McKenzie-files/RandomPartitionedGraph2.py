@@ -84,7 +84,7 @@ def MakeGraphPartition(size = 100, num_parts = 4, dem_mean = 0.5, dem_sd = 0.3, 
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 print(os.getcwd())
-G, parts = MakeGraphPartition(size = 10000, num_parts = 4, filename = 'whole_map_contig_point_adj.gpickle', rand_graph = False)
+G, parts = MakeGraphPartition(size = 10000, num_parts = 4, filename = 'contig_16_share.gpickle', rand_graph = False)
 print("Mean Dem Percentage = ", np.mean([G.nodes[n]['dem']/G.nodes[n]['pop'] for n in G.nodes() if G.nodes[n]['pop'] != 0]))
 #nx.draw(G, pos=pos)
 #nx.draw(part1_subgraph, with_labels=True, pos=pos, node_color='b')

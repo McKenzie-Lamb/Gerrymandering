@@ -9,7 +9,10 @@
 mutable struct District
     pop::Int
     dems::Int
+    tot::Int
+    reps::Int
     dem_prop::Float64
+
 
     # function District(;pop = 0, dems = 0, dem_prop = 0)
 end

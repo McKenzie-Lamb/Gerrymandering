@@ -30,7 +30,7 @@ const num_parts = 8
 const dem_mean = 0.5
 const dem_sd = 0.5
 const rand_graph = false
-const filename = "whole_map_contig_point_adj.gpickle"
+const filename = "contig_16_share.gpickle"
 percent_dem = 50
 const par_thresh = 0.1
 
@@ -48,9 +48,9 @@ const max_swaps = 150
 
 function CalculateDemPercentage(mg, part)
     part_nodes = MG.filter_vertices(mg, :part, part)
-    part_pop = sum([MG.get_prop(mg, v, :pop) for v in part_nodes])
+    part_tot = sum([MG.get_prop(mg, v, :tot) for v in part_nodes])
     part_dems = sum([MG.get_prop(mg, v, :dems) for v in part_nodes])
-    return 100 * (part_dems / part_pop)
+    return 100 * (part_dems / part_tot)
 end
 
 function DemPercentages(mg)
@@ -58,11 +58,13 @@ function DemPercentages(mg)
 end
 
 function CalculateDistData(mg, part)
-    d = District(0, 0, 0)
+    d = District(0, 0, 0, 0, 0)
     part_nodes = MG.filter_vertices(mg, :part, part)
-    d.pop = sum([MG.get_prop(mg, v, :pop) for v in part_nodes])
+    d.tot = sum([MG.get_prop(mg, v, :tot) for v in part_nodes])
     d.dems = sum([MG.get_prop(mg, v, :dems) for v in part_nodes])
-    d.dem_prop = 100 * (d.dems / d.pop)
+    d.reps = sum([MG.get_prop(mg, v, :reps) for v in part_nodes])
+    d.pop = sum([MG.get_prop(mg, v, :pop) for v in part_nodes])
+    d.dem_prop = 100 * (d.dems / d.tot)
     return d
 end
 
@@ -82,10 +84,13 @@ function InteriorBoundary(mg, nodes)
     return b_list
 end
 
+#Not complete.  Will calculate convex hull compactness.
 function Compactness(mg, part)
     bdy_nodes = InteriorBoundary(MG.filter_vertices(mg, :part, part))
 end
 
+#Returns the exterior node boundary of the set "nodes" within the graph "mg".
+#Translated from NetworkX
 function Boundary(mg, nodes)
     b_list = IntSet()
     for v in nodes
@@ -109,8 +114,8 @@ end
 
 function DistanceToParity(mg)
     dist_data = MG.get_prop(mg, :dist_dict)
-    percentages = sort([dist.dem_prop for dist in values(dist_data)])
     pops = sort([dist.pop for dist in values(dist_data)])
+    # println("####Pops##### : ", pops)
     parity = MG.get_prop(mg, :parity)
     return [100.0*((p-parity)/parity) for p in pops]
 end
@@ -133,6 +138,7 @@ function PartConnected(mg, part)
     return LG.is_connected(subgraph)
 end
 
+#Returns true if all districts are connected, false otherwise.
 function AllConnected(mg)
     connected = true
     for part in 1:MG.get_prop(mg, :num_parts)
@@ -174,6 +180,17 @@ function OneSidedScore(mg)
 end
 
 #Euclidean distance to target democratic percentages
+#in num_parts-dimensional space + parity score.
+function TargetPlusParityScore(mg)
+    dist_data = MG.get_prop(mg, :dist_dict)
+    percentages = sort([dist.dem_prop for dist in values(dist_data)])
+    pops = sort([dist.pop for dist in values(dist_data)])
+    parity = MG.get_prop(mg, :parity)
+    dist_to_parity = 100*(maximum(append!([0.1], [par_thresh * ((p-parity)/(parity * par_thresh))^2 for p in pops])))
+    return norm(percentages-target) + dist_to_parity
+end
+
+#Euclidean distance to target democratic percentages
 #in num_parts-dimensional space.
 function DistToTargetScore(mg)
     dist_data = MG.get_prop(mg, :dist_dict)
@@ -181,10 +198,6 @@ function DistToTargetScore(mg)
     pops = sort([dist.pop for dist in values(dist_data)])
     parity = MG.get_prop(mg, :parity)
     return norm(percentages-target)
-    # dist_to_target = norm(percentages-target)
-    # compactness = 100*(1-mean([PartCompactness(mg, part) for part in 1:num_parts]))
-    # println("Mean Compactness: ", compactness)
-    # return sqrt(dist_to_target^2+compactness^2)
 end
 
 #Euclidean distance from vector of percentages for districts to win to the line
@@ -199,6 +212,18 @@ function DistToEqualScore(mg)
     return dist_to_equal
 end
 
+#=Calculates a parity score based on the maximum deviation above or below
+parity.  Squaring imposes steep penalties once par_thresh is exceeded.
+Also, maximum ensures score remains constant if maximum deviation is
+below par_thresh.
+=#
+function ParityScore(mg)
+    dist_data = MG.get_prop(mg, :dist_dict)
+    pops = sort([dist.pop for dist in values(dist_data)])
+    parity = MG.get_prop(mg, :parity)
+    return 100*(maximum(append!([par_thresh], [par_thresh * ((p-parity)/(parity * par_thresh))^2 for p in pops])))
+end
+
 #=Three componenets: distance to target of throw-away district,
 distance to equality line of districts we want to win,
 distance to parity.
@@ -209,7 +234,6 @@ function ComponentScore(mg)
     pops = sort([dist.pop for dist in values(dist_data)])
     parity = MG.get_prop(mg, :parity)
     dist_to_target = abs(percentages[1]-target[1])
-    #sqrt(sum([(percentages[i]-target[i])^2 for i in 1:length(target)]))
     dist_to_parity = 100*(maximum(append!([par_thresh], [par_thresh * ((p-parity)/(parity * par_thresh))^2 for p in pops])))
     ep = percentages[2:num_parts]
     el = [1 for i in 2:num_parts]
@@ -219,20 +243,28 @@ end
 
 #Create a randomly generated graph and partition it using Metis (via Python)
 function InitialGraphPartition()
+    #Global variables to be updated based on graph data.
     global target
     global percent_dem
+
+    #Import partitioned graph from Python/Metis.
     G, parts = RPG.MakeGraphPartition(size = size, num_parts = num_parts,
             dem_sd = dem_sd, filename = filename, rand_graph = rand_graph)
+
+    #Increment by 1 because Julia starts counting at 1, Python starts at 0.
     parts = [i+1 for i in parts]
+
+    #Create LG version of G.
     g = LG.SimpleGraph()
     LG.add_vertices!(g, length(G[:nodes]()))
     for e in G[:edges]()
-        LG.add_edge!(g, (e[1]+1, e[2]+1))
+        LG.add_edge!(g, (e[1]+1, e[2]+1)) #Increment because of counting difference.
     end
     mg = MG.MetaGraph(g)
 
     MG.set_prop!(mg, :num_parts, num_parts)
 
+    #Copy population data from nx graph into MG graph
     for d in nx.get_node_attributes(G,"pop")
         # println(d[1], " ** ", d[2])
         MG.set_prop!(mg, d[1]+1, :pop, d[2])
@@ -240,29 +272,56 @@ function InitialGraphPartition()
 
     CalculateParity(mg)
 
+    #Copy democratic vote data from nx graph into MG graph
     for d in nx.get_node_attributes(G,"dem")
-        MG.set_prop!(mg, d[1]+1, :dems, d[2])
+        if isnan(d[2])
+            MG.set_prop!(mg, d[1]+1, :dems, 0)
+        else
+            MG.set_prop!(mg, d[1]+1, :dems, d[2])
+        end
     end
 
+    #Copy democratic vote data from nx graph into MG graph
+    rep_data = nx.get_node_attributes(G,"rep")
+    # if length(rep_data) == 0
+    for d in rep_data
+        if isnan(d[2])
+            MG.set_prop!(mg, d[1]+1, :reps, 0)
+        else
+            MG.set_prop!(mg, d[1]+1, :reps, d[2])
+        end
+    end
+
+    #Construct total vote data: dem + rep
+    for v in LG.vertices(mg)
+        total = MG.get_prop(mg, v, :reps) + MG.get_prop(mg, v, :reps)
+        MG.set_prop!(mg, v, :tot, total)
+    end
+
+    #Copy position (node coordinates) into MG graph.
     pos_dict = Dict(nx.get_node_attributes(G,"pos"))
     for node_num in keys(pos_dict)
         MG.set_prop!(mg, node_num+1, :pos, pos_dict[node_num])
     end
 
+    #Insert district numbers into MG graph.
     for i in 1:length(parts)
         MG.set_prop!(mg, i, :part, parts[i])
     end
 
+    #Create dictionary with district data (district objects).
     dist_dict = Dict(part => CalculateDistData(mg, part) for part in 1:num_parts)
     MG.set_prop!(mg, :dist_dict, dist_dict)
     # println("Dist Data = ", dist_dict)
 
     percent_dem = 100 * (sum([MG.get_prop(mg, d, :dems) for d in LG.vertices(mg)])
-                / sum([MG.get_prop(mg, d, :pop) for d in LG.vertices(mg)]))
+                / sum([MG.get_prop(mg, d, :tot) for d in LG.vertices(mg)]))
     println("Overal Dem Percentage = ", percent_dem)
-    target = sort([53.8291, 53.82, 53.7211, 31.523, 53.7479, 53.8298, 53.7259, 53.51])
-    append!([num_parts*percent_dem-safe_percentage*(num_parts - 1)],
-                    [safe_percentage for i in 1:(num_parts - 1)])
+    target = [6, 6, 6, 6, 53, 53, 53, 53]
+    # append!([num_parts*percent_dem-safe_percentage*(num_parts - 1)],
+                    # [safe_percentage for i in 1:(num_parts - 1)])
+    #sort([53.8291, 53.82, 53.7211, 31.523, 53.7479, 53.8298, 53.7259, 53.51])
+
     return mg, G
 end
 
@@ -291,13 +350,16 @@ function CheckConnectedWithoutBunch(mg, part_from, bunch_to_move)
     return LG.is_connected(subgraph)
 end
 
-
+#Calculate proportions of democratic votes in each district.
+#Record in dictionary of district objects.
 function UpdateDemProps(mg)
     for (part, dist) in MG.get_prop(mg, :dist_dict)
-        dist.dem_prop = 100*(dist.dems / dist.pop)
+        dist.dem_prop = 100*(dist.dems / dist.tot)
     end
 end
 
+#= Makes a move: reassigns a connected set of nodes from one district to another.
+If the proposed move would disconnect the district losing nodes, bail. =#
 
 function MoveNodes(mg, part_to)
     part_to_nodes = MG.filter_vertices(mg, :part, part_to)
@@ -312,13 +374,20 @@ function MoveNodes(mg, part_to)
     if CheckConnectedWithoutBunch(mg, part_from, bunch_to_move)
         pop_to_move = sum([MG.get_prop(mg, n, :pop) for n in bunch_to_move])
         dems_to_move = sum([MG.get_prop(mg, n, :dems) for n in bunch_to_move])
+        reps_to_move = sum([MG.get_prop(mg, n, :reps) for n in bunch_to_move])
+        tot_to_move = dems_to_move + reps_to_move
         dist_data = MG.get_prop(mg, :dist_dict)
+
+        #Update dictionary of district data to reflect move.
         dist_data[part_to].pop += pop_to_move
         dist_data[part_from].pop -= pop_to_move
         dist_data[part_to].dems += dems_to_move
         dist_data[part_from].dems -= dems_to_move
-        dist_data[part_to].dem_prop = 100 * (dist_data[part_to].dems / dist_data[part_to].pop)
-        dist_data[part_from].dem_prop = 100 * (dist_data[part_from].dems / dist_data[part_from].pop)
+        dist_data[part_to].reps += reps_to_move
+        dist_data[part_from].reps -= reps_to_move
+        dist_data[part_to].tot += tot_to_move
+        dist_data[part_from].tot -= tot_to_move
+        UpdateDemProps(mg)
         MG.set_prop!(mg, :dist_dict, dist_data)
         for n in bunch_to_move
             MG.set_prop!(mg, n, :part, part_to)
@@ -329,6 +398,9 @@ function MoveNodes(mg, part_to)
     end
 end
 
+#= Makes a sequence of node moves (length of sequence set as global const.)
+For each step after the first in the sequence, the district to receive
+nodes is the one that lost nodes in the previous step. =#
 function ShuffleNodes(mg)
     mg_temp = deepcopy(mg)
     # part_to = FindFarthestDist(mg)
@@ -360,7 +432,7 @@ function _acceptance_prob(old_score, new_score, T)
 end
 
 function SimulatedAnnealing(mg)
-    current_score = ComponentScore(mg)
+    current_score = TargetPlusParityScore(mg)
     println("Initial Score: ", current_score)
     T = 1.0
     steps_remaining = Int(round(temperature_steps))
@@ -370,7 +442,7 @@ function SimulatedAnnealing(mg)
         while i <= swaps[1]
             new_mg = deepcopy(mg)
             new_mg, success = ShuffleNodes(new_mg)
-            new_score = ComponentScore(new_mg)
+            new_score = TargetPlusParityScore(new_mg)
             ap = _acceptance_prob(current_score, new_score, T)
             if ap > rand()
                 if new_score < current_score
@@ -420,10 +492,17 @@ function RunFunc(;print_graph = false, sim = false)
         PrintPartition(mg, locs_x, locs_y, name = "before.svg")
     end
 
+    println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    dem_percents = DemPercentages(mg)
+    println("Dem percents: ", sort(dem_percents))
+    println("Parity: ", DistanceToParity(mg))
+    println("District Data: ", MG.get_prop(mg, :dist_dict))
+    println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+
 
     #Record before data.
-    current_score = ComponentScore(mg)
-    println("Initial Score: ", current_score)
+    # current_score = ComponentScore(mg)
+    # println("Initial Score: ", current_score)
     connected_before = AllConnected(mg)
     parity_before = ParityCheckAll(mg)
     dem_percent_before = DemPercentages(mg)
@@ -457,7 +536,7 @@ function RunFunc(;print_graph = false, sim = false)
 
 
         println("**************After***************")
-        println("Final Score = ", ComponentScore(mg))
+        # println("Final Score = ", ComponentScore(mg))
         println("Connected after? ", AllConnected(mg))
         println("Parity after? ", ParityCheckAll(mg))
         println("Parity after: ", DistanceToParity(mg))
@@ -506,6 +585,3 @@ end
 #Testing Code
 using RePartition
 mg, G = RePartition.RunFunc(print_graph = true, sim = true)
-# mg, G = RePartition.InitialGraphPartition()
-# compactness = @time RePartition.CompactnessTest(mg, 1)
-# println("Compactness: ", compactness)
