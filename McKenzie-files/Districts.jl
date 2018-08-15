@@ -9,8 +9,8 @@
 mutable struct District
     pop::Int
     dems::Int
-    tot::Int
     reps::Int
+    tot::Int
     dem_prop::Float64
 
 

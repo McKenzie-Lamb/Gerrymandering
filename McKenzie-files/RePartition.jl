@@ -30,7 +30,8 @@ const num_parts = 8
 const dem_mean = 0.5
 const dem_sd = 0.5
 const rand_graph = false
-const filename = "contig_16_share.gpickle"
+# const filename = "contig_16_share.gpickle" #Texas (incomplete data)
+const filename = "whole_map_contig_point_adj.gpickle" #Wisconsin
 percent_dem = 50
 const par_thresh = 0.1
 
@@ -71,7 +72,7 @@ end
 
 function SafeDemSeats(mg)
     percentages = DemPercentages(mg)
-    return length([p for p in percentages if p >= 54])
+    return length([p for p in percentages if p >= 53])
 end
 
 function InteriorBoundary(mg, nodes)
@@ -282,9 +283,10 @@ function InitialGraphPartition()
     end
 
     #Copy democratic vote data from nx graph into MG graph
-    rep_data = nx.get_node_attributes(G,"rep")
+    # rep_data =
+    # println("Rep? ", rep_data)
     # if length(rep_data) == 0
-    for d in rep_data
+    for d in nx.get_node_attributes(G,"rep")
         if isnan(d[2])
             MG.set_prop!(mg, d[1]+1, :reps, 0)
         else
@@ -317,9 +319,9 @@ function InitialGraphPartition()
     percent_dem = 100 * (sum([MG.get_prop(mg, d, :dems) for d in LG.vertices(mg)])
                 / sum([MG.get_prop(mg, d, :tot) for d in LG.vertices(mg)]))
     println("Overal Dem Percentage = ", percent_dem)
-    target = [6, 6, 6, 6, 53, 53, 53, 53]
-    # append!([num_parts*percent_dem-safe_percentage*(num_parts - 1)],
-                    # [safe_percentage for i in 1:(num_parts - 1)])
+    # target = [6, 6, 6, 6, 53, 53, 53, 53]
+    target = append!([num_parts*percent_dem-safe_percentage*(num_parts - 1)],
+                    [safe_percentage for i in 1:(num_parts - 1)])
     #sort([53.8291, 53.82, 53.7211, 31.523, 53.7479, 53.8298, 53.7259, 53.51])
 
     return mg, G
@@ -461,7 +463,7 @@ function SimulatedAnnealing(mg)
         println("Steps Remaining: ", steps_remaining)
         T = T * alpha
         println("T = ", T)
-        dem_percents = DemPercentages(mg)
+        dem_percents = sort!(DemPercentages(mg))
         println("Dem percents: ", sort(dem_percents))
         println("Parity: ", DistanceToParity(mg))
         println("-------------------------------------")
@@ -493,8 +495,8 @@ function RunFunc(;print_graph = false, sim = false)
     end
 
     println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-    dem_percents = DemPercentages(mg)
-    println("Dem percents: ", sort(dem_percents))
+    dem_percents = sort!(DemPercentages(mg))
+    println("Dem percents: ", sort!(dem_percents))
     println("Parity: ", DistanceToParity(mg))
     println("District Data: ", MG.get_prop(mg, :dist_dict))
     println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
@@ -505,7 +507,7 @@ function RunFunc(;print_graph = false, sim = false)
     # println("Initial Score: ", current_score)
     connected_before = AllConnected(mg)
     parity_before = ParityCheckAll(mg)
-    dem_percent_before = DemPercentages(mg)
+    dem_percent_before = sort!(DemPercentages(mg))
     mean_dem_percent_before = mean(dem_percent_before)
     safe_dem_seats_before = SafeDemSeats(mg)
 
@@ -540,9 +542,9 @@ function RunFunc(;print_graph = false, sim = false)
         println("Connected after? ", AllConnected(mg))
         println("Parity after? ", ParityCheckAll(mg))
         println("Parity after: ", DistanceToParity(mg))
-        dem_percents_after = DemPercentages(mg)
+        dem_percents_after = sort!(DemPercentages(mg))
         println("Target = ", target)
-        println("Dem percents after = ", sort(dem_percents_after))
+        println("Dem percents after = ", sort!(dem_percents_after))
         println("Mean dem percent after = ", mean(dem_percents_after))
         println("Safe dem seats after = ", SafeDemSeats(mg))
         if print_graph == true
