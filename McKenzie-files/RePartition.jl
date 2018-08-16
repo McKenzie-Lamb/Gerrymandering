@@ -40,7 +40,8 @@ const safe_percentage = 54
 target = append!([num_parts*percent_dem-safe_percentage*(num_parts - 1)],
                  [safe_percentage for i in 1:(num_parts - 1)])
 const num_moves = 2
-const bunch_radius = 2
+const max_radius = 6
+bunch_radius = max_radius
 const alpha = 0.95
 const temperature_steps = 150
 const T_min = alpha^temperature_steps
@@ -366,13 +367,26 @@ If the proposed move would disconnect the district losing nodes, bail. =#
 function MoveNodes(mg, part_to)
     part_to_nodes = MG.filter_vertices(mg, :part, part_to)
     boundary = Boundary(mg, part_to_nodes)
+
+    #Find a connected boundary neighborhood to move.
+    connected = false
+    radius = bunch_radius
     base_node_to_move = rand(collect(boundary))
     part_from = MG.get_prop(mg, base_node_to_move, :part)
-    radius = rand(0:bunch_radius)
-    bunch_to_move = Set(LG.neighborhood(mg, base_node_to_move, radius))
-    bunch_to_move = intersect(bunch_to_move, Set(MG.filter_vertices(mg, :part, part_from)))
-    # println(length(Set(MG.filter_vertices(mg, :part, part_from))))
-    # println("Bunch size in part_from = ", length(bunch_to_move))
+    bunch_to_move = [] #Declare for access to local scope variable in loop.
+    while connected == false
+        bunch_to_move = Set(LG.neighborhood(mg, base_node_to_move, radius))
+        bunch_to_move = intersect(bunch_to_move, Set(MG.filter_vertices(mg, :part, part_from)))
+        subgraph, vm = LG.induced_subgraph(mg, collect(bunch_to_move))
+        if LG.is_connected(subgraph)
+            connected = true
+        else
+            radius -= 1
+        end
+    end
+
+    #Try moving bunch_to_move from part_from to part_to.
+    #First, check to see whether the move would disconnect part_from.
     if CheckConnectedWithoutBunch(mg, part_from, bunch_to_move)
         pop_to_move = sum([MG.get_prop(mg, n, :pop) for n in bunch_to_move])
         dems_to_move = sum([MG.get_prop(mg, n, :dems) for n in bunch_to_move])
@@ -391,12 +405,14 @@ function MoveNodes(mg, part_to)
         dist_data[part_from].tot -= tot_to_move
         UpdateDemProps(mg)
         MG.set_prop!(mg, :dist_dict, dist_data)
+
+        #Update node prorties of moved nodes.
         for n in bunch_to_move
             MG.set_prop!(mg, n, :part, part_to)
         end
         return part_from, true
     else
-        return part_from, false
+        return part_to, false
     end
 end
 
@@ -434,6 +450,7 @@ function _acceptance_prob(old_score, new_score, T)
 end
 
 function SimulatedAnnealing(mg)
+    global bunch_radius
     current_score = TargetPlusParityScore(mg)
     println("Initial Score: ", current_score)
     T = 1.0
@@ -459,14 +476,20 @@ function SimulatedAnnealing(mg)
             i += 1
         end
         steps_remaining -= 1
+        bunch_radius = Int(floor(max_radius - (max_radius / temperature_steps) * (temperature_steps - steps_remaining)))
         println("-------------------------------------")
         println("Steps Remaining: ", steps_remaining)
+        println("Bunch Radius: ", bunch_radius)
         T = T * alpha
         println("T = ", T)
         dem_percents = sort!(DemPercentages(mg))
         println("Dem percents: ", sort(dem_percents))
         println("Parity: ", DistanceToParity(mg))
         println("-------------------------------------")
+        # if !AllConnected(mg)
+        #     println("Connectedness broken.")
+        #     break
+        # end
     end
     return mg
 end
@@ -475,7 +498,7 @@ end
 # @time PartitionDict(mg)
 function RunFunc(;print_graph = false, sim = false)
     mg, G = InitialGraphPartition()
-
+    colors = []
     #= Set x and y coordinates of nodes.  Takes a long time.
     Comment out if not plotting before and after.=#
     if print_graph == true
@@ -491,7 +514,7 @@ function RunFunc(;print_graph = false, sim = false)
             locs_y = [-pos_dict[n][2] for n in G[:nodes]()]
         end
         # println(locs_x)
-        PrintPartition(mg, locs_x, locs_y, name = "before.svg")
+        colors = PrintPartition(mg, locs_x, locs_y, name = "before.svg")
     end
 
     println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
@@ -519,6 +542,7 @@ function RunFunc(;print_graph = false, sim = false)
     println("Mean dem percent = ", mean_dem_percent_before)
     println("Safe dem seats = ", safe_dem_seats_before)
     println("Target = ", target)
+    println("Initial Bunch Radius: ", bunch_radius)
 
     # for i in 1:10
     #     MoveCheck(mg)
@@ -548,10 +572,11 @@ function RunFunc(;print_graph = false, sim = false)
         println("Mean dem percent after = ", mean(dem_percents_after))
         println("Safe dem seats after = ", SafeDemSeats(mg))
         if print_graph == true
-            PrintPartition(mg, locs_x, locs_y, name = "after.svg")
+            colors = PrintPartition(mg, locs_x, locs_y, name = "after.svg")
         end
     end
-    return mg, G
+    println("Colors: ", enumerate(colors))
+    return mg, G, colors
 end
 
 # mg, G = RePartition.RunFunc(print_graph = true, sim = true)
@@ -586,4 +611,4 @@ end
 
 #Testing Code
 using RePartition
-mg, G = RePartition.RunFunc(print_graph = true, sim = true)
+mg, G, colors = RePartition.RunFunc(print_graph = true, sim = true)

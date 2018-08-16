@@ -44,4 +44,5 @@ function PrintPartition(mg, locs_x, locs_y; name = "partition.svg", filename = "
         nodefillc=nodefillc, nodestrokelw = nodestrokelw,
         nodestrokec = nodestrokec, edgestrokec=edgestrokec,
         NODESIZE = NODESIZE))
+    return colors
 end
