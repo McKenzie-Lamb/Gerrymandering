@@ -11,11 +11,11 @@ cd(dirname(Base.source_path()))
 #For compactness measure calculation.
 # @pyimport matplotlib.pyplot as pyplot
 # using PyPlot
-@pyimport shapely
-geom = shapely.geometry
-poly = geom[:polygon]
-Polygon = poly[:Polygon]
-LinearRing = geom[:LinearRing]
+# @pyimport shapely
+# geom = shapely.geometry
+# poly = geom[:polygon]
+# Polygon = poly[:Polygon]
+# LinearRing = geom[:LinearRing]
 
 using GraphPlot, Compose
 GP = GraphPlot
@@ -39,8 +39,10 @@ const par_thresh = 0.1
 const safe_percentage = 54
 target = append!([num_parts*percent_dem-safe_percentage*(num_parts - 1)],
                  [safe_percentage for i in 1:(num_parts - 1)])
+dem_target = sort([0.055, 0.135, 0.135, 0.135, 0.135, 0.135, 0.135, 0.135])
+
 const num_moves = 2
-const max_radius = 6
+const max_radius = 2
 bunch_radius = max_radius
 const alpha = 0.95
 const temperature_steps = 150
@@ -246,12 +248,13 @@ end
 #Create a randomly generated graph and partition it using Metis (via Python)
 function InitialGraphPartition()
     #Global variables to be updated based on graph data.
-    global target
+    # global target
     global percent_dem
 
     #Import partitioned graph from Python/Metis.
     G, parts = RPG.MakeGraphPartition(size = size, num_parts = num_parts,
-            dem_sd = dem_sd, filename = filename, rand_graph = rand_graph)
+            dem_sd = dem_sd, filename = filename, rand_graph = rand_graph,
+            target = dem_target)
 
     #Increment by 1 because Julia starts counting at 1, Python starts at 0.
     parts = [i+1 for i in parts]
@@ -297,7 +300,7 @@ function InitialGraphPartition()
 
     #Construct total vote data: dem + rep
     for v in LG.vertices(mg)
-        total = MG.get_prop(mg, v, :reps) + MG.get_prop(mg, v, :reps)
+        total = MG.get_prop(mg, v, :dems) + MG.get_prop(mg, v, :reps)
         MG.set_prop!(mg, v, :tot, total)
     end
 
