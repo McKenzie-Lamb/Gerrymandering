@@ -21,6 +21,7 @@ using GraphPlot, Compose
 GP = GraphPlot
 include("PrintPartition.jl")
 include("Districts.jl")
+using StatsBase
 
 # using Districts
 
@@ -41,13 +42,13 @@ target = append!([num_parts*percent_dem-safe_percentage*(num_parts - 1)],
                  [safe_percentage for i in 1:(num_parts - 1)])
 dem_target = sort([0.055, 0.135, 0.135, 0.135, 0.135, 0.135, 0.135, 0.135])
 
-const num_moves = 2
-const max_radius = 2
-bunch_radius = max_radius
+const num_moves = 1
+const max_move_size = 10
+move_size = max_move_size
 const alpha = 0.95
 const temperature_steps = 150
 const T_min = alpha^temperature_steps
-const max_swaps = 150
+const max_swaps = 200
 # const sa_steps = log(alpha, T_min)
 
 function CalculateDemPercentage(mg, part)
@@ -367,55 +368,33 @@ end
 #= Makes a move: reassigns a connected set of nodes from one district to another.
 If the proposed move would disconnect the district losing nodes, bail. =#
 
-function MoveNodes(mg, part_to)
+function MoveNodes(mg, part_to, part_from)
     part_to_nodes = MG.filter_vertices(mg, :part, part_to)
-    boundary = Boundary(mg, part_to_nodes)
-
+    part_from_nodes = MG.filter_vertices(mg, :part, part_from)
     #Find a connected boundary neighborhood to move.
-    connected = false
-    radius = bunch_radius
-    base_node_to_move = rand(collect(boundary))
-    part_from = MG.get_prop(mg, base_node_to_move, :part)
-    bunch_to_move = [] #Declare for access to local scope variable in loop.
-    while connected == false
-        bunch_to_move = Set(LG.neighborhood(mg, base_node_to_move, radius))
-        bunch_to_move = intersect(bunch_to_move, Set(MG.filter_vertices(mg, :part, part_from)))
-        subgraph, vm = LG.induced_subgraph(mg, collect(bunch_to_move))
-        if LG.is_connected(subgraph)
-            connected = true
-        else
-            radius -= 1
-        end
-    end
+    bunch_to_move = StatsBase.sample(collect(part_from_nodes), move_size)
 
-    #Try moving bunch_to_move from part_from to part_to.
-    #First, check to see whether the move would disconnect part_from.
-    if CheckConnectedWithoutBunch(mg, part_from, bunch_to_move)
-        pop_to_move = sum([MG.get_prop(mg, n, :pop) for n in bunch_to_move])
-        dems_to_move = sum([MG.get_prop(mg, n, :dems) for n in bunch_to_move])
-        reps_to_move = sum([MG.get_prop(mg, n, :reps) for n in bunch_to_move])
-        tot_to_move = dems_to_move + reps_to_move
-        dist_data = MG.get_prop(mg, :dist_dict)
+    pop_to_move = sum([MG.get_prop(mg, n, :pop) for n in bunch_to_move])
+    dems_to_move = sum([MG.get_prop(mg, n, :dems) for n in bunch_to_move])
+    reps_to_move = sum([MG.get_prop(mg, n, :reps) for n in bunch_to_move])
+    tot_to_move = dems_to_move + reps_to_move
 
-        #Update dictionary of district data to reflect move.
-        dist_data[part_to].pop += pop_to_move
-        dist_data[part_from].pop -= pop_to_move
-        dist_data[part_to].dems += dems_to_move
-        dist_data[part_from].dems -= dems_to_move
-        dist_data[part_to].reps += reps_to_move
-        dist_data[part_from].reps -= reps_to_move
-        dist_data[part_to].tot += tot_to_move
-        dist_data[part_from].tot -= tot_to_move
-        UpdateDemProps(mg)
-        MG.set_prop!(mg, :dist_dict, dist_data)
+    #Update dictionary of district data to reflect move.
+    dist_data = MG.get_prop(mg, :dist_dict)
+    dist_data[part_to].pop += pop_to_move
+    dist_data[part_from].pop -= pop_to_move
+    dist_data[part_to].dems += dems_to_move
+    dist_data[part_from].dems -= dems_to_move
+    dist_data[part_to].reps += reps_to_move
+    dist_data[part_from].reps -= reps_to_move
+    dist_data[part_to].tot += tot_to_move
+    dist_data[part_from].tot -= tot_to_move
+    UpdateDemProps(mg)
+    MG.set_prop!(mg, :dist_dict, dist_data)
 
-        #Update node prorties of moved nodes.
-        for n in bunch_to_move
-            MG.set_prop!(mg, n, :part, part_to)
-        end
-        return part_from, true
-    else
-        return part_to, false
+    #Update node prorties of moved nodes.
+    for n in bunch_to_move
+        MG.set_prop!(mg, n, :part, part_to)
     end
 end
 
@@ -425,21 +404,12 @@ nodes is the one that lost nodes in the previous step. =#
 function ShuffleNodes(mg)
     mg_temp = deepcopy(mg)
     # part_to = FindFarthestDist(mg)
-    part_to = rand(1:MG.get_prop(mg, :num_parts))
+    shuffled_part_nums = shuffle(1:num_parts)
+    part_to = shuffled_part_nums[1]
+    part_from = shuffled_part_nums[2]
     for i in 1:num_moves
-        part_to, success = MoveNodes(mg, part_to)
-        if success == false
-            # println("Failed")
-            return mg_temp, false
-        end
+        MoveNodes(mg, part_to, part_from)
     end
-    # ac = AllConnected(mg)
-    # if !CheckDictParity(mg, MG.get_prop(mg, :dist_dict))
-    #     return mg_temp, false
-    # else
-        # println("Succeeded.")
-        return mg, true
-    # end
 end
 
 
@@ -453,7 +423,7 @@ function _acceptance_prob(old_score, new_score, T)
 end
 
 function SimulatedAnnealing(mg)
-    global bunch_radius
+    global move_size
     current_score = TargetPlusParityScore(mg)
     println("Initial Score: ", current_score)
     T = 1.0
@@ -463,7 +433,7 @@ function SimulatedAnnealing(mg)
         i = 1
         while i <= swaps[1]
             new_mg = deepcopy(mg)
-            new_mg, success = ShuffleNodes(new_mg)
+            ShuffleNodes(new_mg)
             new_score = TargetPlusParityScore(new_mg)
             ap = _acceptance_prob(current_score, new_score, T)
             if ap > rand()
@@ -479,10 +449,10 @@ function SimulatedAnnealing(mg)
             i += 1
         end
         steps_remaining -= 1
-        bunch_radius = Int(floor(max_radius - (max_radius / temperature_steps) * (temperature_steps - steps_remaining)))
+        move_size = Int(ceil(max_move_size - (max_move_size / temperature_steps) * (temperature_steps - steps_remaining)))
         println("-------------------------------------")
         println("Steps Remaining: ", steps_remaining)
-        println("Bunch Radius: ", bunch_radius)
+        println("Move Size: ", move_size)
         T = T * alpha
         println("T = ", T)
         dem_percents = sort!(DemPercentages(mg))
@@ -545,7 +515,7 @@ function RunFunc(;print_graph = false, sim = false)
     println("Mean dem percent = ", mean_dem_percent_before)
     println("Safe dem seats = ", safe_dem_seats_before)
     println("Target = ", target)
-    println("Initial Bunch Radius: ", bunch_radius)
+    println("Initial Move Size: ", max_move_size)
 
     # for i in 1:10
     #     MoveCheck(mg)
@@ -613,5 +583,5 @@ end
 end
 
 #Testing Code
-using RePartition
+import RePartition
 mg, G, colors = RePartition.RunFunc(print_graph = true, sim = true)

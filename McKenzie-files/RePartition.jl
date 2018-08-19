@@ -42,7 +42,7 @@ target = append!([num_parts*percent_dem-safe_percentage*(num_parts - 1)],
 dem_target = sort([0.055, 0.135, 0.135, 0.135, 0.135, 0.135, 0.135, 0.135])
 
 const num_moves = 2
-const max_radius = 2
+const max_radius = 1
 bunch_radius = max_radius
 const alpha = 0.95
 const temperature_steps = 150
@@ -248,7 +248,7 @@ end
 #Create a randomly generated graph and partition it using Metis (via Python)
 function InitialGraphPartition()
     #Global variables to be updated based on graph data.
-    # global target
+    global target
     global percent_dem
 
     #Import partitioned graph from Python/Metis.
@@ -324,8 +324,9 @@ function InitialGraphPartition()
                 / sum([MG.get_prop(mg, d, :tot) for d in LG.vertices(mg)]))
     println("Overal Dem Percentage = ", percent_dem)
     # target = [6, 6, 6, 6, 53, 53, 53, 53]
-    target = append!([num_parts*percent_dem-safe_percentage*(num_parts - 1)],
-                    [safe_percentage for i in 1:(num_parts - 1)])
+    target = [28.1597, 53.6469, 54.06, 54.1618, 54.2257, 54.3312, 54.5771, 54.883]
+    # target = append!([num_parts*percent_dem-safe_percentage*(num_parts - 1)],
+                    # [safe_percentage for i in 1:(num_parts - 1)])
     #sort([53.8291, 53.82, 53.7211, 31.523, 53.7479, 53.8298, 53.7259, 53.51])
 
     return mg, G
@@ -395,9 +396,9 @@ function MoveNodes(mg, part_to)
         dems_to_move = sum([MG.get_prop(mg, n, :dems) for n in bunch_to_move])
         reps_to_move = sum([MG.get_prop(mg, n, :reps) for n in bunch_to_move])
         tot_to_move = dems_to_move + reps_to_move
-        dist_data = MG.get_prop(mg, :dist_dict)
 
         #Update dictionary of district data to reflect move.
+        dist_data = MG.get_prop(mg, :dist_dict)
         dist_data[part_to].pop += pop_to_move
         dist_data[part_from].pop -= pop_to_move
         dist_data[part_to].dems += dems_to_move
@@ -613,5 +614,5 @@ end
 end
 
 #Testing Code
-using RePartition
+import RePartition
 mg, G, colors = RePartition.RunFunc(print_graph = true, sim = true)

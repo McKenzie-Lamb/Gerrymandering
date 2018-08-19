@@ -64,8 +64,8 @@ def MakeNXGraphRand(size = 100, dem_mean = 0.5, dem_sd = 0.3):
     return G
 
 #G = metis.example_networkx()
-def MakeGraphPartition(size = 100, num_parts = 4, dem_mean = 0.5, dem_sd = 0.3, 
-                       filename = 'small_map3_no_discontiguos.gpickle', 
+def MakeGraphPartition(size = 100, num_parts = 4, dem_mean = 0.5, dem_sd = 0.3,
+                       filename = 'small_map3_no_discontiguos.gpickle',
                        rand_graph = True, target = [0.25, 0.25, 0.25, 0.25]):
     if rand_graph == True:
         G = MakeNXGraphRand(size, dem_mean = dem_mean, dem_sd = dem_sd)
@@ -78,7 +78,7 @@ def MakeGraphPartition(size = 100, num_parts = 4, dem_mean = 0.5, dem_sd = 0.3,
     #H = metis.networkx_to_metis(G)
     target = [(t, 1/num_parts) for t in target]
     print("^^^^^Target^^^^^^^^: ", target)
-    (edgecuts, parts) = metis.part_graph(G, num_parts, contig = True, ufactor = 100, tpwgts = list(target))
+    (edgecuts, parts) = metis.part_graph(G, num_parts, contig = False, ufactor = 100, tpwgts = list(target))
 #    colors = ['red','blue','green', 'gray']
 #    for i, p in enumerate(parts):
 #        G.node[i]['color'] = colors[p]
@@ -104,8 +104,8 @@ def MakeGraphPartition(size = 100, num_parts = 4, dem_mean = 0.5, dem_sd = 0.3,
 
 #os.chdir(os.path.dirname(os.path.realpath(__file__)))
 ##print(os.getcwd())
-#G, parts = MakeGraphPartition(size = 10000, num_parts = 8, 
-#                              filename = 'whole_map_contig_point_adj.gpickle', 
+#G, parts = MakeGraphPartition(size = 10000, num_parts = 8,
+#                              filename = 'whole_map_contig_point_adj.gpickle',
 #                              rand_graph = False, target = [0.055, 0.135, 0.135, 0.135, 0.135, 0.135, 0.135, 0.135])
 #print("Mean Dem Percentage = ", np.mean([G.nodes[n]['dem']/G.nodes[n]['pop'] for n in G.nodes() if G.nodes[n]['pop'] != 0]))
 #nx.draw(G, pos=pos)
