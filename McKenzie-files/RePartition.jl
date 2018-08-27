@@ -19,6 +19,9 @@ cd(dirname(Base.source_path()))
 
 using GraphPlot, Compose
 GP = GraphPlot
+using Plots
+# using PyPlot
+using ConcaveHull; CH = ConcaveHull
 include("PrintPartition.jl")
 include("Districts.jl")
 
@@ -32,7 +35,7 @@ const dem_sd = 0.5
 const rand_graph = false
 # const filename = "contig_16_share.gpickle" #Texas (incomplete data)
 const filename = "whole_map_contig_point_adj.gpickle" #Wisconsin
-percent_dem = 50
+percent_dem = 50 #Placeholder.  Gets recalculated.
 const par_thresh = 0.1
 
 #Simulated annealing parameters
@@ -41,8 +44,9 @@ target = append!([num_parts*percent_dem-safe_percentage*(num_parts - 1)],
                  [safe_percentage for i in 1:(num_parts - 1)])
 dem_target = sort([0.055, 0.135, 0.135, 0.135, 0.135, 0.135, 0.135, 0.135])
 
-const num_moves = 2
-const max_radius = 1
+const max_moves = 8
+const max_radius = 2
+const max_tries = 20
 bunch_radius = max_radius
 const alpha = 0.95
 const temperature_steps = 150
@@ -155,16 +159,16 @@ function AllConnected(mg)
 end
 
 function PartCompactness(mg, part)
-    bdy_nodes = InteriorBoundary(mg, MG.filter_vertices(mg, :part, part))
-    points = [MG.get_prop(mg, n, :pos) for n in bdy_nodes]
-    poly = Polygon(points)
-    area = poly[:area]
-    # println("Area = ", area)
-    convex_hull = poly[:convex_hull]
-    ch_area = convex_hull[:area]
-    # println("Convex Hull Area = ", ch_area)
-    return area / ch_area
-    # ring = LinearRing(points)
+    part_nodes = MG.filter_vertices(mg, :part, part)
+    points = [[MG.get_prop(mg, n, :pos)[1], MG.get_prop(mg, n, :pos)[2]] for n in part_nodes]
+    ccave_hull = CH.concave_hull(points, 0)
+    cvex_hull = CH.concave_hull(points, 10000)
+    compactness = CH.area(ccave_hull) / CH.area(cvex_hull)
+    return compactness
+end
+
+function Compactness(mg)
+    return 100*(1-mean([PartCompactness(mg, part) for part in 1:num_parts]))
 end
 
 #=Measures taxicab distance to target, but throws away improvements beyond
@@ -184,8 +188,20 @@ function OneSidedScore(mg)
 end
 
 #Euclidean distance to target democratic percentages
-#in num_parts-dimensional space + parity score.
-function TargetPlusParityScore(mg)
+#in num_parts-dimensional space + parity score (squared).
+function TargetParityCompactness(mg)
+    dist_data = MG.get_prop(mg, :dist_dict)
+    percentages = sort([dist.dem_prop for dist in values(dist_data)])
+    pops = sort([dist.pop for dist in values(dist_data)])
+    parity = MG.get_prop(mg, :parity)
+    dist_to_parity = 100*(maximum(append!([0.1], [par_thresh * ((p-parity)/(parity * par_thresh))^2 for p in pops])))
+    compactness = Compactness(mg)
+    return norm(percentages-target) + dist_to_parity + compactness
+end
+
+#Euclidean distance to target democratic percentages
+#in num_parts-dimensional space + parity score (squared).
+function TargetParity(mg)
     dist_data = MG.get_prop(mg, :dist_dict)
     percentages = sort([dist.dem_prop for dist in values(dist_data)])
     pops = sort([dist.pop for dist in values(dist_data)])
@@ -323,10 +339,10 @@ function InitialGraphPartition()
     percent_dem = 100 * (sum([MG.get_prop(mg, d, :dems) for d in LG.vertices(mg)])
                 / sum([MG.get_prop(mg, d, :tot) for d in LG.vertices(mg)]))
     println("Overal Dem Percentage = ", percent_dem)
-    # target = [6, 6, 6, 6, 53, 53, 53, 53]
-    target = [28.1597, 53.6469, 54.06, 54.1618, 54.2257, 54.3312, 54.5771, 54.883]
-    # target = append!([num_parts*percent_dem-safe_percentage*(num_parts - 1)],
-                    # [safe_percentage for i in 1:(num_parts - 1)])
+    # target = [32, 54, 54, 54, 54, 54, 54, 54]
+    # target = [28.1597, 53.6469, 54.06, 54.1618, 54.2257, 54.3312, 54.5771, 54.883]
+    target = append!([num_parts*percent_dem-safe_percentage*(num_parts - 1)],
+                    [safe_percentage for i in 1:(num_parts - 1)])
     #sort([53.8291, 53.82, 53.7211, 31.523, 53.7479, 53.8298, 53.7259, 53.51])
 
     return mg, G
@@ -365,18 +381,9 @@ function UpdateDemProps(mg)
     end
 end
 
-#= Makes a move: reassigns a connected set of nodes from one district to another.
-If the proposed move would disconnect the district losing nodes, bail. =#
-
-function MoveNodes(mg, part_to)
-    part_to_nodes = MG.filter_vertices(mg, :part, part_to)
-    boundary = Boundary(mg, part_to_nodes)
-
-    #Find a connected boundary neighborhood to move.
+function _find_bunch_to_move(mg, base_node_to_move, part_from)
     connected = false
     radius = bunch_radius
-    base_node_to_move = rand(collect(boundary))
-    part_from = MG.get_prop(mg, base_node_to_move, :part)
     bunch_to_move = [] #Declare for access to local scope variable in loop.
     while connected == false
         bunch_to_move = Set(LG.neighborhood(mg, base_node_to_move, radius))
@@ -388,36 +395,61 @@ function MoveNodes(mg, part_to)
             radius -= 1
         end
     end
+    return bunch_to_move
+end
 
-    #Try moving bunch_to_move from part_from to part_to.
-    #First, check to see whether the move would disconnect part_from.
-    if CheckConnectedWithoutBunch(mg, part_from, bunch_to_move)
-        pop_to_move = sum([MG.get_prop(mg, n, :pop) for n in bunch_to_move])
-        dems_to_move = sum([MG.get_prop(mg, n, :dems) for n in bunch_to_move])
-        reps_to_move = sum([MG.get_prop(mg, n, :reps) for n in bunch_to_move])
-        tot_to_move = dems_to_move + reps_to_move
+function _do_move(mg, part_to, part_from, bunch_to_move)
+    pop_to_move = sum([MG.get_prop(mg, n, :pop) for n in bunch_to_move])
+    dems_to_move = sum([MG.get_prop(mg, n, :dems) for n in bunch_to_move])
+    reps_to_move = sum([MG.get_prop(mg, n, :reps) for n in bunch_to_move])
+    tot_to_move = dems_to_move + reps_to_move
 
-        #Update dictionary of district data to reflect move.
-        dist_data = MG.get_prop(mg, :dist_dict)
-        dist_data[part_to].pop += pop_to_move
-        dist_data[part_from].pop -= pop_to_move
-        dist_data[part_to].dems += dems_to_move
-        dist_data[part_from].dems -= dems_to_move
-        dist_data[part_to].reps += reps_to_move
-        dist_data[part_from].reps -= reps_to_move
-        dist_data[part_to].tot += tot_to_move
-        dist_data[part_from].tot -= tot_to_move
-        UpdateDemProps(mg)
-        MG.set_prop!(mg, :dist_dict, dist_data)
+    #Update dictionary of district data to reflect move.
+    dist_data = MG.get_prop(mg, :dist_dict)
+    dist_data[part_to].pop += pop_to_move
+    dist_data[part_from].pop -= pop_to_move
+    dist_data[part_to].dems += dems_to_move
+    dist_data[part_from].dems -= dems_to_move
+    dist_data[part_to].reps += reps_to_move
+    dist_data[part_from].reps -= reps_to_move
+    dist_data[part_to].tot += tot_to_move
+    dist_data[part_from].tot -= tot_to_move
+    UpdateDemProps(mg)
+    MG.set_prop!(mg, :dist_dict, dist_data)
 
-        #Update node prorties of moved nodes.
-        for n in bunch_to_move
-            MG.set_prop!(mg, n, :part, part_to)
-        end
-        return part_from, true
-    else
-        return part_to, false
+    #Update node prorties of moved nodes.
+    for n in bunch_to_move
+        MG.set_prop!(mg, n, :part, part_to)
     end
+end
+
+
+#= Makes a move: reassigns a connected set of nodes from one district to another.
+If the proposed move would disconnect the district losing nodes, bail. =#
+function MoveNodes(mg, part_to)
+    part_to_nodes = MG.filter_vertices(mg, :part, part_to)
+    boundary = Boundary(mg, part_to_nodes)
+    boundary = collect(boundary)
+    tries = 0
+    connected = false
+    while tries <= max_tries && connected == false
+        #Find a connected boundary neighborhood to move.
+        base_node_to_move = rand(boundary)
+        part_from = MG.get_prop(mg, base_node_to_move, :part)
+        bunch_to_move = _find_bunch_to_move(mg, base_node_to_move, part_from)
+
+        #Try moving bunch_to_move from part_from to part_to.
+        #First, check to see whether the move would disconnect part_from.
+        if CheckConnectedWithoutBunch(mg, part_from, bunch_to_move)
+            _do_move(mg, part_to, part_from, bunch_to_move)
+            connected = true
+            return part_from, true
+        else
+            tries += 1
+            continue
+        end
+    end
+    return part_to, false
 end
 
 #= Makes a sequence of node moves (length of sequence set as global const.)
@@ -427,20 +459,21 @@ function ShuffleNodes(mg)
     mg_temp = deepcopy(mg)
     # part_to = FindFarthestDist(mg)
     part_to = rand(1:MG.get_prop(mg, :num_parts))
+    num_moves = rand(1:max_moves)
+    # visited = IntSet()
     for i in 1:num_moves
         part_to, success = MoveNodes(mg, part_to)
         if success == false
-            # println("Failed")
             return mg_temp, false
+        else
+            # if in(part_to, visited)
+            #     return mg, true
+            # else
+                # push!(visited, part_to)
+            # end
         end
     end
-    # ac = AllConnected(mg)
-    # if !CheckDictParity(mg, MG.get_prop(mg, :dist_dict))
-    #     return mg_temp, false
-    # else
-        # println("Succeeded.")
-        return mg, true
-    # end
+    return mg, true
 end
 
 
@@ -455,7 +488,9 @@ end
 
 function SimulatedAnnealing(mg)
     global bunch_radius
-    current_score = TargetPlusParityScore(mg)
+    global Score
+    Score = TargetParity
+    current_score = Score(mg)
     println("Initial Score: ", current_score)
     T = 1.0
     steps_remaining = Int(round(temperature_steps))
@@ -465,7 +500,7 @@ function SimulatedAnnealing(mg)
         while i <= swaps[1]
             new_mg = deepcopy(mg)
             new_mg, success = ShuffleNodes(new_mg)
-            new_score = TargetPlusParityScore(new_mg)
+            new_score = Score(new_mg)
             ap = _acceptance_prob(current_score, new_score, T)
             if ap > rand()
                 if new_score < current_score
@@ -521,6 +556,9 @@ function RunFunc(;print_graph = false, sim = false)
         colors = PrintPartition(mg, locs_x, locs_y, name = "before.svg")
     end
 
+    #Log graph before any redistricting.
+    LG.savegraph("before_graph_compressed", mg, compress=true)
+
     println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
     dem_percents = sort!(DemPercentages(mg))
     println("Dem percents: ", sort!(dem_percents))
@@ -537,11 +575,13 @@ function RunFunc(;print_graph = false, sim = false)
     dem_percent_before = sort!(DemPercentages(mg))
     mean_dem_percent_before = mean(dem_percent_before)
     safe_dem_seats_before = SafeDemSeats(mg)
+    # initial_compactness = Compactness(mg)
 
     #Print before data.
     println("Number of vertices = ", LG.nv(mg))
     println("Connected? ", connected_before)
     println("Parity? ", parity_before)
+    # println("Initial Compactness = ", Compactness(mg))
     println("Dem percents = ", dem_percent_before)
     println("Mean dem percent = ", mean_dem_percent_before)
     println("Safe dem seats = ", safe_dem_seats_before)
@@ -560,6 +600,7 @@ function RunFunc(;print_graph = false, sim = false)
         println("Number of vertices = ", LG.nv(mg))
         println("Connected before? ", connected_before)
         println("Parity before? ", parity_before)
+        # println("Initial Compactness = ", Compactness(mg))
         println("Dem percents before = ", dem_percent_before)
         println("Mean dem percent before = ", mean_dem_percent_before)
         println("Safe dem seats before = ", safe_dem_seats_before)
@@ -570,6 +611,7 @@ function RunFunc(;print_graph = false, sim = false)
         println("Connected after? ", AllConnected(mg))
         println("Parity after? ", ParityCheckAll(mg))
         println("Parity after: ", DistanceToParity(mg))
+        # println("Final Compactness = ", Compactness(mg))
         dem_percents_after = sort!(DemPercentages(mg))
         println("Target = ", target)
         println("Dem percents after = ", sort!(dem_percents_after))
@@ -578,8 +620,12 @@ function RunFunc(;print_graph = false, sim = false)
         if print_graph == true
             colors = PrintPartition(mg, locs_x, locs_y, name = "after.svg")
         end
+
+        #Log graph after redistricting.
+        LG.savegraph("after_graph_compressed.lgz", mg, compress=true)
     end
     println("Colors: ", enumerate(colors))
+
     return mg, G, colors
 end
 
@@ -587,27 +633,15 @@ end
 
 #Testing function for compactness measure.
 function CompactnessTest(mg, part)
-    bdy_nodes = collect(InteriorBoundary(mg, MG.filter_vertices(mg, :part, part)))
-    points = [MG.get_prop(mg, n, :pos) for n in bdy_nodes]
-    bdy_sub_graph, a = LG.induced_subgraph(mg, bdy_nodes)
-    ordered_points = LG.maximum_adjacency_visit(bdy_sub_graph)
-    pts = [(Real(MG.get_prop(mg, p, :pos)[1]), Real(MG.get_prop(mg, p, :pos)[2])) for p in ordered_points]
-    # println(pts)
-    poly = Polygon(pts)
-    area = poly[:area]
-    println("Area = ", area)
-    convex_hull = poly[:convex_hull]
-    ch_area = convex_hull[:area]
-    println("Convex Hull Area = ", ch_area)
-    compactness = area / ch_area
-    # ring = LinearRing([(0, 0), (0, 2), (1, 1),
-    # (2, 2), (2, 0), (1, 0.8), (0, 0)])
-    # x, y = ring.xy
-
-    # fig = PyPlot.plot(x, y, color="#6699cc", alpha=0.7,
-    #     linewidth=3, solid_capstyle="round", zorder=2)
-    # fig.savefig("test.svg")
-    # ring = LinearRing(points)
+    # mg, G = InitialGraphPartition()
+    part_nodes = MG.filter_vertices(mg, :part, part)
+    points = [[MG.get_prop(mg, n, :pos)[1], MG.get_prop(mg, n, :pos)[2]] for n in part_nodes]
+    ccave_hull = CH.concave_hull(points, 0)
+    cvex_hull = CH.concave_hull(points, 10000)
+    a = Plots.plot!(ccave_hull, show=true)
+    b = Plots.plot!(cvex_hull, show=true)
+    display(a)
+    compactness = CH.area(ccave_hull) / CH.area(cvex_hull)
     return compactness
 end
 
@@ -616,3 +650,11 @@ end
 #Testing Code
 import RePartition
 mg, G, colors = RePartition.RunFunc(print_graph = true, sim = true)
+
+# clf()
+# Plots.plot()
+# mg = MG.loadgraph("after_graph.lgz", MGFormat())
+# for i in 1:RePartition.num_parts
+#     compactness = RePartition.CompactnessTest(mg, i)
+#     println("Compactness = ", compactness)
+# end

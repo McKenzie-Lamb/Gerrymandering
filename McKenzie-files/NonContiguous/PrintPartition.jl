@@ -40,7 +40,7 @@ function PrintPartition(mg, locs_x, locs_y; name = "partition.svg", filename = "
     nodefillc = colors[partition]
     # nodefillc = nodestrokec
     nodestrokec = colorant"lightgray" #colors[partition]
-    draw(SVG(name, 16cm, 16cm), GP.gplot(mg, locs_x, locs_y,
+    Compose.draw(SVG(name, 16cm, 16cm), GP.gplot(mg, locs_x, locs_y,
         nodefillc=nodefillc, nodestrokelw = nodestrokelw,
         nodestrokec = nodestrokec, edgestrokec=edgestrokec,
         NODESIZE = NODESIZE))

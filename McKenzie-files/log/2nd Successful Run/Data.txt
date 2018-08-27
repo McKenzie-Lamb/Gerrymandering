@@ -1,0 +1,32 @@
+Score: 10.005107926195013
+-------------------------------------
+Steps Remaining: 1
+Bunch Radius: 0
+T = 0.00047953155208806006
+Dem percents: [31.901, 53.9971, 53.9999, 54.0001, 54.0008, 54.0018, 54.002, 54.0022]
+Parity: [-9.73051, -6.54443, -5.7033, 0.0264235, 1.54066, 2.32288, 8.4915, 9.59679]
+-------------------------------------
+-------------------------------------
+Steps Remaining: 0
+Bunch Radius: 0
+T = 0.000455554974483657
+Dem percents: [31.901, 53.9971, 53.9999, 54.0001, 54.0008, 54.0018, 54.002, 54.0022]
+Parity: [-9.73051, -6.54443, -5.7033, 0.0264235, 1.54066, 2.32288, 8.4915, 9.59679]
+-------------------------------------
+8246.852563 seconds (50.80 G allocations: 6.296 TiB, 40.90% gc time)
+**************Before***************
+Number of vertices = 6467
+Connected before? true
+Parity before? false
+Dem percents before = [27.765, 34.7089, 51.6363, 52.5465, 57.8917, 59.6312, 60.7009, 65.0952]
+Mean dem percent before = 51.24697454598837
+Safe dem seats before = 4
+**************After***************
+Connected after? true
+Parity after? true
+Parity after: [-9.73051, -6.54443, -5.7033, 0.0264235, 1.54066, 2.32288, 8.4915, 9.59679]
+Target = [31.8989, 54.0, 54.0, 54.0, 54.0, 54.0, 54.0, 54.0]
+Dem percents after = [31.901, 53.9971, 53.9999, 54.0001, 54.0008, 54.0018, 54.002, 54.0022]
+Mean dem percent after = 51.23811770778784
+Safe dem seats after = 7
+Colors: Enumerate{Array{ColorTypes.RGB{FixedPointNumbers.Normed{UInt8,8}},1}}(ColorTypes.RGB{FixedPointNumbers.Normed{UInt8,8}}[RGB{N0f8}(0.0,0.0,0.0), RGB{N0f8}(1.0,1.0,0.384), RGB{N0f8}(1.0,0.624,1.0), RGB{N0f8}(0.0,0.839,1.0), RGB{N0f8}(0.843,0.267,0.0), RGB{N0f8}(0.0,0.502,0.161), RGB{N0f8}(0.0,0.373,0.835), RGB{N0f8}(0.576,0.0,0.408)])
