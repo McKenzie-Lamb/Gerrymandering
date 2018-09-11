@@ -9,7 +9,7 @@ import json
 ##
 
 state_dem_ratio = .52    # overall ratio of democratic votes
-target_dem_seats = 10    # target number of democratic seats
+target_dem_seats = 13    # target number of democratic seats
 state_total_seats = 18  # total number of seats in the state
 
 
@@ -20,8 +20,8 @@ max_time = 10
 # seats above high cutoff are considered Democratic
 # seats below low cutoff are considered Republican
 # (other example values: [.47, .53] or [.52, .53] or [.47, .48])
-safe_seat_low_cutoff = .49
-safe_seat_high_cutoff = .51
+safe_seat_low_cutoff = .47
+safe_seat_high_cutoff = .53
 
 # race with state_dem_ratio between low and high is considered close (affects the tests we use)
 close_race_low_cutoff = .45
