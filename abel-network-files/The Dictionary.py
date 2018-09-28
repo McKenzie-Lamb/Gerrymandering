@@ -18,4 +18,4 @@ for i in range (0, number_of_rows):
     US_Dem = sheet.cell_value(i, 7)
     US_Rep = sheet.cell_value(i, 6)
 #store the info in voting data dictionary
-    voting_data[i] = {geocode:{US Total:US_Total, US Dem:US_Dem, US Rep:US_Rep}}
+    voting_data = {geocode:{US Total:US_Total, US Dem:US_Dem, US Rep:US_Rep}}
