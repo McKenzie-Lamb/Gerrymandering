@@ -1,7 +1,7 @@
 #Open the excel file, the first sheet in the specified location
 
 import xlrd
-file_location = "C:\Users\Mohammad Navid\Documents\GitHub\Gerrymandering\abel-network-files"
+file_location = "Gerrymandering/abel-network-files/Refine2014PAVotingData.xlsx "
 workbook = xlrd.open_workbook(file_location)
 sheet = workbook.sheet_by_index(0)
 
@@ -19,3 +19,4 @@ for i in range (0, number_of_rows):
     US_Rep = sheet.cell_value(i, 6)
 #store the info in voting data dictionary
     voting_data = {geocode:{US Total:US_Total, US Dem:US_Dem, US Rep:US_Rep}}
+
