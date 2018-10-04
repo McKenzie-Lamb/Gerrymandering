@@ -41,7 +41,7 @@ const rand_graph = false
 # const filename = "contig_16_share.gpickle" #Texas (incomplete data)
 const filename = "whole_map_contig_point_adj.gpickle" #Wisconsin
 percent_dem = 50 #Placeholder.  Gets recalculated.
-const par_thresh = 0.10
+global par_thresh = 0.10
 
 #Simulated annealing parameters
 const safe_percentage = 54
@@ -54,7 +54,7 @@ const max_radius = 2
 const max_tries = 10
 bunch_radius = max_radius
 const alpha = 0.95
-const temperature_steps = 150
+const temperature_steps = 175
 const T_min = alpha^temperature_steps
 const max_swaps = 150
 # const sa_steps = log(alpha, T_min)
