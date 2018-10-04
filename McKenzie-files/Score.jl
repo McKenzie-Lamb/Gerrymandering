@@ -5,10 +5,9 @@
 targets: throw away district doesn't need to go below target;
 districts to win don't need to go above safe percentage.
 =#
-function OneSided(mg)
-    dist_data = MG.get_prop(mg, :dist_dict)
-    percentages = sort([dist.dem_prop for dist in values(dist_data)])
-    pops = sort([dist.pop for dist in values(dist_data)])
+function OneSided(dist_dict)
+    percentages = sort([dist.dem_prop for dist in values(dist_dict)])
+    pops = sort([dist.pop for dist in values(dist_dict)])
     parity = MG.get_prop(mg, :parity)
     throw_away_distance = maximum([0.0, percentages[1]-target[1]])
     safe_distance = norm([maximum([0.0, target[i] - percentages[i]]) for i in 2:num_parts])
@@ -19,10 +18,9 @@ end
 
 #Euclidean distance to target democratic percentages
 #in num_parts-dimensional space + parity score (squared).
-function TargetParityCompactness(mg)
-    dist_data = MG.get_prop(mg, :dist_dict)
-    percentages = sort([dist.dem_prop for dist in values(dist_data)])
-    pops = sort([dist.pop for dist in values(dist_data)])
+function TargetParityCompactness(dist_dict)
+    percentages = sort([dist.dem_prop for dist in values(dist_dict)])
+    pops = sort([dist.pop for dist in values(dist_dict)])
     parity = MG.get_prop(mg, :parity)
     dist_to_parity = 100*(maximum(append!([0.1], [par_thresh * ((p-parity)/(parity * par_thresh))^2 for p in pops])))
     compactness = Compactness(mg)
@@ -31,31 +29,32 @@ end
 
 #Euclidean distance to target democratic percentages
 #in num_parts-dimensional space + parity score (squared).
-function TargetParity(mg)
-    dist_data = MG.get_prop(mg, :dist_dict)
-    percentages = sort([dist.dem_prop for dist in values(dist_data)])
-    pops = sort([dist.pop for dist in values(dist_data)])
+function TargetParity(dist_dict)
+    percentages = sort([dist.dem_prop for dist in values(dist_dict)])
+    pops = sort([dist.pop for dist in values(dist_dict)])
     parity = MG.get_prop(mg, :parity)
-    dist_to_parity = 100*(maximum(append!([0.1], [par_thresh * ((p-parity)/(parity * par_thresh))^2 for p in pops])))
-    return norm(percentages-target) + dist_to_parity
+    dist_to_parity = 100*(maximum(append!([par_thresh], [par_thresh * ((p-parity)/(parity * par_thresh))^2 for p in pops])))
+    # dist_to_parity = norm(pops - [parity for i in 1:num_parts])
+    score = norm(percentages-target) + dist_to_parity
+    # println("Inner Score: ", score)
+    # println("Inner Dist Score: ", norm(percentages-target))
+    return score
 end
 
 #Euclidean distance to target democratic percentages
 #in num_parts-dimensional space.
-function DistToTarget(mg)
-    dist_data = MG.get_prop(mg, :dist_dict)
-    percentages = sort([dist.dem_prop for dist in values(dist_data)])
-    pops = sort([dist.pop for dist in values(dist_data)])
+function DistToTarget(dist_dict)
+    percentages = sort([dist.dem_prop for dist in values(dist_dict)])
+    pops = sort([dist.pop for dist in values(dist_dict)])
     parity = MG.get_prop(mg, :parity)
     return norm(percentages-target)
 end
 
 #Euclidean distance from vector of percentages for districts to win to the line
 #on which they are all equal.  Uses a vector projection.
-function DistToEqual(mg)
-    dist_data = MG.get_prop(mg, :dist_dict)
-    percentages = sort([dist.dem_prop for dist in values(dist_data)])
-    pops = sort([dist.pop for dist in values(dist_data)])
+function DistToEqual(dist_dict)
+    percentages = sort([dist.dem_prop for dist in values(dist_dict)])
+    pops = sort([dist.pop for dist in values(dist_dict)])
     ep = percentages[2:num_parts]
     el = [1 for i in 2:num_parts]
     dist_to_equal = norm(ep - (dot(ep, el)/dot(el, el))*el)
@@ -67,9 +66,8 @@ parity.  Squaring imposes steep penalties once par_thresh is exceeded.
 Also, maximum ensures score remains constant if maximum deviation is
 below par_thresh.
 =#
-function Parity(mg)
-    dist_data = MG.get_prop(mg, :dist_dict)
-    pops = sort([dist.pop for dist in values(dist_data)])
+function Parity(dist_dict)
+    pops = sort([dist.pop for dist in values(dist_dict)])
     parity = MG.get_prop(mg, :parity)
     return 100*(maximum(append!([par_thresh], [par_thresh * ((p-parity)/(parity * par_thresh))^2 for p in pops])))
 end
@@ -78,10 +76,9 @@ end
 distance to equality line of districts we want to win,
 distance to parity.
 =#
-function Component(mg)
-    dist_data = MG.get_prop(mg, :dist_dict)
-    percentages = sort([dist.dem_prop for dist in values(dist_data)])
-    pops = sort([dist.pop for dist in values(dist_data)])
+function Component(dist_dict)
+    percentages = sort([dist.dem_prop for dist in values(dist_dict)])
+    pops = sort([dist.pop for dist in values(dist_dict)])
     parity = MG.get_prop(mg, :parity)
     dist_to_target = abs(percentages[1]-target[1])
     dist_to_parity = 100*(maximum(append!([par_thresh], [par_thresh * ((p-parity)/(parity * par_thresh))^2 for p in pops])))

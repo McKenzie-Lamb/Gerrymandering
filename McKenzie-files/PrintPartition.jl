@@ -15,12 +15,19 @@ function EdgeColor(mg, edge)
 
 end
 
-function PrintPartition(mg, locs_x, locs_y; name = "partition.svg", filename = "small_map_no_discontiguos.gpickle")
-    num_parts = MG.get_prop(mg, :num_parts)
+function PrintPartition(dist_dict, locs_x, locs_y; name = "partition.svg", filename = "small_map_no_discontiguos.gpickle")
     colors = distinguishable_colors(num_parts)
     # symbols = ["A", "B", "C", "D"]
     verts = LG.vertices(mg)
-    partition = [MG.get_prop(mg, v, :part) for v in MG.vertices(mg)]
+
+    #Convert dist_dict to a list of district assignments, one for each node.
+    partition = [1 for node in verts]
+    for i in keys(dist_dict)
+        for node in dist_dict[i].vtds
+            partition[node] = i
+        end
+    end
+    
     dem_colors = Colors.colormap("RdBu")
     # println([floor(round(100*round(MG.get_prop(mg, v, :dems)/MG.get_prop(mg, v, :pop),2)))
             # for v in MG.vertices(mg)])

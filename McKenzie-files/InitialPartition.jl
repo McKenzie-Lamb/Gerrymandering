@@ -1,9 +1,10 @@
 #=Creates the initial graph and partition using Metis (via Python)=#
-#Create a randomly generated graph and partition it using Metis (via Python)
 function InitialGraphPartition()
     #Global variables to be updated based on graph data.
     global target
     global percent_dem
+    global mg
+
 
     #Import partitioned graph from Python/Metis.
     G, parts = RPG.MakeGraphPartition(size = size, num_parts = num_parts,
@@ -19,6 +20,7 @@ function InitialGraphPartition()
     for e in G[:edges]()
         LG.add_edge!(g, (e[1]+1, e[2]+1)) #Increment because of counting difference.
     end
+
     mg = MG.MetaGraph(g)
 
     MG.set_prop!(mg, :num_parts, num_parts)
@@ -29,7 +31,8 @@ function InitialGraphPartition()
         MG.set_prop!(mg, d[1]+1, :pop, d[2])
     end
 
-    CalculateParity(mg)
+    #Calculate # of people in each district for exact parity, and store in graph.
+    CalculateParity()
 
     #Copy democratic vote data from nx graph into MG graph
     for d in nx.get_node_attributes(G,"dem")
@@ -41,9 +44,6 @@ function InitialGraphPartition()
     end
 
     #Copy democratic vote data from nx graph into MG graph
-    # rep_data =
-    # println("Rep? ", rep_data)
-    # if length(rep_data) == 0
     for d in nx.get_node_attributes(G,"rep")
         if isnan(d[2])
             MG.set_prop!(mg, d[1]+1, :reps, 0)
@@ -69,10 +69,26 @@ function InitialGraphPartition()
         MG.set_prop!(mg, i, :part, parts[i])
     end
 
+
+    #Create dictionary with lists of nodes in each district.
+    part_node_dict = Dict(i=>IntSet() for i in 1:num_parts)
+    for (node, part) in enumerate(parts)
+        push!(part_node_dict[part], Int(node))
+    end
+
     #Create dictionary with district data (district objects).
-    dist_dict = Dict(part => CalculateDistData(mg, part) for part in 1:num_parts)
-    MG.set_prop!(mg, :dist_dict, dist_dict)
-    # println("Dist Data = ", dist_dict)
+    dist_dict = Dict()
+    for i in 1:num_parts
+        dist = CreateDist(part_node_dict[i])
+        dist_dict[i] = dist
+    end
+
+    #For testing only.
+    all_in_dist_dict = Base.Iterators.flatten([dist_dict[i].vtds for i in keys(dist_dict)])
+    # println("All in dist_dict = ", all_in_dist_dict)
+    diff = setdiff(1:MG.nv(mg), all_in_dist_dict)
+    println("^^^^^^^^Initial Difference: ", diff)
+
 
     percent_dem = 100 * (sum([MG.get_prop(mg, d, :dems) for d in LG.vertices(mg)])
                 / sum([MG.get_prop(mg, d, :tot) for d in LG.vertices(mg)]))
@@ -83,5 +99,5 @@ function InitialGraphPartition()
                     [safe_percentage for i in 1:(num_parts - 1)])
     #sort([53.8291, 53.82, 53.7211, 31.523, 53.7479, 53.8298, 53.7259, 53.51])
 
-    return mg, G
+    return G, dist_dict
 end
