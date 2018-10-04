@@ -1,3 +1,7 @@
 {
-    "python.pythonPath": "/home/abel/miniconda3/envs/gerrymandering/bin/python"
+    "python.pythonPath": "/home/abel/miniconda3/envs/gerrymandering/bin/python",
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": true,
+    "python.linting.enabled": true,
+    "editor.rulers": [80]
 }

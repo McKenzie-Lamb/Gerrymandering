@@ -218,7 +218,6 @@ def create_graph(daShapefile, rm_discontiguos = False, get_small_graph = False):
     if get_small_graph:
         small_graph = nx.ego_graph(graph, random.randint(1, len(graph)), radius=15)
         graph = small_graph
-    print(total_area)
     return graph
 
 # Files path
@@ -232,3 +231,5 @@ graph = create_graph(daShapefile14, rm_discontiguos = True)
 nx.draw(graph, graph.graph['positions'], node_size=(10))
 nx.write_gpickle(graph, 'whole_16_share.gpickle')
 plt.savefig('tmp', dpi=300)
+pop=map_data[precinct]['pop'],
+                       rep=map_data[precinct]['rep'],
