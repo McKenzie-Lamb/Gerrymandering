@@ -135,10 +135,10 @@ function SimulatedAnnealing(dist_dict)
         end
         steps_remaining -= 1
         bunch_radius = Int(floor(max_radius - (max_radius / temperature_steps) * (temperature_steps - steps_remaining)))
-        par_thresh = 0.1 - ((0.1-0.01)/temperature_steps)*(temperature_steps - steps_remaining)
+        # par_thresh = 0.1 - ((0.1-0.01)/temperature_steps)*(temperature_steps - steps_remaining)
         println("-------------------------------------")
         println("Steps Remaining: ", steps_remaining)
-        println("Parity Threshold: ", par_thresh)
+        # println("Parity Threshold: ", par_thresh)
         println("Bunch Radius: ", bunch_radius)
         T = T * alpha
         println("T = ", T)

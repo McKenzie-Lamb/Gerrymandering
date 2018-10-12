@@ -34,27 +34,32 @@ include("PrintPartition.jl")
 #Graph parameters
 global mg = MG.MetaGraph()
 const size = 1000
-const num_parts = 8
+const num_parts = 18
 const dem_mean = 0.5
 const dem_sd = 0.5
 const rand_graph = false
 # const filename = "contig_16_share.gpickle" #Texas (incomplete data)
-const filename = "whole_map_contig_point_adj.gpickle" #Wisconsin
-percent_dem = 50 #Placeholder.  Gets recalculated.
-global par_thresh = 0.10
+const filename = "pa_contiguos.gpickle" #Pennsylvania
+# const filename = "whole_map_contig_point_adj.gpickle" # Wisconsin
+global percent_dem = 50 #Default value.  Gets recalculated.
+global par_thresh = 0.01
 
 #Simulated annealing parameters
-const safe_percentage = 54
-target = append!([num_parts*percent_dem-safe_percentage*(num_parts - 1)],
-                 [safe_percentage for i in 1:(num_parts - 1)])
-dem_target = sort([0.055, 0.135, 0.135, 0.135, 0.135, 0.135, 0.135, 0.135])
+const safe_percentage = 55
+global safe_seats = 9 #Placeholder.
+#To win all but one seats for Democrats.
+global target = append!([(num_parts*percent_dem-safe_percentage*safe_seats)/(num_parts - safe_seats) for i in 1:(num_parts - safe_seats)],
+                 [safe_percentage for i in 1:safe_seats])
+# global dem_target = sort([0.055, 0.135, 0.135, 0.135, 0.135, 0.135, 0.135, 0.135])
+
+global dem_target = [1/num_parts for i in 1:num_parts] # Default value.
 
 const max_moves = 4
 const max_radius = 2
 const max_tries = 10
 bunch_radius = max_radius
 const alpha = 0.95
-const temperature_steps = 175
+const temperature_steps = 200
 const T_min = alpha^temperature_steps
 const max_swaps = 150
 # const sa_steps = log(alpha, T_min)
@@ -93,12 +98,12 @@ function RunFunc(;print_graph = false, sim = false)
     #Log graph before any redistricting.
     LG.savegraph("before_graph_compressed", mg, compress=true)
 
-    println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-    dem_percents = sort!(DemPercentages(dist_dict))
-    println("Dem percents: ", sort!(dem_percents))
-    println("Parity: ", DistanceToParity(dist_dict))
-    # println("District Data: ", dist_dict)
-    println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    # println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    # dem_percents = sort!(DemPercentages(dist_dict))
+    # println("Dem percents: ", sort!(dem_percents))
+    # println("Parity: ", DistanceToParity(dist_dict))
+    # # println("District Data: ", dist_dict)
+    # println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 
 
     #Record before data.
@@ -120,6 +125,7 @@ function RunFunc(;print_graph = false, sim = false)
     println("Mean dem percent = ", mean_dem_percent_before)
     println("Safe dem seats = ", safe_dem_seats_before)
     println("Target = ", target)
+    println("Dem Target for Metis: ", dem_target)
     println("Initial Bunch Radius: ", bunch_radius)
 
     # for i in 1:10
@@ -158,7 +164,7 @@ function RunFunc(;print_graph = false, sim = false)
         #Log graph after redistricting.
         LG.savegraph("after_graph_compressed.lgz", mg, compress=true)
     end
-    println("Colors: ", enumerate(colors))
+    # println("Colors: ", enumerate(colors))
 
     return mg, G, dist_dict, colors
 end

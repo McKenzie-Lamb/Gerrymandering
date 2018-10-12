@@ -4,6 +4,7 @@ function InitialGraphPartition()
     global target
     global percent_dem
     global mg
+    global dem_target
 
 
     #Import partitioned graph from Python/Metis.
@@ -83,21 +84,19 @@ function InitialGraphPartition()
         dist_dict[i] = dist
     end
 
-    #For testing only.
-    all_in_dist_dict = Base.Iterators.flatten([dist_dict[i].vtds for i in keys(dist_dict)])
-    # println("All in dist_dict = ", all_in_dist_dict)
-    diff = setdiff(1:MG.nv(mg), all_in_dist_dict)
-    println("^^^^^^^^Initial Difference: ", diff)
-
 
     percent_dem = 100 * (sum([MG.get_prop(mg, d, :dems) for d in LG.vertices(mg)])
                 / sum([MG.get_prop(mg, d, :tot) for d in LG.vertices(mg)]))
     println("Overal Dem Percentage = ", percent_dem)
     # target = [32, 54, 54, 54, 54, 54, 54, 54]
     # target = [28.1597, 53.6469, 54.06, 54.1618, 54.2257, 54.3312, 54.5771, 54.883]
-    target = append!([num_parts*percent_dem-safe_percentage*(num_parts - 1)],
-                    [safe_percentage for i in 1:(num_parts - 1)])
-    #sort([53.8291, 53.82, 53.7211, 31.523, 53.7479, 53.8298, 53.7259, 53.51])
+    target = append!([(num_parts*percent_dem-safe_percentage*safe_seats)/(num_parts - safe_seats) for i in 1:(num_parts - safe_seats)],
+                     [safe_percentage for i in 1:safe_seats])
+    T = sum([MG.get_prop(mg, d, :tot) for d in LG.vertices(mg)]) #Total votes.
+    D = sum([MG.get_prop(mg, d, :dems) for d in LG.vertices(mg)]) #Total dem votes.
+    tp = [t/100 for t in target] # Target as decimals
+    # dem_target = [(t*(T/num_parts))/D for t in tp]
+    dem_target = [1/num_parts for i in 1:num_parts]
 
     return G, dist_dict
 end
