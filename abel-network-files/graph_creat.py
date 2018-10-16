@@ -17,16 +17,66 @@ import pprint
 import pyproj
 from functools import partial
 
-
-def is_adjacent(shape1, shape2):
-    # Checks for adjacency between two shapes
-    # Inputs: Two polygons object
-    # Outputs: True for adjacency, False for not adjacency
-    return shape1.touches(shape2) and not isinstance(shape1.intersection(shape2),Point)
-
-
-def is_adjacent_point_in(shape1, shape2):
-    return shape1.touches(shape2)
+# Author: Abel Gonzalez
+# Date: 05/29/18
+#
+# Description:
+# This program uses the .shp file to create a network graph where each node
+# represents a census tract and the edge represents adjacency between each tract.
+# Author: Abel Gonzalez
+# Date: 05/29/18
+#
+# Description:
+# This program uses the .shp file to create a network graph where each node
+# represents a census tract and the edge represents adjacency between each tract., shape2):
+# Author: Abel Gonzalez
+# Date: 05/29/18
+#
+# Description:
+# This program uses the .shp file to create a network graph where each node
+# represents a census tract and the edge represents adjacency between each tract.ency between two shapes
+# Author: Abel Gonzalez
+# Date: 05/29/18
+#
+# Description:
+# This program uses the .shp file to create a network graph where each node
+# represents a census tract and the edge represents adjacency between each tract.gons object
+# Author: Abel Gonzalez
+# Date: 05/29/18
+#
+# Description:
+# This program uses the .shp file to create a network graph where each node
+# represents a census tract and the edge represents adjacency between each tract.r adjacency, False for not adjacency
+# Author: Abel Gonzalez
+# Date: 05/29/18
+#
+# Description:
+# This program uses the .shp file to create a network graph where each node
+# represents a census tract and the edge represents adjacency between each tract.hes(shape2) and not isinstance(shape1.intersection(shape2),Point)
+# Author: Abel Gonzalez
+# Date: 05/29/18
+#
+# Description:
+# This program uses the .shp file to create a network graph where each node
+# represents a census tract and the edge represents adjacency between each tract.
+# Author: Abel Gonzalez
+# Date: 05/29/18
+#
+# Description:
+# This program uses the .shp file to create a network graph where each node
+# represents a census tract and the edge represents adjacency between each tract.
+# Author: Abel Gonzalez
+# Date: 05/29/18
+#
+# Description:
+# This program uses the .shp file to create a network graph where each node
+# represents a census tract and the edge represents adjacency between each tract.in(shape1, shape2):
+# Author: Abel Gonzalez
+# Date: 05/29/18
+#
+# Description:
+# This program uses the .shp file to create a network graph where each node
+# represents a census tract and the edge represents adjacency between each tract.hes(shape2)
 
 def get_area(geom):
     geom_area = ops.transform(
@@ -231,5 +281,3 @@ graph = create_graph(daShapefile14, rm_discontiguos = True)
 nx.draw(graph, graph.graph['positions'], node_size=(10))
 nx.write_gpickle(graph, 'whole_16_share.gpickle')
 plt.savefig('tmp', dpi=300)
-pop=map_data[precinct]['pop'],
-                       rep=map_data[precinct]['rep'],
