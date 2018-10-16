@@ -1,0 +1,33 @@
+Graph Parameters
+
+#Graph parameters
+global mg = MG.MetaGraph()
+const size = 1000
+const num_parts = 8
+const dem_mean = 0.5
+const dem_sd = 0.5
+const rand_graph = false
+# const filename = "contig_16_share.gpickle" #Texas (incomplete data)
+# const filename = "pa_contiguos.gpickle" #Pennsylvania
+const filename = "whole_map_contig_point_adj.gpickle" # Wisconsin
+global percent_dem = 50 #Default value.  Gets recalculated.
+global par_thresh = 0.01
+
+#Simulated annealing parameters
+const safe_percentage = 55
+global safe_seats = 7 #Placeholder.
+#To win all but one seats for Democrats.
+global target = append!([(num_parts*percent_dem-safe_percentage*safe_seats)/(num_parts - safe_seats) for i in 1:(num_parts - safe_seats)],
+                 [safe_percentage for i in 1:safe_seats])
+# global dem_target = sort([0.055, 0.135, 0.135, 0.135, 0.135, 0.135, 0.135, 0.135])
+
+global dem_target = [1/num_parts for i in 1:num_parts] # Default value.
+
+const max_moves = 4
+const max_radius = 2
+const max_tries = 10
+bunch_radius = max_radius
+const alpha = 0.95
+const temperature_steps = 200
+const T_min = alpha^temperature_steps
+const max_swaps = 500
